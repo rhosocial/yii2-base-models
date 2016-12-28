@@ -9,7 +9,7 @@
     "authors": [
         {
             "name": "vistart",
-            "email": "i@vistart.vip"
+            "email": "i@vistart.me"
         }
     ],
     "require": {
@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "rhosocial\\base\\models": ""
+            "rhosocial\\base\\models\\": ""
         }
     }
 }
