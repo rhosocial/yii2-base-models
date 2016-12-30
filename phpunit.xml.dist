@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="./tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         timeoutForLargeTests="1200"
+         verbose="true">
+    <testsuites>
+        <testsuite name="Common">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">traits</directory>
+            <directory suffix=".php">models</directory>
+            <directory suffix=".php">queries</directory>
+            <directory suffix=".php">events</directory>
+        </whitelist>
+    </filter>
+</phpunit>
