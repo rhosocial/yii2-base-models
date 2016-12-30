@@ -16,6 +16,10 @@ use Closure;
 use yii\base\ModelEvent;
 use yii\behaviors\TimestampBehavior;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 trait TimestampTrait
 {
     /**

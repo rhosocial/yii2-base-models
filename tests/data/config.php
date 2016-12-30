@@ -4,9 +4,9 @@
  * | | / // // ___//_  _//   ||  __||_   _|
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
- * @link http://vistart.me/
+ * @link https://vistart.me/
  * @copyright Copyright (c) 2016 vistart
- * @license http://vistart.me/license/
+ * @license https://vistart.me/license/
  */
 /**
  * This is the configuration file for the Yii2 unit tests.
@@ -44,7 +44,7 @@ $config = [
         'keyPrefix' => 'test_',
     ],
     'multiDomainsManager' => [
-        'class' => 'vistart\Models\tests\data\ar\MultiDomainsManager',
+        'class' => 'rhosocial\base\models\tests\data\ar\MultiDomainsManager',
     ],
 ];
 if (is_file(__DIR__ . '/config.local.php')) {

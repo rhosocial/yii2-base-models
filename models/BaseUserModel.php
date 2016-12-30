@@ -5,9 +5,9 @@
  * | | / // // ___//_  _//   ||  __||_   _|
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
- * @link http://vistart.me/
+ * @link https://vistart.me/
  * @copyright Copyright (c) 2016 vistart
- * @license http://vistart.me/license/
+ * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\models;
@@ -23,7 +23,7 @@ use yii\web\IdentityInterface;
  * user model generator to generate a new user model, like following:
  * ~~~php
  * * @property string $guid
- * class User extends \vistart\Models\models\BaseUserModel {
+ * class User extends \rhosocial\base\models\models\BaseUserModel {
  *     public static function tableName() {
  *         return <table_name>;
  *     }
@@ -52,7 +52,7 @@ use yii\web\IdentityInterface;
  * ~~~
  * Note: you should supplement `get<ModelName>()` method(s) by yourself, or by
  * generator.
- * @see vistart\Models\models\BaseEntityModel
+ * @see \rhosocial\base\models\models\BaseEntityModel
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

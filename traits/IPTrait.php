@@ -17,6 +17,10 @@ use Yii;
 use yii\base\ModelEvent;
 use yii\web\Request;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 trait IPTrait
 {
     /**

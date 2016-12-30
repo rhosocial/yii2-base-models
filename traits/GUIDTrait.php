@@ -21,7 +21,7 @@ use yii\base\ModelEvent;
  * @property-read string $readableGUID
  * @property-read array $idRules
  * @property mixed $id
- * @version 2.0
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 trait GUIDTrait

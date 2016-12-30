@@ -5,9 +5,9 @@
  * | | / // // ___//_  _//   ||  __||_   _|
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
- * @link http://vistart.me/
+ * @link https://vistart.me/
  * @copyright Copyright (c) 2016 vistart
- * @license http://vistart.me/license/
+ * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
@@ -23,7 +23,7 @@ use yii\base\ModelEvent;
  * @property string $confirmCode the confirm code used for confirming the content.
  * You can disable this attribute and create a new model for storing confirm code as
  * its low-frequency usage.
- * @version 2.0
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 trait ConfirmationTrait

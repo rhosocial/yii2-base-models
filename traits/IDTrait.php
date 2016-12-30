@@ -19,7 +19,7 @@ use yii\base\ModelEvent;
  * Entity features concerning ID.
  * @property-read array $idRules
  * @property mixed $id
- * @version 2.0
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 trait IDTrait

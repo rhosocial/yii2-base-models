@@ -5,9 +5,9 @@
  * | | / // // ___//_  _//   ||  __||_   _|
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
- * @link http://vistart.me/
+ * @link https://vistart.me/
  * @copyright Copyright (c) 2016 vistart
- * @license http://vistart.me/license/
+ * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\queries;
@@ -19,7 +19,7 @@ use rhosocial\base\models\traits\MutualQueryTrait;
  * Description of BaseUserRelationQuery
  *
  * Note: You must specify $modelClass property, and the class must be the subclass
- * of `\vistart\Models\models\BaseUserRelationModel`.
+ * of `\rhosocial\base\models\models\BaseUserRelationModel`.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
