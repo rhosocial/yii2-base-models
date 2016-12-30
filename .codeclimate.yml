@@ -14,4 +14,4 @@ engines:
     phpmd:
         enabled: true
     phpcodesniffer:
-enabled: true
+        enabled: true
