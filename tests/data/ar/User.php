@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2016 vistart
  * @license https://vistart.me/license/
  */
-namespace vistart\Models\tests\data\ar;
+namespace rhosocial\base\models\tests\data\ar;
 use Yii;
 /**
  * Description of ActiveRecord
@@ -32,18 +32,16 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
      */
     public function attributeLabels() {
         return [
-            'user_uuid' => Yii::t('app', 'User Uuid'),
-            'user_id' => Yii::t('app', 'User ID'),
+            'guid' => Yii::t('app', 'Guid'),
+            'id' => Yii::t('app', 'ID'),
             'pass_hash' => Yii::t('app', 'Pass Hash'),
-            'create_time' => Yii::t('app', 'Create Time'),
-            'update_time' => Yii::t('app', 'Update Time'),
-            'ip_1' => Yii::t('app', 'Ip 1'),
-            'ip_2' => Yii::t('app', 'Ip 2'),
-            'ip_3' => Yii::t('app', 'Ip 3'),
-            'ip_4' => Yii::t('app', 'Ip 4'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+            'ip' => Yii::t('app', 'Ip'),
             'ip_type' => Yii::t('app', 'Ip Type'),
             'auth_key' => Yii::t('app', 'Auth Key'),
             'access_token' => Yii::t('app', 'Access Token'),
+            'password_reset_token' => Yii::t('app', 'Password Reset Token'),
             'status' => Yii::t('app', 'Status'),
             'source' => Yii::t('app', 'Source'),
         ];
@@ -51,6 +49,7 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
     /**
      * @return \yii\db\ActiveQuery
      */
+    /*
     public function getUserEmails() {
         return $this->hasMany(UserEmail::className(), ['user_guid' => 'guid'])->inverseOf('user');
     }

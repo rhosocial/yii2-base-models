@@ -17,10 +17,8 @@ use yii\base\ModelEvent;
 
 /**
  * Entity features concerning GUID.
- * @property string $GUID
- * @property-read string $readableGUID
- * @property-read array $idRules
- * @property mixed $id
+ * @property string $GUID GUID value in 128-bit(16 bytes) binary.
+ * @property-read string $readableGUID Readable GUID value seperated with four hyphens.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -98,8 +96,8 @@ trait GUIDTrait
      */
     public function getGUID()
     {
-        $guidAtttribute = $this->guidAttribute;
-        return is_string($guidAtttribute) ? $this->guidAttribute : null;
+        $guidAttribute = $this->guidAttribute;
+        return is_string($guidAttribute) ? $this->$guidAttribute : null;
     }
     
     /**
@@ -109,7 +107,7 @@ trait GUIDTrait
     public function getReadableGUID()
     {
         $guid = $this->getGUID();
-        if (preg_match(self::GUID_REGEX, $guid)) {
+        if (preg_match(Number::GUID_REGEX, $guid)) {
             return $guid;
         }
         return Number::guid(false, false, $guid);

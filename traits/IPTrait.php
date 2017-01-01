@@ -66,7 +66,7 @@ trait IPTrait
     {
         $sender = $event->sender;
         $request = $sender->getWebRequest();
-        if ($sender->enableIP && $request && emtpy($sender->ipAddress)) {
+        if ($sender->enableIP && $request && empty($sender->ipAddress)) {
             $sender->ipAddress = $request->userIP;
         }
     }

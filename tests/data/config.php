@@ -22,7 +22,7 @@
 $config = [
     'databases' => [
         'mysql' => [
-            'dsn' => 'mysql:host=localhost;dbname=yii2-models',
+            'dsn' => 'mysql:host=localhost;dbname=yii2-base-models',
             'username' => 'root',
             'password' => '',
             'charset' => 'utf8',
@@ -36,7 +36,7 @@ $config = [
     ],
     'mongodb' => [
         'class' => 'yii\mongodb\Connection',
-        'dsn' => "mongodb://user:123456@localhost:27017/yii2-models",
+        'dsn' => "mongodb://user:123456@localhost:27017/yii2-base-models",
     ],
     'cache' => [
         'class' => 'yii\redis\Cache',

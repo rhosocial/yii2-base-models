@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2016 vistart
  * @license https://vistart.me/license/
  */
-namespace vistart\Models\tests;
+namespace rhosocial\base\models\tests;
 use yii\di\Container;
 use yii\helpers\ArrayHelper;
 use Yii;

@@ -10,7 +10,7 @@
  * @license https://vistart.me/license/
  */
 
-namespace vistart\Models\traits;
+namespace rhosocial\base\models\traits;
 
 /**
  * 使用此 trait 的类必须与使用 UserRelationTrait 的类配合使用。
