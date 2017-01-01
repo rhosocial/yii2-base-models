@@ -54,7 +54,7 @@ before_script:
             php -m
         fi
     - mysql --version
-    - mysql -uroot < tests/data/yii2-models.sql
+    - mysql -uroot < tests/data/yii2-base-models.sql
     - |
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             travis_retry wget https://phar.phpunit.de/phpunit.phar

@@ -84,7 +84,7 @@ trait GUIDTrait
             $rules = [
                 [[$this->guidAttribute], 'required',],
                 [[$this->guidAttribute], 'unique',],
-                [[$this->guidAttribute], 'string', 'max' => 36],
+                [[$this->guidAttribute], 'string', 'max' => 16],
             ];
         }
         return $rules;

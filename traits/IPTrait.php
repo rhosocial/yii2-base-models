@@ -147,14 +147,14 @@ trait IPTrait
         if ($this->enableIP & static::$ipv4) {
             $rules = [
                 [[$this->ipAttribute],
-                    'number', 'integerOnly' => true, 'min' => 0
+                    'string', 'max' => 4
                 ],
             ];
         }
         if ($this->enableIP & static::$ipv6) {
             $rules = [
                 [[$this->ipAttribute],
-                    'number', 'integerOnly' => true, 'min' => 0
+                    'string', 'max' => 16
                 ],
             ];
         }
