@@ -29,9 +29,6 @@ cache:
 
 install:
     - echo $TRAVIS_PHP_VERSION
-    - travis_retry composer self-update && composer --version
-    - travis_retry composer global require "fxp/composer-asset-plugin:*"
-    - travis_retry composer require "yiisoft/yii2-redis:*"
     - |
         if [ $TRAVIS_PHP_VERSION = '5.6' ]; then
             phpenv config-add tests/data/php5.6.ini
@@ -43,10 +40,6 @@ install:
             phpenv config-add tests/data/php5.6.ini
             travis_retry composer require "yiisoft/yii2-mongodb:*"
         fi
-    - export PATH="$HOME/.composer/vendor/bin/:$PATH"
-    - travis_retry composer install --prefer-dist --no-interaction
-    
-before_script:
     - php -r "echo INTL_ICU_VERSION . \"\n\";"
     - php -r "echo INTL_ICU_DATA_VERSION . \"\n\";"
     - php -v
@@ -54,6 +47,13 @@ before_script:
         if [ $TRAVIS_PHP_VERSION != 'hhvm' ]; then
             php -m
         fi
+    - travis_retry composer self-update && composer --version
+    - travis_retry composer global require "fxp/composer-asset-plugin:*"
+    - travis_retry composer require "yiisoft/yii2-redis:*"
+    - export PATH="$HOME/.composer/vendor/bin/:$PATH"
+    - travis_retry composer install --prefer-dist --no-interaction
+    
+before_script:
     - mysql --version
     - mysql -uroot < tests/data/yii2-base-models.sql
     - |
