@@ -223,4 +223,209 @@ class BaseUserModelTest extends TestCase
     {
         return Yii::$app->security->validatePassword($password, $hash);
     }
+    
+    /**
+     * @group user
+     * @depends testPassword
+     */
+    public function testPasswordResetToken()
+    {
+        $password = '123456';
+        $user = new User(['password' => $password]);
+        $user->on(User::$eventResetPasswordFailed, [$this, 'onResetPasswordFailed']);
+        $user->register();
+        $this->assertTrue($user->applyForNewPassword());
+        $password = $password . ' ';
+        $passwordResetTokenAttribute = $user->passwordResetTokenAttribute;
+        $user->resetPassword($password, $user->$passwordResetTokenAttribute);
+        $user->deregister();
+    }
+    /**
+     * @group user
+     * @depends testPasswordResetToken
+     */
+    public function testStatus()
+    {
+        $user = new User();
+        $guidAttribute = $user->guidAttribute;
+        $guid = $user->guid;
+        $this->assertTrue($user->register());
+        $user = User::findOne($guid);
+        $statusAttribute = $user->statusAttribute;
+        $this->assertEquals(User::$statusActive, $user->$statusAttribute);
+        $user = User::find()->where([$guidAttribute => $guid])->active(User::$statusInactive)->one();
+        $this->assertNull($user);
+        $user = User::find()->where([$guidAttribute => $guid])->active(User::$statusActive)->one();
+        $this->assertInstanceOf(User::className(), $user);
+        $this->assertTrue($user->deregister());
+    }
+    /**
+     * @group user
+     * @depends testStatus
+     */
+    public function testSource()
+    {
+        $user = new User();
+        $guid = $user->guid;
+        $guidAttribute = $user->guidAttribute;
+        $this->assertTrue($user->register());
+        $user = User::findOne($guid);
+        $sourceAttribute = $user->sourceAttribute;
+        $this->assertEquals(User::$sourceSelf, $user->$sourceAttribute);
+        $user = User::find()->where([$guidAttribute => $guid])->source('1')->one();
+        $this->assertNull($user);
+        $user = User::find()->where([$guidAttribute => $guid])->source()->one();
+        $this->assertInstanceOf(User::className(), $user);
+        $this->assertTrue($user->deregister());
+    }
+    /**
+     * @group user
+     * @depends testSource
+     */
+    public function testTimestamp()
+    {
+        $user = new User();
+        $createdAtAttribute = $user->createdAtAttribute;
+        $updatedAtAttribute = $user->updatedAtAttribute;
+        $this->assertNull($user->$createdAtAttribute);
+        $this->assertNull($user->$updatedAtAttribute);
+        $result = $user->register();
+        if ($result instanceof \yii\db\Exception) {
+            var_dump($result->getMessage());
+            $this->assertFalse(false);
+        } else {
+            $this->assertTrue($result);
+        }
+        $this->assertNotNull($user->$createdAtAttribute);
+        $this->assertNotNull($user->$updatedAtAttribute);
+        $this->assertTrue($user->deregister());
+    }
+    public $beforeRegisterEvent = '';
+    public $afterRegisterEvent = '';
+    public $beforeDeregisterEvent = '';
+    public $afterDeregisterEvent = '';
+    /**
+     * @group user
+     * @depends testTimestamp
+     */
+    public function testRegister()
+    {
+        $user = new User();
+        $user->on(User::$eventBeforeRegister, [$this, 'onBeforeRegister']);
+        $user->on(User::$eventAfterRegister, [$this, 'onAfterRegister']);
+        $this->assertTrue($user->register());
+        $this->assertEquals('beforeRegister', $this->beforeRegisterEvent);
+        $this->assertEquals('afterRegister', $this->afterRegisterEvent);
+        $authKeyAttribute = $user->authKeyAttribute;
+        $this->assertEquals(40, strlen($user->$authKeyAttribute));
+        $accessTokenAttribute = $user->accessTokenAttribute;
+        $this->assertEquals(40, strlen($user->$accessTokenAttribute));
+        $sourceAttribute = $user->sourceAttribute;
+        $this->assertEquals(User::$sourceSelf, $user->$sourceAttribute);
+        $statusAttribute = $user->statusAttribute;
+        $this->assertEquals(User::$statusActive, $user->$statusAttribute);
+        $user->on(User::$eventBeforeDeregister, [$this, 'onBeforeDeregister']);
+        $user->on(User::$eventAfterDeregister, [$this, 'onAfterDeregister']);
+        $this->assertTrue($user->deregister());
+        $this->assertEquals('beforeDeregister', $this->beforeDeregisterEvent);
+        $this->assertEquals('afterDeregister', $this->afterDeregisterEvent);
+    }
+    public function onBeforeRegister($event)
+    {
+        $sender = $event->sender;
+        $this->assertInstanceOf(User::className(), $sender);
+        $this->beforeRegisterEvent = 'beforeRegister';
+    }
+    public function onAfterRegister($event)
+    {
+        $sender = $event->sender;
+        $this->assertInstanceOf(User::className(), $sender);
+        $this->afterRegisterEvent = 'afterRegister';
+    }
+    public function onBeforeDeregister($event)
+    {
+        $sender = $event->sender;
+        $this->assertInstanceOf(User::className(), $sender);
+        $this->beforeDeregisterEvent = 'beforeDeregister';
+    }
+    public function onAfterDeregister($event)
+    {
+        $sender = $event->sender;
+        $this->assertInstanceOf(User::className(), $sender);
+        $this->afterDeregisterEvent = 'afterDeregister';
+    }
+    /**
+     * @group user
+     * @depends testRegister
+     * @large
+     */
+    /*
+    public function atestNewUser256()
+    {
+        $users = [];
+        for ($i = 0; $i < 256; $i++) {
+            $password = '123456';
+            $user = new User(['password' => $password]);
+            $users[] = $user;
+            if (!$user->register()) {
+                $this->fail(($i + 1) . "\n" . $user->errors);
+            }
+        }
+        foreach ($users as $key => $user) {
+            if (!$user->deregister()) {
+                $this->fail($key . "\n" . $user->errors);
+            }
+        }
+        echo "$i\n";
+    }
+    /**
+     * @group user
+     * @depends testRegister
+     */
+    /*
+    public function testCreateNonObject()
+    {
+        $user = new User();
+        $this->assertNull($user->createProfile());
+    }
+    /**
+     * @group user
+     * @depends testCreateNonObject
+     */
+    /*
+    public function testCreateCommentWithoutMap()
+    {
+        $user = new User(['password' => '123456']);
+        $this->assertTrue($user->register());
+        $comment = $user->createUserComment();
+        $this->assertNull($comment);
+        $this->assertTrue($user->deregister());
+    }
+    /**
+     * @group user
+     * @depends testCreateCommentWithoutMap
+     */
+    /*
+    public function testCreateCommentWithMap()
+    {
+        $user = new User(['password' => '123456']);
+        $this->assertTrue($user->register());
+        $user->subsidiaryMap = [
+            'Comment' => UserComment::className(),
+        ];
+        $comment = $user->createComment(['class' => UserComment::className()]);
+        $this->assertInstanceOf(UserComment::className(), $comment);
+        $comment = $user->createSubsidiary(UserComment::className(), ['class' => UserComment::className()]);
+        $this->assertTrue($user->deregister());
+    }
+    /**
+     * @group user
+     * @depends testCreateCommentWithMap
+     */
+    /*
+    public function testNormalizeSubsidiaryClass()
+    {
+        $user = new User(['password' => '123456']);
+        $this->assertNull($user->normalizeSubsidiaryClass(null));
+    }*/
 }
