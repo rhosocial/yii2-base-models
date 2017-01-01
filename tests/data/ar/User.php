@@ -51,12 +51,18 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
      */
     /*
     public function getUserEmails() {
-        return $this->hasMany(UserEmail::className(), ['user_guid' => 'guid'])->inverseOf('user');
+        return $this->hasMany(UserEmail::class, ['user_guid' => 'guid'])->inverseOf('user');
+    }
+     * 
+     */
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdditionalAccounts() {
+        return $this->hasMany(AdditionalAccount::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
     
-    public function getAdditionalAccounts() {
-        return $this->hasMany(AdditionalAccount::className(), ['user_guid' => 'guid'])->inverseOf('user');
-    }
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseUserQuery

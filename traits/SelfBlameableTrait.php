@@ -265,7 +265,7 @@ trait SelfBlameableTrait
      */
     public function getParent()
     {
-        return $this->hasOne(static::className(), [$this->refIdAttribute => $this->parentAttribute]);
+        return $this->hasOne(static::class, [$this->refIdAttribute => $this->parentAttribute]);
     }
 
     /**
@@ -393,7 +393,7 @@ trait SelfBlameableTrait
      */
     public function getChildren()
     {
-        return $this->hasMany(static::className(), [$this->parentAttribute => $this->refIdAttribute])->inverseOf('parent');
+        return $this->hasMany(static::class, [$this->parentAttribute => $this->refIdAttribute])->inverseOf('parent');
     }
 
     /**
@@ -441,10 +441,10 @@ trait SelfBlameableTrait
         } catch (IntegrityException $ex) {
             $transaction->rollBack();
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::className() . '\update');
+                Yii::error($ex->errorInfo, static::class . '\update');
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::className() . '\update');
+            Yii::warning($ex->errorInfo, static::class . '\update');
             return false;
         }
         return true;
@@ -477,10 +477,10 @@ trait SelfBlameableTrait
         } catch (IntegrityException $ex) {
             $transaction->rollBack();
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::className() . '\delete');
+                Yii::error($ex->errorInfo, static::class . '\delete');
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::className() . '\delete');
+            Yii::warning($ex->errorInfo, static::class . '\delete');
             return false;
         }
         return true;

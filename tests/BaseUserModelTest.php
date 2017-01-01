@@ -147,7 +147,7 @@ class BaseUserModelTest extends TestCase
         $this->assertEquals(User::$ipAll, $user->enableIP);
         $this->assertEquals($ipAddress, $user->ipAddress);
         $ipTypeAttribute = $user->ipTypeAttribute;
-        $this->assertEquals(Ip::IPv6, $user->$ipTypeAttribute);
+        $this->assertEquals(IP::IPv6, $user->$ipTypeAttribute);
         $this->assertTrue($user->deregister());
 
         $user = new User(['enableIP' => User::$ipv4, 'ipAddress' => $ipAddress]);
@@ -168,7 +168,7 @@ class BaseUserModelTest extends TestCase
         $this->assertEquals(User::$ipAll, $user->enableIP);
         $this->assertEquals($ipAddress, $user->ipAddress);
         $ipTypeAttribute = $user->ipTypeAttribute;
-        $this->assertEquals(Ip::IPv4, $user->$ipTypeAttribute);
+        $this->assertEquals(IP::IPv4, $user->$ipTypeAttribute);
         $this->assertTrue($user->deregister());
         
         $user = new User(['enableIP' => User::$ipv4, 'ipAddress' => $ipAddress]);
@@ -197,13 +197,13 @@ class BaseUserModelTest extends TestCase
         $user->on(User::$eventAfterSetPassword, function($event) {
             $this->assertTrue(true, 'EVENT_AFTER_SET_PASSWORD');
             $sender = $event->sender;
-            $this->assertInstanceOf(User::className(), $sender);
+            $this->assertInstanceOf(User::class, $sender);
         });
         $this->assertTrue($user->hasEventHandlers(User::$eventAfterSetPassword));
         $user->on(User::$eventBeforeValidatePassword, function($event) {
             $this->assertTrue(true, 'EVENT_BEFORE_VALIDATE_PASSWORD');
             $sender = $event->sender;
-            $this->assertInstanceOf(User::className(), $sender);
+            $this->assertInstanceOf(User::class, $sender);
         });
         $this->assertTrue($user->hasEventHandlers(User::$eventBeforeValidatePassword));
         $user->password = $password;
@@ -256,7 +256,7 @@ class BaseUserModelTest extends TestCase
         $user = User::find()->where([$guidAttribute => $guid])->active(User::$statusInactive)->one();
         $this->assertNull($user);
         $user = User::find()->where([$guidAttribute => $guid])->active(User::$statusActive)->one();
-        $this->assertInstanceOf(User::className(), $user);
+        $this->assertInstanceOf(User::class, $user);
         $this->assertTrue($user->deregister());
     }
     /**
@@ -275,7 +275,7 @@ class BaseUserModelTest extends TestCase
         $user = User::find()->where([$guidAttribute => $guid])->source('1')->one();
         $this->assertNull($user);
         $user = User::find()->where([$guidAttribute => $guid])->source()->one();
-        $this->assertInstanceOf(User::className(), $user);
+        $this->assertInstanceOf(User::class, $user);
         $this->assertTrue($user->deregister());
     }
     /**
@@ -333,25 +333,25 @@ class BaseUserModelTest extends TestCase
     public function onBeforeRegister($event)
     {
         $sender = $event->sender;
-        $this->assertInstanceOf(User::className(), $sender);
+        $this->assertInstanceOf(User::class, $sender);
         $this->beforeRegisterEvent = 'beforeRegister';
     }
     public function onAfterRegister($event)
     {
         $sender = $event->sender;
-        $this->assertInstanceOf(User::className(), $sender);
+        $this->assertInstanceOf(User::class, $sender);
         $this->afterRegisterEvent = 'afterRegister';
     }
     public function onBeforeDeregister($event)
     {
         $sender = $event->sender;
-        $this->assertInstanceOf(User::className(), $sender);
+        $this->assertInstanceOf(User::class, $sender);
         $this->beforeDeregisterEvent = 'beforeDeregister';
     }
     public function onAfterDeregister($event)
     {
         $sender = $event->sender;
-        $this->assertInstanceOf(User::className(), $sender);
+        $this->assertInstanceOf(User::class, $sender);
         $this->afterDeregisterEvent = 'afterDeregister';
     }
     /**
@@ -411,11 +411,11 @@ class BaseUserModelTest extends TestCase
         $user = new User(['password' => '123456']);
         $this->assertTrue($user->register());
         $user->subsidiaryMap = [
-            'Comment' => UserComment::className(),
+            'Comment' => UserComment::class,
         ];
-        $comment = $user->createComment(['class' => UserComment::className()]);
-        $this->assertInstanceOf(UserComment::className(), $comment);
-        $comment = $user->createSubsidiary(UserComment::className(), ['class' => UserComment::className()]);
+        $comment = $user->createComment(['class' => UserComment::class]);
+        $this->assertInstanceOf(UserComment::class, $comment);
+        $comment = $user->createSubsidiary(UserComment::class, ['class' => UserComment::class]);
         $this->assertTrue($user->deregister());
     }
     /**

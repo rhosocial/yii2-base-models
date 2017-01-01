@@ -50,7 +50,7 @@ trait UserTrait
     public function create($className, $config = [], $loadDefault = true, $skipIfSet = true)
     {
         if (!isset($config['userClass'])) {
-            $config['userClass'] = static::className();
+            $config['userClass'] = static::class;
         }
         if (isset($config['class'])) {
             unset($config['class']);

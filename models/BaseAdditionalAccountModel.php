@@ -20,16 +20,16 @@ use rhosocial\base\models\traits\AdditionalAccountTrait;
  *
  * Default settings:
  * - enable GUID.
- * - enable ID, random string, with 8 characters.
+ * - enable ID, random string, with 8-digit number.
  * - enable IP, accept all IP address.
  * - enable createdAtAttribute.
  * - enable content, and its rule is integer.
  * - enable confirmation, but confirm code.
  * - enable description.
  * the content attribute is used for recording the login-type of account, e.g. ID
- * , email or any other format.
+ * , email or any other formats.
  * the content type attribute is used for recording the account source, e.g. register
- * from self, or any other account provider.
+ * from self, or any other account providers.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

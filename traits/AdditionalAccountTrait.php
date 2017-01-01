@@ -23,12 +23,14 @@ trait AdditionalAccountTrait
      * with current additional account among all the users.
      */
     public $enableLoginAttribute = false;
+    
     /**
      * @var boolean|string  Determines whether login with current additional
      * account with an independent password or not. If you set $enableLoginAttribute
      * to false, this feature will be skipped.
      */
     public $independentPassword = false;
+    
     /**
      * Get this additional account could be used for logging-in.
      * @return boolean
@@ -41,6 +43,7 @@ trait AdditionalAccountTrait
         $enableLoginAttribute = $this->enableLoginAttribute;
         return $this->$enableLoginAttribute > 0;
     }
+    
     /**
      * Set this additional accunt could be used for logging-in.
      * @param boolean $can
@@ -54,6 +57,7 @@ trait AdditionalAccountTrait
         $enableLoginAttribute = $this->enableLoginAttribute;
         $this->$enableLoginAttribute = ($can ? 1 : 0);
     }
+    
     /**
      * Get rules associated with enable login attribute.
      * If enable login feature by this additional account, it will return the rules
@@ -67,6 +71,7 @@ trait AdditionalAccountTrait
             [[$this->enableLoginAttribute], 'default', 'value' => true],
             ] : [];
     }
+    
     /**
      * Get rules associated with additional account attributes.
      * @return array rules.

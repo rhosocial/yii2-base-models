@@ -199,7 +199,7 @@ trait TimestampTrait
     {
         return [
             [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'createdAtAttribute' => $this->createdAtAttribute,
                 'updatedAtAttribute' => $this->updatedAtAttribute,
                 'value' => [$this, 'onUpdateCurrentDatetime'],
