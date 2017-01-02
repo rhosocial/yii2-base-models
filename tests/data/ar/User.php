@@ -12,7 +12,7 @@ namespace rhosocial\base\models\tests\data\ar;
 use Yii;
 /**
  * Description of ActiveRecord
- * @property-read UserEmail[] $userEmails
+ * @property-read UserEmail[] $emails
  * @property-read AdditionalAccount[] $additionalAccounts
  * @author vistart <i@vistart.me>
  * @since 1.0
@@ -47,17 +47,14 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
         ];
     }
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \rhosocial\base\models\queries\BaseBlameableQuery
      */
-    /*
-    public function getUserEmails() {
+    public function getEmails() {
         return $this->hasMany(UserEmail::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
-     * 
-     */
     
     /**
-     * @return \yii\db\ActiveQuery
+     * @return \rhosocial\base\models\queries\BaseBlameableQuery
      */
     public function getAdditionalAccounts() {
         return $this->hasMany(AdditionalAccount::class, ['user_guid' => 'guid'])->inverseOf('user');
