@@ -48,7 +48,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     {
         $self = static::buildNoInitModel();
         if (!is_string($self->queryClass)) {
-            $self->queryClass = BaseMongoEntityQuery::className();
+            $self->queryClass = BaseMongoEntityQuery::class;
         }
         $queryClass = $self->queryClass;
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);

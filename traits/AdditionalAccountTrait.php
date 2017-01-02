@@ -18,7 +18,7 @@ trait AdditionalAccountTrait
     
     /**
      * @var boolean|string The attribute of which determines whether enable to
-     * login with current additional account. You can assign it to false ff you
+     * login with current additional account. You can assign it to false if you
      * want to disable this feature, this is equivolent to not allow to login
      * with current additional account among all the users.
      */

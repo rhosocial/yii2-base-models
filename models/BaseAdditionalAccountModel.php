@@ -43,8 +43,8 @@ abstract class BaseAdditionalAccountModel extends BaseBlameableModel
     public $contentAttributeRule = ['integer', 'min' => 0];
     public $contentTypeAttribute = 'source';  // Where did this account origin from, defined by yourself.
     public $contentTypes = [
-        0 => 'self',
-        1 => 'third-party',
+        0 => 'self', // Self created or bound.
+        1 => 'third-party', // bound with third-party account.
     ];
     public $confirmationAttribute = 'confirmed';
     public $confirmCodeAttribute = false;
@@ -56,7 +56,7 @@ abstract class BaseAdditionalAccountModel extends BaseBlameableModel
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseBlameableQuery::className();
+            $this->queryClass = BaseBlameableQuery::class;
         }
         if ($this->skipInit) {
             return;

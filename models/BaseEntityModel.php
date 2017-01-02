@@ -74,7 +74,7 @@ abstract class BaseEntityModel extends ActiveRecord
     {
         $self = static::buildNoInitModel();
         if (!is_string($self->queryClass)) {
-            $self->queryClass = BaseEntityQuery::className();
+            $self->queryClass = BaseEntityQuery::class;
         }
         $queryClass = $self->queryClass;
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);

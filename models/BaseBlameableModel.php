@@ -80,7 +80,7 @@ abstract class BaseBlameableModel extends BaseEntityModel
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseBlameableQuery::className();
+            $this->queryClass = BaseBlameableQuery::class;
         }
         if ($this->skipInit) {
             return;

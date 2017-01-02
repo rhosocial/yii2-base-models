@@ -71,7 +71,7 @@ abstract class BaseUserModel extends BaseEntityModel implements IdentityInterfac
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseUserQuery::className();
+            $this->queryClass = BaseUserQuery::class;
         }
         if ($this->skipInit) {
             return;

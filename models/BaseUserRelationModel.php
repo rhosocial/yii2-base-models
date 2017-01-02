@@ -28,7 +28,7 @@ use rhosocial\base\models\traits\UserRelationTrait;
  *
  *     public function init()
  *     {
- *         $this->multiBlamesClass = UserRelationGroup::className(); // if you need relation group feature, `$multiBlamesClass` property should be specified.
+ *         $this->multiBlamesClass = UserRelationGroup::class; // if you need relation group feature, `$multiBlamesClass` property should be specified.
  *         parent::init(); // parent's call should be placed at the end of init() method.
  *     }
  * }
@@ -40,7 +40,7 @@ use rhosocial\base\models\traits\UserRelationTrait;
  *
  *     public function init()
  *     {
- *         $this->multiBlamesClass = UserRelationGroup::className(); // if you need relation group feature, `$multiBlamesClass` property should be specified.
+ *         $this->multiBlamesClass = UserRelationGroup::class; // if you need relation group feature, `$multiBlamesClass` property should be specified.
  *         parent::init(); // parent's call should be placed at the end of init() method.
  *     }
  * }
@@ -86,7 +86,7 @@ abstract class BaseUserRelationModel extends BaseBlameableModel
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseUserRelationQuery::className();
+            $this->queryClass = BaseUserRelationQuery::class;
         }
         if ($this->skipInit) {
             return;

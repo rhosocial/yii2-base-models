@@ -346,7 +346,7 @@ trait UserRelationTrait
             $otherGuidAttribute = $noInit->otherGuidAttribute;
             $userClass = $noInit->userClass;
             if ($user instanceof BaseUserModel) {
-                $userClass = $userClass ? : $user->className();
+                $userClass = $userClass ? : $user->class;
                 $user = $user->guid;
             }
             if ($other instanceof BaseUserModel) {

@@ -123,7 +123,7 @@ trait EntityTrait
      */
     public function getEntityRulesCacheKey()
     {
-        return static::className() . $this->cachePrefix . static::$cacheKeyEntityRules;
+        return static::class . $this->cachePrefix . static::$cacheKeyEntityRules;
     }
     
     /**
@@ -132,7 +132,7 @@ trait EntityTrait
      */
     public function getEntityRulesCacheTag()
     {
-        return static::className() . $this->cachePrefix . static::$cacheTagEntityRules;
+        return static::class . $this->cachePrefix . static::$cacheTagEntityRules;
     }
     
     /**
@@ -174,7 +174,7 @@ trait EntityTrait
      */
     public function getEntityBehaviorsCacheKey()
     {
-        return static::className() . $this->cachePrefix . static::$cacheKeyEntityBehaviors;
+        return static::class . $this->cachePrefix . static::$cacheKeyEntityBehaviors;
     }
     
     /**
@@ -183,7 +183,7 @@ trait EntityTrait
      */
     public function getEntityBehaviorsCacheTag()
     {
-        return static::className() . $this->cachePrefix . static::$cacheTagEntityBehaviors;
+        return static::class . $this->cachePrefix . static::$cacheTagEntityBehaviors;
     }
     
     /**

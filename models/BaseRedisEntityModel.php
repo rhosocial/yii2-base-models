@@ -45,7 +45,7 @@ abstract class BaseRedisEntityModel extends \yii\redis\ActiveRecord
     {
         $self = static::buildNoInitModel();
         if (!is_string($self->queryClass)) {
-            $self->queryClass = BaseRedisEntityQuery::className();
+            $self->queryClass = BaseRedisEntityQuery::class;
         }
         $queryClass = $self->queryClass;
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);

@@ -32,7 +32,7 @@ abstract class BaseRedisBlameableModel extends BaseRedisEntityModel
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseRedisBlameableQuery::className();
+            $this->queryClass = BaseRedisBlameableQuery::class;
         }
         if ($this->skipInit) {
             return;

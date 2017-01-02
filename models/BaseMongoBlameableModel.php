@@ -32,7 +32,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = BaseMongoBlameableQuery::className();
+            $this->queryClass = BaseMongoBlameableQuery::class;
         }
         if ($this->skipInit) {
             return;

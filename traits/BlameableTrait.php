@@ -260,7 +260,7 @@ trait BlameableTrait
      */
     public function getBlameableRulesCacheKey()
     {
-        return static::className() . $this->cachePrefix . static::$cacheKeyBlameableRules;
+        return static::class . $this->cachePrefix . static::$cacheKeyBlameableRules;
     }
 
     /**
@@ -269,7 +269,7 @@ trait BlameableTrait
      */
     public function getBlameableRulesCacheTag()
     {
-        return static::className() . $this->cachePrefix . static::$cacheTagBlameableRules;
+        return static::class . $this->cachePrefix . static::$cacheTagBlameableRules;
     }
 
     /**
@@ -416,7 +416,7 @@ trait BlameableTrait
      */
     public function getBlameableBehaviorsCacheKey()
     {
-        return static::className() . $this->cachePrefix . static::$cacheKeyBlameableBehaviors;
+        return static::class . $this->cachePrefix . static::$cacheKeyBlameableBehaviors;
     }
 
     /**
@@ -425,7 +425,7 @@ trait BlameableTrait
      */
     public function getBlameableBehaviorsCacheTag()
     {
-        return static::className() . $this->cachePrefix . static::$cacheTagBlameableBehaviors;
+        return static::class . $this->cachePrefix . static::$cacheTagBlameableBehaviors;
     }
 
     /**
@@ -445,7 +445,7 @@ trait BlameableTrait
             }
             $behaviors = parent::behaviors();
             $behaviors['blameable'] = [
-                'class' => BlameableBehavior::className(),
+                'class' => BlameableBehavior::class,
                 'createdByAttribute' => $this->createdByAttribute,
                 'updatedByAttribute' => $this->updatedByAttribute,
                 'value' => [$this,
