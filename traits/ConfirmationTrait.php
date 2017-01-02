@@ -62,7 +62,7 @@ trait ConfirmationTrait
      * this attribute is assigned to false, this feature will be ignored.
      * if $confirmationAttribute is empty or false, this attribute will be skipped.
      */
-    public $confirmTimeAttribute = 'confirm_time';
+    public $confirmTimeAttribute = 'confirmed_at';
 
     /**
      * @var string initialization confirm time.
