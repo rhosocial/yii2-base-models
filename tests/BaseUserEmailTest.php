@@ -68,7 +68,7 @@ class BaseUserEmailTest extends TestCase
      * @group email
      * @group blameable
      */
-    public function testCreatorandUpdate()
+    public function testCreatorandUpdater()
     {
         $user = new User();
         $email = $user->findOneOrCreate(UserEmail::class, ['email' => 'i@vistart.me', 'type' => UserEmail::TYPE_HOME]);

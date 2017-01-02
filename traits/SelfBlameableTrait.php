@@ -44,6 +44,9 @@ trait SelfBlameableTrait
 
     /**
      * @var false|string attribute name of which store the parent's guid.
+     * If you do not want to use self-blameable features, please set it false.
+     * And if you access any features of this trait when this parameter is false,
+     * exception may be thrown.
      */
     public $parentAttribute = false;
 
@@ -55,6 +58,8 @@ trait SelfBlameableTrait
 
     /**
      * @var string self referenced ID attribute.
+     * If you enable self-blameable features, this parameter should be specified,
+     * otherwise, exception will be thrown.
      */
     public $refIdAttribute = 'guid';
     public static $parentNone = 0;
@@ -94,13 +99,15 @@ trait SelfBlameableTrait
 
     /**
      * @var false|integer Set the limit of ancestor level. False is no limit.
+     * We strongly recommend you set an unsigned integer which is less than 256.
      */
     public $ancestorLimit = false;
 
     /**
      * @var false|integer Set the limit of children. False is no limit.
+     * We strongly recommend you set an unsigned integer which is less than 256.
      */
-    public $childrenLimit = false;
+    public $descendantLimit = false;
 
     /**
      * Get rules associated with self blameable attribute.
@@ -135,7 +142,7 @@ trait SelfBlameableTrait
     /**
      * Check whether this model has reached the ancestor limit.
      * If $ancestorLimit is false, it will be regared as no limit(return false).
-     * If $ancestorLimit is not false and not a number, 256 will be taken.
+     * If $ancestorLimit is not false and not an unsigned integer, 256 will be taken.
      * @return boolean
      */
     public function hasReachedAncestorLimit()
@@ -150,31 +157,47 @@ trait SelfBlameableTrait
     }
 
     /**
-     * Check whether this model has reached the children limit.
-     * If $childrenLimit is false, it will be regarded as no limit(return false).
-     * If $childrenLimist is not false and not a number, 256 will be taken.
+     * Check whether this model has reached the descendant limit.
+     * If $descendantLimit is false, it will be regarded as no limit(return false).
+     * If $descendantLimit is not false and not an unsigned integer, 256 will be taken.
      * @return boolean
      */
-    public function hasReachedChildrenLimit()
+    public function hasReachedDescendantLimit()
     {
-        if ($this->childrenLimit === false) {
+        if ($this->descendantLimit === false) {
             return false;
         }
-        if (!is_numeric($this->childrenLimit)) {
-            $this->childrenLimit = 256;
+        if (!is_numeric($this->descendantLimit)) {
+            $this->descendantLimit = 256;
         }
-        return ((int) $this->getChildren()->count()) >= $this->childrenLimit;
+        return ((int) $this->getChildren()->count()) >= $this->descendantLimit;
     }
 
     /**
      * Bear a child.
+     * The creator of this child is not necessarily the creator of current one.
+     * For example: Someone commit a comment on another user's comment, these
+     * two comments are father and son, but do not belong to the same owner.
+     * Therefore, you need to specify the creator of current model.
      * @param array $config
      * @return static|null Null if reached the ancestor limit or children limit.
+     * @throws \yii\base\InvalidConfigException Self reference ID attribute or
+     * parent attribute not determined.
+     * @throws \yii\base\InvalidParamException ancestor or descendant limit reached.
      */
     public function bear($config = [])
     {
-        if ($this->hasReachedAncestorLimit() || $this->hasReachedChildrenLimit()) {
-            return null;
+        if (!$this->refIdAttribute) {
+            throw new \yii\base\InvalidConfigException("Self Reference ID Attribute Not Determined.");
+        }
+        if (!$this->parentAttribute) {
+            throw new \yii\base\InvalidConfigException("Parent Attribute Not Determined.");
+        }
+        if ($this->hasReachedAncestorLimit()) {
+            throw new \yii\base\InvalidParamException("Reached Ancestor Limit: " . $this->ancestorLimit);
+        }
+        if ($this->hasReachedDescendantLimit()) {
+            throw new \yii\base\InvalidParamException("Reached Descendant Limit: ". $this->descendantLimit);
         }
         if (isset($config['class'])) {
             unset($config['class']);
@@ -191,7 +214,7 @@ trait SelfBlameableTrait
      */
     public function addChild($child)
     {
-        return $this->hasReachedChildrenLimit() ? $child->setParent($this) : false;
+        return $this->hasReachedDescendantLimit() ? $child->setParent($this) : false;
     }
 
     /**
