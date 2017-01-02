@@ -8,7 +8,7 @@ php:
 
 matrix:
     allow_failures:
-        - php: nightly
+        - php: hhvm, nightly
         
 branches:
     except:
@@ -32,13 +32,13 @@ install:
     - |
         if [ $TRAVIS_PHP_VERSION = '5.6' ]; then
             phpenv config-add tests/data/php5.6.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:*"
+            travis_retry composer require "yiisoft/yii2-mongodb:~2.0.0"
         elif [ $TRAVIS_PHP_VERSION = '7.0' ]; then
-            phpenv config-add tests/data/php5.6.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:*"
+            phpenv config-add tests/data/php7.0.ini
+            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
         elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
-            phpenv config-add tests/data/php5.6.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:*"
+            phpenv config-add tests/data/php7.0.ini
+            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
         fi
     - php -r "echo INTL_ICU_VERSION . \"\n\";"
     - php -r "echo INTL_ICU_DATA_VERSION . \"\n\";"
