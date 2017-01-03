@@ -13,6 +13,8 @@
 namespace rhosocial\base\models\traits;
 
 use yii\base\ModelEvent;
+use yii\base\InvalidConfigException;
+use yii\base\InvalidParamException;
 use yii\db\ActiveQuery;
 use yii\db\IntegrityException;
 
@@ -45,7 +47,7 @@ trait SelfBlameableTrait
     /**
      * @var false|string attribute name of which store the parent's guid.
      * If you do not want to use self-blameable features, please set it false.
-     * And if you access any features of this trait when this parameter is false,
+     * Or if you access any features of this trait when this parameter is false,
      * exception may be thrown.
      */
     public $parentAttribute = false;
@@ -54,7 +56,7 @@ trait SelfBlameableTrait
      * @var string|array rule name and parameters of parent attribute, as well
      * as self referenced ID attribute.
      */
-    public $parentAttributeRule = ['string', 'max' => 36];
+    public $parentAttributeRule = ['string', 'max' => 16];
 
     /**
      * @var string self referenced ID attribute.
@@ -93,6 +95,11 @@ trait SelfBlameableTrait
      * @var boolean indicates whether throw exception or not when restriction occured on updating or deleting operation.
      */
     public $throwRestrictException = false;
+    
+    /**
+     * @var array store the attribute validation rules.
+     * If this field is a non-empty array, then it will be given.
+     */
     private $localSelfBlameableRules = [];
     public static $eventParentChanged = 'parentChanged';
     public static $eventChildAdded = 'childAdded';
@@ -104,13 +111,15 @@ trait SelfBlameableTrait
     public $ancestorLimit = false;
 
     /**
-     * @var false|integer Set the limit of children. False is no limit.
-     * We strongly recommend you set an unsigned integer which is less than 256.
+     * @var false|integer Set the limit of children (not descendants). False is no limit.
+     * We strongly recommend you set an unsigned integer which is less than 1024.
      */
-    public $descendantLimit = false;
+    public $childrenLimit = false;
 
     /**
      * Get rules associated with self blameable attribute.
+     * If self-blameable rules has been stored locally, then it will be given,
+     * or return the parent attribute rule.
      * @return array rules.
      */
     public function getSelfBlameableRules()
@@ -157,20 +166,20 @@ trait SelfBlameableTrait
     }
 
     /**
-     * Check whether this model has reached the descendant limit.
-     * If $descendantLimit is false, it will be regarded as no limit(return false).
-     * If $descendantLimit is not false and not an unsigned integer, 256 will be taken.
+     * Check whether this model has reached the children limit.
+     * If $childrenLimit is false, it will be regarded as no limit(return false).
+     * If $childrenLimit is not false and not an unsigned integer, 1024 will be taken.
      * @return boolean
      */
-    public function hasReachedDescendantLimit()
+    public function hasReachedChildrenLimit()
     {
-        if ($this->descendantLimit === false) {
+        if ($this->childrenLimit === false) {
             return false;
         }
-        if (!is_numeric($this->descendantLimit)) {
-            $this->descendantLimit = 256;
+        if (!is_numeric($this->childrenLimit)) {
+            $this->childrenLimit = 1024;
         }
-        return ((int) $this->getChildren()->count()) >= $this->descendantLimit;
+        return ((int) $this->getChildren()->count()) >= $this->childrenLimit;
     }
 
     /**
@@ -181,23 +190,23 @@ trait SelfBlameableTrait
      * Therefore, you need to specify the creator of current model.
      * @param array $config
      * @return static|null Null if reached the ancestor limit or children limit.
-     * @throws \yii\base\InvalidConfigException Self reference ID attribute or
+     * @throws InvalidConfigException Self reference ID attribute or
      * parent attribute not determined.
-     * @throws \yii\base\InvalidParamException ancestor or descendant limit reached.
+     * @throws InvalidParamException ancestor or children limit reached.
      */
     public function bear($config = [])
     {
-        if (!$this->refIdAttribute) {
-            throw new \yii\base\InvalidConfigException("Self Reference ID Attribute Not Determined.");
-        }
         if (!$this->parentAttribute) {
-            throw new \yii\base\InvalidConfigException("Parent Attribute Not Determined.");
+            throw new InvalidConfigException("Parent Attribute Not Determined.");
+        }
+        if (!$this->refIdAttribute) {
+            throw new InvalidConfigException("Self Reference ID Attribute Not Determined.");
         }
         if ($this->hasReachedAncestorLimit()) {
-            throw new \yii\base\InvalidParamException("Reached Ancestor Limit: " . $this->ancestorLimit);
+            throw new InvalidParamException("Reached Ancestor Limit: " . $this->ancestorLimit);
         }
-        if ($this->hasReachedDescendantLimit()) {
-            throw new \yii\base\InvalidParamException("Reached Descendant Limit: ". $this->descendantLimit);
+        if ($this->hasReachedChildrenLimit()) {
+            throw new InvalidParamException("Reached Children Limit: ". $this->childrenLimit);
         }
         if (isset($config['class'])) {
             unset($config['class']);
@@ -214,7 +223,7 @@ trait SelfBlameableTrait
      */
     public function addChild($child)
     {
-        return $this->hasReachedDescendantLimit() ? $child->setParent($this) : false;
+        return $this->hasReachedChildrenLimit() ? $child->setParent($this) : false;
     }
 
     /**
@@ -226,7 +235,7 @@ trait SelfBlameableTrait
     public function onDeleteChildren($event)
     {
         $sender = $event->sender;
-        if (!is_string($sender->parentAttribute)) {
+        if (!is_string($sender->parentAttribute) || strlen($sender->parentAttribute) == 0) {
             return true;
         }
         switch ($sender->onDeleteType) {
@@ -258,7 +267,7 @@ trait SelfBlameableTrait
     public function onUpdateChildren($event)
     {
         $sender = $event->sender;
-        if (!is_string($sender->parentAttribute)) {
+        if (!is_string($sender->parentAttribute) || strlen($sender->parentAttribute) == 0) {
             return true;
         }
         switch ($sender->onUpdateType) {
@@ -379,7 +388,7 @@ trait SelfBlameableTrait
      */
     public function getAncestors()
     {
-        return is_string($this->parentAttribute) ? $this->getAncestorModels($this->getAncestorChain()) : null;
+        return (is_string($this->parentAttribute) && strlen($this->parentAttribute) > 0) ? $this->getAncestorModels($this->getAncestorChain()) : null;
     }
 
     /**
@@ -389,7 +398,7 @@ trait SelfBlameableTrait
      */
     public function hasCommonAncestor($model)
     {
-        return is_string($this->parentAttribute) ? $this->getCommonAncestor($model) !== null : false;
+        return (is_string($this->parentAttribute) && strlen($this->parentAttribute) > 0) ? $this->getCommonAncestor($model) !== null : false;
     }
 
     /**
@@ -399,7 +408,7 @@ trait SelfBlameableTrait
      */
     public function getCommonAncestor($model)
     {
-        if (!is_string($this->parentAttribute) || empty($model) || !$model->hasParent()) {
+        if (!is_string($this->parentAttribute) || strlen($this->parentAttribute) == 0 || empty($model) || !$model->hasParent()) {
             return null;
         }
         $ancestor = $this->getAncestorChain();
@@ -429,7 +438,7 @@ trait SelfBlameableTrait
     }
 
     /**
-     * Update all children, not grandchildren.
+     * Update all children, not grandchildren (descendants).
      * If onUpdateType is on cascade, the children will be updated automatically.
      * @param mixed $value set guid if false, set empty string if empty() return
      * true, otherwise set it to $parentAttribute.
@@ -437,6 +446,7 @@ trait SelfBlameableTrait
      * succeeded to execute, or false if anyone of them failed. If not production
      * environment or enable debug mode, it will return exception.
      * @throws IntegrityException throw if anyone update failed.
+     * The exception message only contains the first error.
      */
     public function updateChildren($value = false)
     {
@@ -457,7 +467,7 @@ trait SelfBlameableTrait
                     $child->$parentAttribute = $value;
                 }
                 if (!$child->save()) {
-                    throw new IntegrityException('Update failed:' . $child->errors);
+                    throw new IntegrityException('Update failed:' . (empty($child->errors) ? 'No errors return!' : $child->errors[0]));
                 }
             }
             $transaction->commit();
@@ -474,14 +484,15 @@ trait SelfBlameableTrait
     }
 
     /**
-     * Delete all children, not grandchildren.
-     * If onDeleteType is on cascade, the children will be deleted automatically.
-     * If onDeleteType is on restrict and contains children, the deletion will
+     * Delete all children, not grandchildren (descendants).
+     * If onDeleteType is `on cascade`, the children will be deleted automatically.
+     * If onDeleteType is `on restrict` and contains children, the deletion will
      * be restricted.
      * @return IntegrityException|boolean true if all delete operations
      * succeeded to execute, or false if anyone of them failed. If not production
      * environment or enable debug mode, it will return exception.
      * @throws IntegrityException throw if anyone delete failed.
+     * The exception message only contains the first error.
      */
     public function deleteChildren()
     {
@@ -493,7 +504,7 @@ trait SelfBlameableTrait
         try {
             foreach ($children as $child) {
                 if (!$child->delete()) {
-                    throw new IntegrityException('Delete failed:' . $child->errors);
+                    throw new IntegrityException('Delete failed:' . (empty($child->errors) ? 'No errors return!' : $child->errors[0]));
                 }
             }
             $transaction->commit();

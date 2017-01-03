@@ -63,7 +63,7 @@ class UserComment extends \rhosocial\base\models\models\BaseBlameableModel
     
     /**
      * Friendly to IDE.
-     * @return \rhosocial\base\models\quries\BaseBlameableQuery
+     * @return \rhosocial\base\models\queries\BaseBlameableQuery
      */
     public static function find()
     {

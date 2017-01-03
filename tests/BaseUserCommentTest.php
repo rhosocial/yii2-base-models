@@ -71,6 +71,9 @@ class BaseUserCommentTest extends TestCase
     }
     
     /**
+     * 测试级联删除
+     * 正常情况下，本条评论删除后，此后的评论都会删除。
+     * 为了防止产生数据一致性问题，删除操作应当从子孙开始。
      * @group comment
      * @depends testNew
      */
@@ -81,20 +84,27 @@ class BaseUserCommentTest extends TestCase
         $subComment = $this->prepareSubComment($comment);
         $comment->save();
         $subComment->save();
-        if ($comment->delete()) {
-            $query = UserComment::find()->id($subComment->id)->createdBy($user);
-            $copy = clone $query;
+        if ($comment->delete()) { // 如果成功删除
+            //$query = UserComment::find()->id($subComment->id)->createdBy($user);
+            //$copy = clone $query;
             //var_dump($copy->createCommand()->getRawSql());
+            // 则找不到下一级评论。
             $sub = UserComment::find()->id($subComment->id)->createdBy($user)->one();
             $this->assertNull($sub);
-        } else {
+        } else { // 否则判定为失败。
             var_dump($comment->errors);
             $this->fail();
         }
+        $creatorGuid = $user->GUID;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
     
     /**
+     * 测试限制删除。
+     * 正常情况下，如果有下级评论（孩子）则不允许删除。
      * @group comment
      * @depends testDeleteParentCascade
      */
@@ -107,9 +117,10 @@ class BaseUserCommentTest extends TestCase
         $subComment = $this->prepareSubComment($comment);
         $subComment->onDeleteType = UserComment::$onRestrict;
         $subComment->throwRestrictException = true;
-        $comment->save();
-        $subComment->save();
+        $this->assertTrue($comment->save());
+        $this->assertTrue($subComment->save());
         try {
+            // 执行后应当抛出异常，否则判定为失败。
             $result = $comment->delete();
             $this->fail();
         } catch (\yii\db\IntegrityException $ex) {
@@ -123,16 +134,23 @@ class BaseUserCommentTest extends TestCase
         $comment->onDeleteType = UserComment::$onRestrict;
         $subComment = $this->prepareSubComment($comment);
         $subComment->onDeleteType = UserComment::$onRestrict;
-        $comment->save();
-        $subComment->save();
+        $this->assertTrue($comment->save());
+        $this->assertTrue($subComment->save());
         if ($comment->delete()) {
+            // 如果能成功删除则判定为失败。
             $this->fail();
         }
         $sub = UserComment::find()->id($subComment->id)->createdBy($user)->one();
         $this->assertInstanceOf(UserComment::className(), $sub);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
+     * 测试删除后不采取任何动作。
      * @group comment
      * @depends testDeleteParentRestrict
      */
@@ -155,8 +173,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals($subComment->$parentAttribute, $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testDeleteParentNoAction
@@ -180,8 +203,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals('', $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testDeleteParentSetNull
@@ -199,8 +227,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals($comment->guid, $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testUpdateParentCascade
@@ -227,8 +260,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals($comment->getOldAttribute($comment->guidAttribute), $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testUpdateParentRestrict
@@ -249,8 +287,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals($guid, $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testUpdateParentNoAction
@@ -270,8 +313,13 @@ class BaseUserCommentTest extends TestCase
         $this->assertInstanceOf(UserComment::className(), $sub);
         $parentAttribute = $comment->parentAttribute;
         $this->assertEquals('', $sub->$parentAttribute);
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testUpdateParentSetNull
@@ -293,7 +341,10 @@ class BaseUserCommentTest extends TestCase
         }
         $this->assertEquals(10, count($comments));
         $ancestor = $comments[9]->getAncestorChain();
+        // $comment 和 $comments[0 - 8] 一共是 10 个。
         $this->assertEquals(10, count($ancestor));
+        
+        // 指定空数组或不存在的 GUID 时返回 null。
         $this->assertNull(UserComment::getAncestorModels([]));
         $this->assertNull(UserComment::getAncestorModels('ancestor'));
         $ancestorModels = UserComment::getAncestorModels($ancestor);
@@ -310,23 +361,46 @@ class BaseUserCommentTest extends TestCase
         $subCommonComment = $this->prepareSubComment($commonComment);
         $subCommonComment->onUpdateType = UserComment::$onRestrict;
         $this->assertTrue($subCommonComment->save());
+        
+        // $comments[9] 和 $subCommonComment 应该有共同的祖先。
         $this->assertTrue($comments[9]->hasCommonAncestor($subCommonComment));
+        
+        // $comments[9] 和 $subCommonComment 共同的祖先应该是 $comments[5]
         $this->assertEquals($comments[5]->guid, $comments[9]->getCommonAncestor($subCommonComment)->guid);
+        
+        // 自己和自己的共同祖先应该是自己的父结点。
         $this->assertEquals($comments[8]->guid, $comments[9]->getCommonAncestor($comments[9])->guid);
+        
+        // $comments[9] 和 $comments[5] 共同的节点应该是 $comments[4]
         $this->assertEquals($comments[4]->guid, $comments[9]->getCommonAncestor($comments[5])->guid);
+        
+        // 根节点没有祖先。
         $this->assertFalse($comment->hasCommonAncestor($comment));
+        
+        // $subCommonComment 的祖先改为 $comments[5]
         $subCommonComment->parent = $comments[5];
         $this->assertTrue($subCommonComment->save());
+        
+        // 如果能够保存成功，则 $comments[5] 就是 $subCommonComment 的祖先（以 GUID 为准）。
         $this->assertEquals($comments[5]->guid, $subCommonComment->parent->guid);
+        
+        // 没有达到祖先数量上限
         $this->assertFalse($subCommonComment->hasReachedAncestorLimit());
-        $this->assertFalse($subCommonComment->hasReachedDescendantLimit());
-        $this->assertFalse($comment->hasReachedDescendantLimit());
+        
+        // 也没有达到孩子数量上限。
+        $this->assertFalse($subCommonComment->hasReachedChildrenLimit());
+        $this->assertFalse($comment->hasReachedChildrenLimit());
         $this->assertFalse($comments[9]->hasReachedAncestorLimit());
-        $this->assertFalse($comments[9]->hasReachedDescendantLimit());
+        $this->assertFalse($comments[9]->hasReachedChildrenLimit());
         $this->assertFalse($comments[5]->hasReachedAncestorLimit());
-        $this->assertFalse($comments[5]->hasReachedDescendantLimit());
+        $this->assertFalse($comments[5]->hasReachedChildrenLimit());
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
+    
     /**
      * @group comment
      * @depends testAncestor
@@ -336,6 +410,10 @@ class BaseUserCommentTest extends TestCase
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
         $this->assertTrue($comment->save());
+        $creatorGuid = $user->guid;
         $this->assertTrue($user->deregister());
+        // 账户注销后，所有所属评论都应当删除。
+        $count = UserComment::find()->createdBy($creatorGuid)->count();
+        $this->assertEquals(0, $count);
     }
 }
