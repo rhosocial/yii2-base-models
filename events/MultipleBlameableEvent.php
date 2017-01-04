@@ -10,7 +10,7 @@
  * @license http://vistart.me/license/
  */
 
-namespace vistart\Models\events;
+namespace rhosocial\base\models\events;
 
 /**
  * Description of MultipleBlameableEvent

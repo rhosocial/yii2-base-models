@@ -57,7 +57,6 @@ trait UserRelationTrait
         mb::getNonBlameds as getNonGroupMembers;
         mb::getBlamesCount as getGroupsCount;
         mb::getMultipleBlameableAttributeRules as getGroupsRules;
-        mb::getEmptyBlamesJson as getEmptyGroupJson;
     }
 
     /**
@@ -235,7 +234,7 @@ trait UserRelationTrait
      */
     public static function isFollowed($initiator, $recipient)
     {
-        return ((int) static::find()->initiators($recipient)->recipients($initiator)->count()) > 0;
+        return static::find()->initiators($recipient)->recipients($initiator)->exists();
     }
 
     /**
@@ -246,7 +245,7 @@ trait UserRelationTrait
      */
     public static function isFollowing($initiator, $recipient)
     {
-        return ((int) static::find()->initiators($initiator)->recipients($recipient)->count()) > 0;
+        return static::find()->initiators($initiator)->recipients($recipient)->exists();
     }
 
     /**
@@ -285,7 +284,7 @@ trait UserRelationTrait
     }
 
     /**
-     * Build new or return existed suspend mutual relation, of return null if
+     * Build new or return existed suspend mutual relation, or return null if
      * current type is not mutual.
      * @see buildRelation()
      * @param BaseUserModel|string $user Initiator or its GUID.
@@ -346,7 +345,7 @@ trait UserRelationTrait
             $otherGuidAttribute = $noInit->otherGuidAttribute;
             $userClass = $noInit->userClass;
             if ($user instanceof BaseUserModel) {
-                $userClass = $userClass ? : $user->class;
+                $userClass = $userClass ? : $user->className();
                 $user = $user->guid;
             }
             if ($other instanceof BaseUserModel) {

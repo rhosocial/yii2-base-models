@@ -19,7 +19,6 @@ use yii\base\ModelEvent;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
-use yii\web\JsonParser;
 
 /**
  * 一个模型的某个属性可能对应多个责任者，该 trait 用于处理此种情况。此种情况违反
@@ -94,9 +93,8 @@ trait MultipleBlameableTrait
     public function getMultipleBlameableAttributeRules()
     {
         return is_string($this->multiBlamesAttribute) ? [
-            [[$this->multiBlamesAttribute], 'required'],
-            [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 39 + 1],
-            [[$this->multiBlamesAttribute], 'default', 'value' => '[]'],
+            [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 16],
+            [[$this->multiBlamesAttribute], 'default', 'value' => ''],
             ] : [];
     }
 
@@ -104,8 +102,8 @@ trait MultipleBlameableTrait
      * Add specified blame.
      * @param {$this->multiBlamesClass}|string $blame
      * @return false|array
-     * @throws InvalidParamException
-     * @throws InvalidCallException
+     * @throws InvalidParamException if blame existed.
+     * @throws InvalidCallException if blame limit reached.
      */
     public function addBlame($blame)
     {
@@ -250,8 +248,7 @@ trait MultipleBlameableTrait
         if ($multiBlamesAttribute === false) {
             return [];
         }
-        $jsonParser = new JsonParser();
-        $guids = $jsonParser->parse($this->$multiBlamesAttribute, true);
+        $guids = Number::divide_guid_bin($this->$multiBlamesAttribute);
         if ($checkValid) {
             $guids = $this->unsetInvalidBlames($guids);
         }
@@ -275,18 +272,19 @@ trait MultipleBlameableTrait
      */
     protected function unsetInvalidBlames($guids)
     {
-        $checkedGuids = Number::unsetInvalidGUIDs($guids);
+        $unchecked = $guids;
         $multiBlamesClass = $this->multiBlamesClass;
-        foreach ($checkedGuids as $key => $guid) {
-            $blame = $multiBlamesClass::findOne($guid);
+        $mbi = $multiBlamesClass::buildNoInitModel();
+        foreach ($guids as $key => $guid) {
+            $blame = $multiBlamesClass::find()->where([$mbi->guidAttribute => $guid])->exists();
             if (!$blame) {
-                unset($checkedGuids[$key]);
+                unset($guids[$key]);
             }
         }
-        $diff = array_diff($guids, $checkedGuids);
+        $diff = array_diff($unchecked, $guids);
         $eventName = static::$eventMultipleBlamesChanged;
         $this->trigger($eventName, new MultipleBlameableEvent(['blamesChanged' => !empty($diff)]));
-        return $checkedGuids;
+        return $guids;
     }
 
     /**
@@ -304,7 +302,7 @@ trait MultipleBlameableTrait
             $guids = $this->unsetInvalidBlames($guids);
         }
         $multiBlamesAttribute = $this->multiBlamesAttribute;
-        $this->$multiBlamesAttribute = json_encode(array_values($guids));
+        $this->$multiBlamesAttribute = Number::composite_guid($guids);
         return $guids;
     }
 
@@ -384,7 +382,7 @@ trait MultipleBlameableTrait
         $createdByAttribute = $this->createdByAttribute;
         $cond = [
             $createdByAttribute => $this->$createdByAttribute,
-            $this->multiBlamesAttribute => static::getEmptyBlamesJson()
+            $this->multiBlamesAttribute => ''
         ];
         return static::find()->where($cond)->all();
     }
@@ -399,14 +397,5 @@ trait MultipleBlameableTrait
         if (!is_int($sender->blamesLimit) || $sender->blamesLimit < 1 || $sender->blamesLimit > 64) {
             $sender->blamesLimit = 10;
         }
-    }
-
-    /**
-     * Get the json of empty blames array.
-     * @return string
-     */
-    public static function getEmptyBlamesJson()
-    {
-        return json_encode([]);
     }
 }
