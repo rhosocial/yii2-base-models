@@ -12,7 +12,6 @@
 
 namespace rhosocial\base\models\queries;
 
-use rhosocial\base\models\models\BaseUserRelationModel;
 use rhosocial\base\models\traits\MutualQueryTrait;
 
 /**
@@ -46,7 +45,7 @@ class BaseUserRelationQuery extends BaseBlameableQuery
             return $this;
         }
         if (empty($groups)) {
-            return $this->andWhere([$model->multiBlamesAttribute => BaseUserRelationModel::getEmptyGroupJson()]);
+            return $this->andWhere([$model->multiBlamesAttribute => '']);
         }
         return $this->andWhere(['or like', $model->multiBlamesAttribute, $groups]);
     }

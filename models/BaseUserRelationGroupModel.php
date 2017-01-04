@@ -31,6 +31,7 @@ abstract class BaseUserRelationGroupModel extends BaseBlameableModel
     use UserRelationGroupTrait;
 
     public $confirmationAttribute = false;
+    public $descriptionAttribute = 'description';
     public $enableIP = false;
     public $idAttribute = false;
     public $updatedAtAttribute = false;

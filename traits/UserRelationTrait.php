@@ -276,8 +276,8 @@ trait UserRelationTrait
             return static::isMutual($initiator, $recipient);
         }
         if ($model->relationType == static::$relationMutual) {
-            $relation = (int) static::find()->initiators($initiator)->recipients($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->count();
-            $inverse = (int) static::find()->recipients($initiator)->initiators($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->count();
+            $relation = static::find()->initiators($initiator)->recipients($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
+            $inverse = static::find()->recipients($initiator)->initiators($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
             return $relation && $inverse;
         }
         return false;

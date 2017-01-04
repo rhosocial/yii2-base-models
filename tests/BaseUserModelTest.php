@@ -25,19 +25,21 @@ class BaseUserModelTest extends TestCase
     public function testInit()
     {
         $users = [];
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $users[] = new User();
         }
+        $failed = 0;
         foreach ($users as $key => $user) {
             if ($user->register() !== true) {
                 unset($users[$key]);
+                $failed++;
+                echo $user->readableGUID . ' | ' . $user->id . (empty($user->errors) ? '' : ' | ' . print_r(current($user->errors))) . "\n";
             } else {
-                //echo $user->readableGUID . ' | ' . $user->id . "\n";
             }
         }
         
         $count = count($users);
-        $this->assertEquals(100, $count, "100 users should be registered.");
+        $this->assertEquals(1000 - $failed, $count, "100 users should be registered.");
         foreach ($users as $user) {
             if ($user->deregister() !== true) {
                 $this->assertTrue(false);

@@ -49,6 +49,9 @@ trait MutualQueryTrait
         if (!empty($others)) {
             $query = $query->andWhere([$model->createdByAttribute => array_values($others)]);
         }
+        // $clone = clone $query;
+        /* @var $clone \yii\db\Query */
+        // echo $clone->createCommand($database)->getRawSql();
         return $query->all($database);
     }
 

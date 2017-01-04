@@ -280,7 +280,7 @@ trait EntityTrait
     public function __toString()
     {
         if (is_string($this->guidAttribute)) {
-            return $this->readableGuid;
+            return $this->GUID;
         }
         if (is_string($this->idAttribute)) {
             return $this->id;
