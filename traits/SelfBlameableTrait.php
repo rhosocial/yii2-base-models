@@ -467,7 +467,7 @@ trait SelfBlameableTrait
                     $child->$parentAttribute = $value;
                 }
                 if (!$child->save()) {
-                    throw new IntegrityException('Update failed:', $child->errors);
+                    throw new IntegrityException('Update failed:', $child->getErrors());
                 }
             }
             $transaction->commit();
@@ -504,7 +504,7 @@ trait SelfBlameableTrait
         try {
             foreach ($children as $child) {
                 if (!$child->delete()) {
-                    throw new IntegrityException('Delete failed:', $child->errors);
+                    throw new IntegrityException('Delete failed:', $child->getErrors());
                 }
             }
             $transaction->commit();

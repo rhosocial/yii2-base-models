@@ -33,7 +33,7 @@ class BaseUserModelTest extends TestCase
             if ($user->register() !== true) {
                 unset($users[$key]);
                 $failed++;
-                echo $user->readableGUID . ' | ' . $user->id . (empty($user->errors) ? '' : ' | ' . print_r(current($user->errors))) . "\n";
+                echo $user->readableGUID . ' | ' . $user->id . (empty($user->getErrors()) ? '' : ' | ' . print_r(current($user->getErrors()))) . "\n";
             } else {
             }
         }
