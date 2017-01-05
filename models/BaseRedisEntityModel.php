@@ -39,7 +39,7 @@ abstract class BaseRedisEntityModel extends \yii\redis\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \vistart\Models\queries\BaseRedisEntityQuery the newly created [[BaseEntityQuery]] or its sub-class instance.
+     * @return BaseRedisEntityQuery the newly created [[BaseEntityQuery]] or its sub-class instance.
      */
     public static function find()
     {
@@ -51,15 +51,26 @@ abstract class BaseRedisEntityModel extends \yii\redis\ActiveRecord
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);
     }
 
+    /**
+     * Returns the list of all attribute names of the model.
+     * You can override this method if enabled fields cannot meet your requirements.
+     * @return array
+     */
     public function attributes()
     {
         return $this->enabledFields();
     }
 
+    /**
+     * Either [[guidAttribute]] or [[idAttribute]] should be enabled.
+     * You can override this method if GUID or ID attribute cannot meet your
+     * requirements.
+     * @return array
+     */
     public static function primaryKey()
     {
         $model = static::buildNoInitModel();
-        if (is_string($model->guidAttribute)) {
+        if (is_string($model->guidAttribute) && !empty($model->guidAttribute)) {
             return [$model->guidAttribute];
         }
         return [$model->idAttribute];

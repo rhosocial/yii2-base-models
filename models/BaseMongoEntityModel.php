@@ -42,7 +42,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
 
     /**
      * @inheritdoc
-     * @return BaseMongoEntityQuery the newly created [[BaseEntityQuery]] or its sub-class instance.
+     * @return BaseMongoEntityQuery the newly created [[BaseMongoEntityQuery]] or its sub-class instance.
      */
     public static function find()
     {
@@ -54,6 +54,11 @@ abstract class BaseMongoEntityModel extends ActiveRecord
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);
     }
 
+    /**
+     * @inheritdoc
+     * You can override this method if enabled fields cannot meet you requirements.
+     * @return array
+     */
     public function attributes()
     {
         return $this->enabledFields();

@@ -235,7 +235,7 @@ trait SelfBlameableTrait
     public function onDeleteChildren($event)
     {
         $sender = $event->sender;
-        if (!is_string($sender->parentAttribute) || strlen($sender->parentAttribute) == 0) {
+        if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
         switch ($sender->onDeleteType) {
@@ -267,7 +267,7 @@ trait SelfBlameableTrait
     public function onUpdateChildren($event)
     {
         $sender = $event->sender;
-        if (!is_string($sender->parentAttribute) || strlen($sender->parentAttribute) == 0) {
+        if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
         switch ($sender->onUpdateType) {
@@ -388,7 +388,7 @@ trait SelfBlameableTrait
      */
     public function getAncestors()
     {
-        return (is_string($this->parentAttribute) && strlen($this->parentAttribute) > 0) ? $this->getAncestorModels($this->getAncestorChain()) : null;
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->getAncestorModels($this->getAncestorChain()) : null;
     }
 
     /**
@@ -398,7 +398,7 @@ trait SelfBlameableTrait
      */
     public function hasCommonAncestor($model)
     {
-        return (is_string($this->parentAttribute) && strlen($this->parentAttribute) > 0) ? $this->getCommonAncestor($model) !== null : false;
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->getCommonAncestor($model) !== null : false;
     }
 
     /**
@@ -408,7 +408,7 @@ trait SelfBlameableTrait
      */
     public function getCommonAncestor($model)
     {
-        if (!is_string($this->parentAttribute) || strlen($this->parentAttribute) == 0 || empty($model) || !$model->hasParent()) {
+        if (empty($this->parentAttribute) || !is_string($this->parentAttribute) || empty($model) || !$model->hasParent()) {
             return null;
         }
         $ancestor = $this->getAncestorChain();

@@ -27,7 +27,7 @@ abstract class BaseRedisBlameableModel extends BaseRedisEntityModel
 
     /**
      * Initialize the blameable model.
-     * If query class is not specified, [[BaseBlameableQuery]] will be taken.
+     * If query class is not specified, [[BaseRedisBlameableQuery]] will be taken.
      */
     public function init()
     {

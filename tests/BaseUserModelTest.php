@@ -17,6 +17,9 @@ use rhosocial\base\helpers\Number;
 use rhosocial\base\helpers\IP;
 use Yii;
 
+/**
+ * @author vistart <i@vistart.me>
+ */
 class BaseUserModelTest extends TestCase
 {
     /**

@@ -27,7 +27,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
 
     /**
      * Initialize the blameable model.
-     * If query class is not specified, [[BaseBlameableQuery]] will be taken.
+     * If query class is not specified, [[BaseMongoBlameableQuery]] will be taken.
      */
     public function init()
     {
@@ -58,6 +58,11 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public $guidAttribute = false;
     public $idAttribute = '_id';
 
+    /**
+     * @inheritdoc
+     * You can override this method if enabled fields cannot meet your requirements.
+     * @return array
+     */
     public function attributes()
     {
         return $this->enabledFields();
