@@ -27,7 +27,7 @@ trait MessageTrait
     public $readAtAttribute = 'read_at';
     public static $eventMessageReceived = 'messageReceived';
     public static $eventMessageRead = 'messageRead';
-    public $permitChangedContent = false;
+    public $permitChangeContent = false;
     public $permitChangeReceivedAt = false;
     public $permitChangeReadAt = false;
     

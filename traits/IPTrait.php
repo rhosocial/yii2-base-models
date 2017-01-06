@@ -174,7 +174,7 @@ trait IPTrait
             case static::$ipv6:
             case static::$ipv4:
                 $fields[] = $this->ipAttribute;
-            case static::$noIp:
+            case static::$noIP:
             default:
                 break;
         }

@@ -12,12 +12,12 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
+use rhosocial\base\models\models\BaseRedisMessageModel;
+
 /**
  * @author vistart <i@vistart.me>
  */
-class Meta extends \rhosocial\base\models\models\BaseMetaModel
+class RedisMessage extends BaseRedisMessageModel
 {
-    public static function tableName() {
-        return '{{%user_meta}}';
-    }
+    
 }
