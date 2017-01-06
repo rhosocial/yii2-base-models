@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-04 15:12:04
+-- Generation Time: 2017-01-06 12:16:53
 -- 服务器版本： 5.7.17
 -- PHP Version: 7.0.14
 
@@ -28,7 +28,7 @@ USE `yii2-base-models`;
 -- 表的结构 `user`
 --
 -- 创建时间： 2017-01-01 08:50:49
--- 最后更新： 2017-01-04 07:11:46
+-- 最后更新： 2017-01-05 06:08:05
 --
 
 DROP TABLE IF EXISTS `user`;
@@ -50,17 +50,13 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `auth_key_unique` (`auth_key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- 表的关联 `user`:
---
-
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `user_additional_account`
 --
 -- 创建时间： 2017-01-02 08:27:57
--- 最后更新： 2017-01-04 06:27:50
+-- 最后更新： 2017-01-05 05:24:20
 --
 
 DROP TABLE IF EXISTS `user_additional_account`;
@@ -83,19 +79,13 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
   KEY `user_guid` (`user_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- 表的关联 `user_additional_account`:
---   `user_guid`
---       `user` -> `guid`
---
-
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `user_comment`
 --
 -- 创建时间： 2017-01-02 12:03:56
--- 最后更新： 2017-01-04 06:28:14
+-- 最后更新： 2017-01-05 05:24:45
 --
 
 DROP TABLE IF EXISTS `user_comment`;
@@ -117,19 +107,13 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   KEY `user_guid` (`user_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- 表的关联 `user_comment`:
---   `user_guid`
---       `user` -> `guid`
---
-
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `user_email`
 --
 -- 创建时间： 2017-01-02 08:25:33
--- 最后更新： 2017-01-04 06:28:17
+-- 最后更新： 2017-01-05 05:24:47
 --
 
 DROP TABLE IF EXISTS `user_email`;
@@ -148,11 +132,23 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   UNIQUE KEY `user_email_id_unique` (`user_guid`,`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- 表的关联 `user_email`:
---   `user_guid`
---       `user` -> `guid`
+-- 表的结构 `user_meta`
 --
+-- 创建时间： 2017-01-05 11:05:36
+--
+
+DROP TABLE IF EXISTS `user_meta`;
+CREATE TABLE IF NOT EXISTS `user_meta` (
+  `guid` varbinary(16) NOT NULL,
+  `user_guid` varbinary(16) NOT NULL,
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `meta__key_unique` (`user_guid`,`key`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -160,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `user_email` (
 -- 表的结构 `user_relation`
 --
 -- 创建时间： 2017-01-04 07:05:43
--- 最后更新： 2017-01-04 07:11:46
+-- 最后更新： 2017-01-05 05:26:17
 --
 
 DROP TABLE IF EXISTS `user_relation`;
@@ -184,20 +180,13 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
   KEY `relation_other_guid_fkey` (`other_guid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- 表的关联 `user_relation`:
---   `other_guid`
---       `user` -> `guid`
---   `user_guid`
---       `user` -> `guid`
---
-
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `user_relation_group`
 --
 -- 创建时间： 2017-01-03 15:31:31
+-- 最后更新： 2017-01-05 05:26:17
 --
 
 DROP TABLE IF EXISTS `user_relation_group`;
@@ -212,18 +201,13 @@ CREATE TABLE IF NOT EXISTS `user_relation_group` (
   KEY `user_guid` (`user_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- 表的关联 `user_relation_group`:
---   `user_guid`
---       `user` -> `guid`
---
-
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `user_single_relation`
 --
 -- 创建时间： 2017-01-04 05:56:09
+-- 最后更新： 2017-01-05 05:26:03
 --
 
 DROP TABLE IF EXISTS `user_single_relation`;
@@ -247,14 +231,6 @@ CREATE TABLE IF NOT EXISTS `user_single_relation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- 表的关联 `user_single_relation`:
---   `other_guid`
---       `user` -> `guid`
---   `user_guid`
---       `user` -> `guid`
---
-
---
 -- 限制导出的表
 --
 
@@ -275,6 +251,12 @@ ALTER TABLE `user_comment`
 --
 ALTER TABLE `user_email`
   ADD CONSTRAINT `user_email_ibfk_1` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- 限制表 `user_meta`
+--
+ALTER TABLE `user_meta`
+  ADD CONSTRAINT `user_meta_fkey` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 限制表 `user_relation`
