@@ -144,7 +144,7 @@ DROP TABLE IF EXISTS `user_meta`;
 CREATE TABLE IF NOT EXISTS `user_meta` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `key` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '', -- key length should be less than 767 bytes.
   `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `meta__key_unique` (`user_guid`,`key`) USING BTREE
