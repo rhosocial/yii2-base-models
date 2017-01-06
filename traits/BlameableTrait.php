@@ -562,7 +562,8 @@ trait BlameableTrait
     public function onInitContentType($event)
     {
         $sender = $event->sender;
-        if (!isset($sender->contentTypeAttribute) || !is_string($sender->contentTypeAttribute)) {
+        /* @var static $sender */
+        if (!is_string($sender->contentTypeAttribute) || empty($sender->contentTypeAttribute)) {
             return;
         }
         $contentTypeAttribute = $sender->contentTypeAttribute;
@@ -580,7 +581,8 @@ trait BlameableTrait
     public function onInitDescription($event)
     {
         $sender = $event->sender;
-        if (!isset($sender->descriptionAttribute) || !is_string($sender->descriptionAttribute)) {
+        /* @var static $sender */
+        if (!is_string($sender->descriptionAttribute) || empty($sender->descriptionAttribute)) {
             return;
         }
         $descriptionAttribute = $sender->descriptionAttribute;
@@ -597,11 +599,11 @@ trait BlameableTrait
         $this->on(static::$eventConfirmationChanged, [$this, "onConfirmationChanged"]);
         $this->on(static::$eventNewRecordCreated, [$this, "onInitConfirmation"]);
         $contentTypeAttribute = $this->contentTypeAttribute;
-        if (!isset($this->$contentTypeAttribute)) {
+        if (is_string($contentTypeAttribute) && !empty($contentTypeAttribute) && !isset($this->$contentTypeAttribute)) {
             $this->on(static::$eventNewRecordCreated, [$this, "onInitContentType"]);
         }
         $descriptionAttribute = $this->descriptionAttribute;
-        if (!isset($this->$descriptionAttribute)) {
+        if (is_string($descriptionAttribute) && !empty($descriptionAttribute) && !isset($this->$descriptionAttribute)) {
             $this->on(static::$eventNewRecordCreated, [$this, 'onInitDescription']);
         }
         $this->on(static::EVENT_BEFORE_UPDATE, [$this, "onContentChanged"]);
