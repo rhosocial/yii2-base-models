@@ -36,7 +36,7 @@ $config = [
     ],
     'mongodb' => [
         'class' => 'yii\mongodb\Connection',
-        'dsn' => "mongodb://user:123456@localhost:27017/rho",
+        'dsn' => "mongodb://user:123456@localhost:27017/yii2-base-models",
     ],
     'cache' => [
         'class' => 'yii\redis\Cache',
