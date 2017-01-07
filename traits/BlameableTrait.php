@@ -502,6 +502,7 @@ trait BlameableTrait
     {
         $userClass = $this->userClass;
         $model = $userClass::buildNoInitModel();
+        /* @var static $model */
         return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->createdByAttribute]);
     }
 
@@ -518,6 +519,7 @@ trait BlameableTrait
         }
         $userClass = $this->userClass;
         $model = $userClass::buildNoInitModel();
+        /* @var static $model */
         return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->updatedByAttribute]);
     }
 
@@ -544,13 +546,14 @@ trait BlameableTrait
     public function onGetCurrentUserGuid($event)
     {
         $sender = $event->sender;
+        /* @var static $sender */
         if (isset($sender->attributes[$sender->createdByAttribute])) {
             return $sender->attributes[$sender->createdByAttribute];
         }
         $identity = \Yii::$app->user->identity;
+        /* @var BaseUserModel $identity */
         if ($identity) {
-            $igAttribute = $identity->guidAttribute;
-            return $identity->$igAttribute;
+            return $identity->getGUID();
         }
     }
 
@@ -616,10 +619,10 @@ trait BlameableTrait
     public function enabledFields()
     {
         $fields = parent::enabledFields();
-        if (is_string($this->createdByAttribute)) {
+        if (is_string($this->createdByAttribute) && !empty($this->createdByAttribute)) {
             $fields[] = $this->createdByAttribute;
         }
-        if (is_string($this->updatedByAttribute)) {
+        if (is_string($this->updatedByAttribute) && !empty($this->updatedByAttribute) && $this->createdByAttribute != $this->updatedByAttribute) {
             $fields[] = $this->updatedByAttribute;
         }
         if (is_string($this->contentAttribute)) {

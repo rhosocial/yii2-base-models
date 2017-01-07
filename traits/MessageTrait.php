@@ -16,6 +16,13 @@ use yii\base\ModelEvent;
 use yii\db\AfterSaveEvent;
 
 /**
+ * This trait should be used in models extended from models used BlameableTrait.
+ * Notice: The models used [[BlameableTrait]] are also models used [[EntityTrait]].
+ * 
+ * @property-read array $messageRules
+ * @property mixed $readAt
+ * @property mixed $receivedAt
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 trait MessageTrait

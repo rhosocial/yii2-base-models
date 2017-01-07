@@ -18,6 +18,10 @@ use yii\base\ModelEvent;
 use yii\web\Request;
 
 /**
+ * 
+ * @property string|null $ipAddress
+ * @property integer $ipType
+ * @proeperty array $ipRules
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -75,7 +79,7 @@ trait IPTrait
      * Get the IPv4 address.
      * @return string
      */
-    private function getIPv4Address()
+    protected function getIPv4Address()
     {
         return inet_ntop($this->{$this->ipAttribute});
     }
@@ -84,11 +88,35 @@ trait IPTrait
      * Get the IPv6 address.
      * @return string
      */
-    private function getIPv6Address()
+    protected function getIPv6Address()
     {
         return inet_ntop($this->{$this->ipAttribute});
     }
     
+    /**
+     * 
+     * @param string $ipAddress IPv4 address.
+     * @return string
+     */
+    protected function setIPv4Address($ipAddress)
+    {
+        return $this->{$this->ipAttribute} = inet_pton($ipAddress);
+    }
+    
+    /**
+     * 
+     * @param string $ipAddress IPv6 address.
+     * @return string
+     */
+    protected function setIPv6Address($ipAddress)
+    {
+        return $this->{$this->ipAttribute} = inet_pton($ipAddress);
+    }
+    
+    /**
+     * 
+     * @return string
+     */
     public function getIPAddress()
     {
         if (!$this->enableIP) {
@@ -125,10 +153,10 @@ trait IPTrait
         }
         $ipType = IP::judgeIPtype($ipAddress);
         if ($ipType == IP::IPv4 && $this->enableIP & static::$ipv4) {
-            $this->{$this->ipAttribute} = inet_pton($ipAddress);
+            $this->setIPv4Address($ipAddress);
         } else
         if ($ipType == Ip::IPv6 && $this->enableIP & static::$ipv6) {
-            $this->{$this->ipAttribute} = inet_pton($ipAddress);
+            $this->setIPv6Address($ipAddress);
         } else {
             return 0;
         }
@@ -137,6 +165,7 @@ trait IPTrait
         }
         return $ipType;
     }
+    
     /**
      * Get the rules associated with ip attributes.
      * @return array
@@ -165,6 +194,10 @@ trait IPTrait
         }
         return $rules;
     }
+    
+    /**
+     * @inheritdoc
+     */
     public function enabledIPFields()
     {
         $fields = [];

@@ -17,8 +17,9 @@ use yii\base\ModelEvent;
 
 /**
  * Entity features concerning GUID.
- * @property string $GUID GUID value in 128-bit(16 bytes) binary.
+ * @property string $GUID GUID value in 128-bit(16 bytes) binary format.
  * @property-read string $readableGUID Readable GUID value seperated with four hyphens.
+ * @property-read array $guidRules
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -48,10 +49,8 @@ trait GUIDTrait
     public function onInitGUIDAttribute($event)
     {
         $sender = $event->sender;
-        $guidAttribute = $sender->guidAttribute;
-        if (is_string($guidAttribute)) {
-            $sender->$guidAttribute = static::generateGuid();
-        }
+        /* @var static $sender */
+        $sender->setGUID(static::generateGuid());
     }
 
     /**
@@ -80,7 +79,7 @@ trait GUIDTrait
     public function getGUIDRules()
     {
         $rules = [];
-        if (is_string($this->guidAttribute)) {
+        if (is_string($this->guidAttribute) && !empty($this->guidAttribute)) {
             $rules = [
                 [[$this->guidAttribute], 'required',],
                 [[$this->guidAttribute], 'unique',],
@@ -97,7 +96,7 @@ trait GUIDTrait
     public function getGUID()
     {
         $guidAttribute = $this->guidAttribute;
-        return is_string($guidAttribute) ? $this->$guidAttribute : null;
+        return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute : null;
     }
     
     /**
@@ -118,12 +117,12 @@ trait GUIDTrait
      * @param string $guid
      * @return string
      */
-    public function setGuid($guid)
+    public function setGUID($guid)
     {
         $guidAttribute = $this->guidAttribute;
-        if (preg_match(self::GUID_REGEX, $guid)) {
+        if (preg_match(Number::GUID_REGEX, $guid)) {
             $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
         }
-        return is_string($guidAttribute) ? $this->$guidAttribute = $guid : null;
+        return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
     }
 }

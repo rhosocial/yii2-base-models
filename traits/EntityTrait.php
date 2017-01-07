@@ -19,7 +19,7 @@ use yii\caching\TagDependency;
 
 /**
  * This trait must be used in class extended from ActiveRecord. The ActiveRecord
- * supports \yii\db\ActiveRecord, \yii\mongodb\ActiveRecord, \yii\redis\ActiveRecord.
+ * supports [[\yii\db\ActiveRecord]], [[\yii\mongodb\ActiveRecord]], [[\yii\redis\ActiveRecord]].
  * @property array $entityRules
  * @property array $entityBehaviors
  * @version 1.0
@@ -279,11 +279,11 @@ trait EntityTrait
      */
     public function __toString()
     {
-        if (is_string($this->guidAttribute)) {
-            return $this->GUID;
+        if (is_string($this->guidAttribute) && !empty($this->guidAttribute)) {
+            return $this->getGUID();
         }
-        if (is_string($this->idAttribute)) {
-            return $this->id;
+        if (is_string($this->idAttribute) && !empty($this->idAttribute)) {
+            return $this->getId();
         }
         return null;
     }
@@ -340,8 +340,8 @@ trait EntityTrait
     public function enabledFields()
     {
         return array_merge(
-            is_string($this->guidAttribute) ? [$this->guidAttribute] : [],
-            is_string($this->idAttribute) ? [$this->idAttribute] : [],
+            (is_string($this->guidAttribute) && !empty($this->guidAttribute)) ? [$this->guidAttribute] : [],
+            (is_string($this->idAttribute) && !empty($this->idAttribute)) ? [$this->idAttribute] : [],
             $this->enabledTimestampFields(),
             $this->enabledIPFields()
         );

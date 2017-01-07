@@ -18,7 +18,7 @@ use yii\base\ModelEvent;
 /**
  * Entity features concerning ID.
  * @property-read array $idRules
- * @property mixed $id
+ * @property mixed $ID
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -66,10 +66,10 @@ trait IDTrait
      * Get ID.
      * @return string|integer
      */
-    public function getId()
+    public function getID()
     {
         $idAttribute = $this->idAttribute;
-        return is_string($idAttribute) ? $this->$idAttribute : null;
+        return (is_string($idAttribute) && !empty($idAttribute)) ? $this->$idAttribute : null;
     }
     
     /**
@@ -77,10 +77,10 @@ trait IDTrait
      * @param string|integer $identity
      * @return string|integer
      */
-    public function setId($identity)
+    public function setID($identity)
     {
         $idAttribute = $this->idAttribute;
-        return is_string($idAttribute) ? $this->$idAttribute = $identity : null;
+        return (is_string($idAttribute) && !empty($idAttribute)) ? $this->$idAttribute = $identity : null;
     }
     
     /**
@@ -103,6 +103,7 @@ trait IDTrait
     public function onInitIDAttribute($event)
     {
         $sender = $event->sender;
+        /* @var static $sender */
         if ($sender->idPreassigned) {
             return;
         }
@@ -110,11 +111,11 @@ trait IDTrait
             $sender->idAttributeSafe = true;
             return;
         }
-        if (is_string($sender->idAttribute) &&
+        $idAttribute = $sender->idAttribute;
+        if (is_string($idAttribute) && !empty($idAttribute) &&
             is_int($sender->idAttributeLength) &&
             $sender->idAttributeLength > 0) {
-            $idAttribute = $sender->idAttribute;
-            $sender->$idAttribute = $sender->generateId();
+            $sender->setID($sender->generateId());
         }
     }
     
@@ -168,7 +169,7 @@ trait IDTrait
                 [[$this->idAttribute], 'safe'],
             ];
         }
-        if (is_string($this->idAttribute) &&
+        if (is_string($this->idAttribute) && !empty($this->idAttribute) &&
             is_int($this->idAttributeLength) &&
             $this->idAttributeLength > 0) {
             $rules = [

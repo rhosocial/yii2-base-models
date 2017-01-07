@@ -17,6 +17,13 @@ use yii\base\ModelEvent;
 use yii\behaviors\TimestampBehavior;
 
 /**
+ * Entity features concerning timestamp.
+ * @property-read array $timestampBehaviors
+ * @property-read string|int createdAt
+ * @property-read string|int updatedAt
+ * @property-read array $createdAtRules
+ * @property-read array $updatedAtRules
+ * @property-read boolean isExpired
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -261,6 +268,10 @@ trait TimestampTrait
         ];
     }
     
+    /**
+     * 
+     * @return array
+     */
     public function enabledTimestampFields()
     {
         $fields = [];

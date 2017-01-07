@@ -28,14 +28,20 @@ use yii\base\ModelEvent;
  * If you want to use group feature, the class used [[UserRelationGroupTrait]]
  * must be used coordinately.
  * @property array $groupGuids the guid array of all groups which owned by current relation.
+ * @property-read array $favoriteRules
+ * @property boolean $isFavorite
+ * @property-read static $opposite
+ * @property-read array $otherGuidRules
+ * @property string $remark
+ * @property-read array $remarkRules
+ * @property-read array $userRelationRules
+ * @property-read mixed $group
+ * @property-read array $groupMembers
+ * @property array $groupGuids
  * @property-read array $allGroups
  * @property-read array $nonGroupMembers
  * @property-read integer $groupsCount
  * @property-read array $groupsRules
- * @property boolean $isFavorite
- * @property-read BaseUserModel $initiator
- * @property-read BaseUserModel $recipient
- * @property-read static $opposite
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

@@ -12,13 +12,14 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
-use rhosocial\base\models\models\BaseRedisEntityModel;
+use rhosocial\base\models\models\BaseMongoBlameableModel;
 
 /**
  * @author vistart <i@vistart.me>
  */
-class RedisEntity extends BaseRedisEntityModel
+class MongoBlameable extends BaseMongoBlameableModel
 {
-    public $guidAttribute = false;
-    public $idAttribute = 'alpha2';
+    public static function collectionName() {
+        return ['yii2-base-models', 'blameable'];
+    }
 }

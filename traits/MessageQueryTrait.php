@@ -13,6 +13,8 @@
 namespace rhosocial\base\models\traits;
 
 /**
+ * This trait is used for building message query class for message model.
+ * 
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

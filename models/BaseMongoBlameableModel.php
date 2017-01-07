@@ -31,7 +31,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      */
     public function init()
     {
-        if (!is_string($this->queryClass)) {
+        if (!is_string($this->queryClass) || empty($this->queryClass)) {
             $this->queryClass = BaseMongoBlameableQuery::class;
         }
         if ($this->skipInit) {
@@ -52,7 +52,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     }
 
     /**
-     * Because every document has a `MongoId" class, this class is no longer needed GUID feature.
+     * Because every document has a `MongoId" class, this class no longer needs GUID feature.
      * @var boolean determines whether enable the GUID features.
      */
     public $guidAttribute = false;

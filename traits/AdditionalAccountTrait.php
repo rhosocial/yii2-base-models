@@ -12,6 +12,17 @@
 
 namespace rhosocial\base\models\traits;
 
+/**
+ * Additional account features.
+ * This trait should be used in blameable model or its extended class.
+ * 
+ * @property boolean $canBeLogon determines whether this account could be used
+ * for logging-in.
+ * @property-read array $enableLoginAttributeRules
+ * @property-read array $additionAccountRules
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 trait AdditionalAccountTrait
 {
     use PasswordTrait;

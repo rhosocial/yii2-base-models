@@ -40,21 +40,5 @@ trait UserRelationGroupTrait
      */
     public function onDeleteGroup($event)
     {
-        /*
-          $relationClass = $this->relationClass;
-          if (!is_string($relationClass)) {
-          throw new \yii\base\NotSupportedException('You must specify the name of relation class.');
-          }
-          $sender = $event->sender;
-          $groupGuid = $sender->guid;
-          $createdByAttribute = $sender->createdByAttribute;
-          $relations = $relationClass::findOnesAllRelations($sender->$createdByAttribute);
-          foreach ($relations as $relation) {
-          $relation->removeGroup($groupGuid);
-          if (!$relation->save() && (YII_ENV !== YII_ENV_PROD || YII_DEBUG)) {
-          $sender->recordWarnings();
-          }
-          }
-         */
     }
 }

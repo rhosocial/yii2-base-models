@@ -18,6 +18,9 @@ use rhosocial\base\models\queries\BaseUserQuery;
 /**
  * Description of MutualTrait
  *
+ * @property-read mixed $initiator
+ * @property mixed $recipient
+ * @property-read array $mutualRules
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

@@ -22,6 +22,8 @@ use yii\rbac\Role;
 /**
  * User features concerning registration.
  *
+ * @property-read mixed $authManager
+ * @property mixed $source
  * @property array $sourceRules rules associated with source attribute.
  * @version 1.0
  * @author vistart <i@vistart.me>

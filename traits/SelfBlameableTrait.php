@@ -34,6 +34,7 @@ use yii\db\IntegrityException;
  * @property static $parent
  * @property-read static[] $ancestors
  * @property-read string[] $ancestorChain
+ * @property-read array $ancestorModels
  * @property-read static $commonAncestor
  * @property-read static[] $children
  * @property-read static[] $oldChildren
