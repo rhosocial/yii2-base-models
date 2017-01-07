@@ -75,8 +75,8 @@ before_script:
             PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
         fi
     - redis-cli flushall
-    - mongo yii2-models --eval "db.addUser(\"user\", \"123456\");"
-    - mongo yii2-models --eval "db.auth(\"user\", \"123456\");db.entity.drop();db.blameable.drop();db.message.drop();db.notification.drop();db.notification.read.drop();"
+    - mongo yii2-base-models --eval "db.addUser(\"user\", \"123456\");"
+    - mongo yii2-base-models --eval "db.auth(\"user\", \"123456\");db.entity.drop();db.blameable.drop();db.message.drop();db.notification.drop();db.notification.read.drop();"
         
 script: 
     - |
