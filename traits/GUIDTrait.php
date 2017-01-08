@@ -32,6 +32,15 @@ trait GUIDTrait
     public $guidAttribute = 'guid';
     
     /**
+     * DO NOT MODIFY OR OVERRIDE THIS METHOD UNLESS YOU KNOW THE CONSEQUENCES.
+     * @return string
+     */
+    public function getReadableGuidAttribute()
+    {
+        return 'readableGuid';
+    }
+    
+    /**
      * Attach `onInitGUIDAttribute` event.
      * @param string $eventName
      */

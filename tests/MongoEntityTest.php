@@ -47,6 +47,7 @@ class MongoEntityTest extends MongoTestCase
         $entity = new MongoEntity();
         $this->assertTrue($entity->save());
         $existed = MongoEntity::find()->guid($entity->guid)->one();
+        /* @var $existed MongoEntity */
         $this->assertRegExp(Number::GUID_REGEX, $existed->getGUID());
         $this->assertEquals(1, $existed->delete());
     }

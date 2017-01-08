@@ -34,7 +34,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     public function getGUIDRules()
     {
         $rules = [];
-        if (is_string($this->guidAttribute)) {
+        if (is_string($this->guidAttribute) || !empty($this->guidAttribute)) {
             $rules = [
                 [[$this->guidAttribute], 'required',],
                 [[$this->guidAttribute], 'unique',],

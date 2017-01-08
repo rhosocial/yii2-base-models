@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\traits;
 
+use rhosocial\base\helpers\Number;
 use rhosocial\base\models\queries\BaseUserQuery;
 use yii\base\InvalidParamException;
 use yii\base\ModelEvent;
@@ -39,8 +40,8 @@ use yii\data\Pagination;
  * @property-read mixed $content Content.
  * @property-read boolean $contentCanBeEdited Whether this content could be edited.
  * @property-read array $contentRules Get content rules.
- * @property-read BaseUserModel $user
- * @property-read BaseUserModel $updater
+ * @property BaseUserModel $user
+ * @property BaseUserModel $updater
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -502,8 +503,27 @@ trait BlameableTrait
     {
         $userClass = $this->userClass;
         $model = $userClass::buildNoInitModel();
-        /* @var static $model */
+        /* @var $model BaseUserModel */
         return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->createdByAttribute]);
+    }
+    
+    /**
+     * 
+     * @param BaseUserModel|string $user
+     * @return boolean
+     */
+    public function setUser($user)
+    {
+        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->createdByAttribute} = $user->getGUID();
+        }
+        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
+            return $this->{$this->createdByAttribute} = Number::guid_bin($user);
+        }
+        if (strlen($user) == 16) {
+            return $this->{$this->createdByAttribute} = $user;
+        }
+        return false;
     }
 
     /**
@@ -514,13 +534,35 @@ trait BlameableTrait
      */
     public function getUpdater()
     {
-        if (!is_string($this->updatedByAttribute)) {
+        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return null;
         }
         $userClass = $this->userClass;
         $model = $userClass::buildNoInitModel();
-        /* @var static $model */
+        /* @var $model BaseUserModel */
         return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->updatedByAttribute]);
+    }
+    
+    /**
+     * 
+     * @param BaseUserModel|string $user
+     * @return boolean
+     */
+    public function setUpdater($user)
+    {
+        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
+            return false;
+        }
+        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->updatedByAttribute} = $user->getGUID();
+        }
+        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
+            return $this->{$this->updatedByAttribute} = Number::guid_bin($user);
+        }
+        if (strlen($user) == 16) {
+            return $this->{$this->updatedByAttribute} = $user;
+        }
+        return false;
     }
 
     /**

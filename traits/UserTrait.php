@@ -56,8 +56,7 @@ trait UserTrait
             unset($config['class']);
         }
         $entity = new $className($config);
-        $createdByAttribute = $entity->createdByAttribute;
-        $entity->$createdByAttribute = $this->guid;
+        $entity->setUser($this);
         if ($loadDefault && method_exists($entity, 'loadDefaultValues')) {
             $entity->loadDefaultValues($skipIfSet);
         }

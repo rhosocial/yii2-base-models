@@ -34,6 +34,7 @@ trait EntityQueryTrait
             $this->noInitModel = $modelClass::buildNoInitModel();
         }
     }
+    
     /**
      * Specify guid attribute.
      * @param string|array $guid
@@ -45,6 +46,7 @@ trait EntityQueryTrait
         $model = $this->noInitModel;
         return $this->likeCondition($guid, $model->guidAttribute, $like);
     }
+    
     /**
      * Specify id attribute.
      * @param string|integer|array $id
@@ -56,6 +58,7 @@ trait EntityQueryTrait
         $model = $this->noInitModel;
         return $this->likeCondition($id, $model->idAttribute, $like);
     }
+    
     /**
      * Specify create time range.
      * @param string $start
@@ -70,6 +73,7 @@ trait EntityQueryTrait
         }
         return static::range($this, $model->createdAtAttribute, $start, $end);
     }
+    
     /**
      * Specify update time range.
      * @param string $start 
@@ -86,6 +90,7 @@ trait EntityQueryTrait
     }
     public static $pageAll = 'all';
     public static $defaultPageSize = 10;
+    
     /**
      * Specify page condition.
      * @param string|int $pageSize It will return all models if it is 'all',

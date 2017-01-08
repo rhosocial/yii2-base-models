@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\models;
 
+use rhosocial\base\helpers\Number;
+use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
 use rhosocial\base\models\traits\BlameableTrait;
 
@@ -66,5 +68,89 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function attributes()
     {
         return $this->enabledFields();
+    }
+
+    /**
+     * Get blame who owned this blameable model.
+     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * specify it in `init()` method.
+     * @return BaseUserQuery user.
+     */
+    public function getUser()
+    {
+        $userClass = $this->userClass;
+        $user = $userClass::buildNoInitModel();
+        /* @var BaseUserModel $user */
+        return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->createdByAttribute]);
+    }
+    
+    public function setUser($user)
+    {
+        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->createdByAttribute} = $user->getReadableGUID();
+        }
+        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
+            return $this->{$this->createdByAttribute} = $user;
+        }
+        if (strlen($user) == 16) {
+            return $this->{$this->createdByAttribute} = Number::guid(false, false, $user);
+        }
+        return false;
+    }
+
+    /**
+     * Get updater who updated this blameable model recently.
+     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * specify it in `init()` method.
+     * @return BaseUserQuery user.
+     */
+    public function getUpdater()
+    {
+        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
+            return null;
+        }
+        $userClass = $this->userClass;
+        $user = $userClass::buildNoInitModel();
+        /* @var BaseUserModel $user */
+        return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->updatedByAttribute]);
+    }
+    
+    public function setUpdater($user)
+    {
+        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
+            return false;
+        }
+        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->updatedByAttribute} = $user->getReadableGUID();
+        }
+        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
+            return $this->{$this->updatedByAttribute} = $user;
+        }
+        if (strlen($user) == 16) {
+            return $this->{$this->updatedByAttribute} = Number::guid(false, false, $user);
+        }
+        return false;
+    }
+
+    /**
+     * Return the current user's GUID if current model doesn't specify the owner
+     * yet, or return the owner's GUID if current model has been specified.
+     * This method is ONLY used for being triggered by event. DO NOT call,
+     * override or modify it directly, unless you know the consequences.
+     * @param ModelEvent $event
+     * @return string the GUID of current user or the owner.
+     */
+    public function onGetCurrentUserGuid($event)
+    {
+        $sender = $event->sender;
+        /* @var static $sender */
+        if (isset($sender->attributes[$sender->createdByAttribute])) {
+            return $sender->attributes[$sender->createdByAttribute];
+        }
+        $identity = \Yii::$app->user->identity;
+        /* @var BaseUserModel $identity */
+        if ($identity) {
+            return $identity->getReadableGUID();
+        }
     }
 }
