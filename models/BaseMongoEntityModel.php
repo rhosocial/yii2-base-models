@@ -136,7 +136,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     public static function find()
     {
         $self = static::buildNoInitModel();
-        /* @var static $self */
+        /* @var $self static */
         if (!is_string($self->queryClass)) {
             $self->queryClass = BaseMongoEntityQuery::class;
         }

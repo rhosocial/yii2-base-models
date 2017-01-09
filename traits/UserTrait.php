@@ -109,4 +109,87 @@ trait UserTrait
             $this->accessTokenRules
         );
     }
+    
+    /**
+     * @var string[] Subsidiary map.
+     * Array key represents class alias,
+     * array value represents the full qualified class name corresponds to the alias.
+     * 
+     * For example:
+     * ```php
+     * public $subsidiaryMap = [
+     *     'Profile' => 'app\models\user\Profile',
+     * ];
+     * ```
+     * or:
+     * ```php
+     * public $subsidiaryMap = [
+     *     'Profile' => [
+     *         'class' => 'app\models\user\Profile',
+     *         'max' => 1,
+     *     ]
+     * ];
+     * 
+     * If you want to create subsidiary model and the class is not found, the array elements will be taken.
+     * @see normalizeSubsidiaryClass
+     */
+    public $subsidiaryMap = [];
+    
+    /**
+     * 
+     * @param string $class
+     * @return integer|null
+     */
+    public function getSubsidiaryInstanceMax($class)
+    {
+        if (array_key_exists($class, $this->subsidiaryMap) && class_exists($this->subsidiaryMap[$class]['class'])) {
+            return array_key_exists('max', $this->subsidiaryMap[$class]) ? $this->subsidiaryMap[$class]['max'] : null;
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param type $class
+     * @param type $config
+     * @return type
+     * @todo 区分字符串和类的实例两种情况。
+     */
+    public function createSubsidiary($class, $config = [])
+    {
+        if (!is_string($class) || empty($class)) {
+            return null;
+        }
+        $className = '';
+        if (class_exists($class)) {
+            $className = $class;
+        } else
+        if (array_key_exists($class, $this->subsidiaryMap)) {
+            if (class_exists($this->subsidiaryMap[$class])) {
+                $className = $this->subsidiaryMap[$class];
+            } else
+            if (class_exists($this->subsidiaryMap[$class]['class'])) {
+                $className = $this->subsidiaryMap[$class]['class'];
+            }
+        } else {
+            return null;
+        }
+        return $this->create($className, $config);
+    }
+    
+    /**
+     * 
+     * @param string $name
+     * @param array $params
+     * @return type
+     */
+    public function __call($name, $params)
+    {
+        if (strpos(strtolower($name), "create") === 0) {
+            $class = substr($name, 6);
+            $config = (isset($params) && isset($params[0])) ? $params[0] : [];
+            return $this->createSubsidiary($class, $config);
+        }
+        return parent::__call($name, $params);
+    }
 }

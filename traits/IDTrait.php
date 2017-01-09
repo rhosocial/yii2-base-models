@@ -103,7 +103,7 @@ trait IDTrait
     public function onInitIDAttribute($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         if ($sender->idPreassigned) {
             return;
         }

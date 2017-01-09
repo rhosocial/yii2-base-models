@@ -16,6 +16,7 @@ use rhosocial\base\helpers\Number;
 use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
 use rhosocial\base\models\traits\BlameableTrait;
+use yii\web\IdentityInterface;
 
 /**
  * Description of BaseMongoBlameableModel
@@ -84,9 +85,14 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->createdByAttribute]);
     }
     
+    /**
+     * 
+     * @param IdentityInterface $user
+     * @return boolean
+     */
     public function setUser($user)
     {
-        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+        if ($user instanceof $this->userClass || $user instanceof IdentityInterface) {
             return $this->{$this->createdByAttribute} = $user->getReadableGUID();
         }
         if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
@@ -111,16 +117,21 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         }
         $userClass = $this->userClass;
         $user = $userClass::buildNoInitModel();
-        /* @var BaseUserModel $user */
+        /* @var $user BaseUserModel */
         return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->updatedByAttribute]);
     }
     
+    /**
+     * 
+     * @param IdentityInterface $user
+     * @return boolean
+     */
     public function setUpdater($user)
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
         }
-        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
+        if ($user instanceof $this->userClass || $user instanceof IdentityInterface) {
             return $this->{$this->updatedByAttribute} = $user->getReadableGUID();
         }
         if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
@@ -143,7 +154,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function onGetCurrentUserGuid($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         if (isset($sender->attributes[$sender->createdByAttribute])) {
             return $sender->attributes[$sender->createdByAttribute];
         }

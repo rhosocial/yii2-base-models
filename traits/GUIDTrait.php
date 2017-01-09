@@ -58,7 +58,7 @@ trait GUIDTrait
     public function onInitGUIDAttribute($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         $sender->setGUID(static::generateGuid());
     }
 

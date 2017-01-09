@@ -588,12 +588,12 @@ trait BlameableTrait
     public function onGetCurrentUserGuid($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         if (isset($sender->attributes[$sender->createdByAttribute])) {
             return $sender->attributes[$sender->createdByAttribute];
         }
         $identity = \Yii::$app->user->identity;
-        /* @var BaseUserModel $identity */
+        /* @var $identity BaseUserModel */
         if ($identity) {
             return $identity->getGUID();
         }
@@ -607,7 +607,7 @@ trait BlameableTrait
     public function onInitContentType($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         if (!is_string($sender->contentTypeAttribute) || empty($sender->contentTypeAttribute)) {
             return;
         }
@@ -626,7 +626,7 @@ trait BlameableTrait
     public function onInitDescription($event)
     {
         $sender = $event->sender;
-        /* @var static $sender */
+        /* @var $sender static */
         if (!is_string($sender->descriptionAttribute) || empty($sender->descriptionAttribute)) {
             return;
         }

@@ -63,7 +63,7 @@ class MongoEntityTest extends MongoTestCase
         $entity->setIPAddress($ipAddress);
         $this->assertTrue($entity->save());
         $existed = MongoEntity::find()->guid($entity->guid)->one();
-        /* @var MongoEntity $existed */
+        /* @var $existed MongoEntity */
         $this->assertEquals($ipAddress, $existed->getIPAddress());
         $this->assertEquals(1, $existed->delete());
     }
@@ -79,7 +79,7 @@ class MongoEntityTest extends MongoTestCase
         $entity->setIPAddress($ipAddress);
         $this->assertTrue($entity->save());
         $existed = MongoEntity::find()->guid($entity->guid)->one();
-        /* @var MongoEntity $existed */
+        /* @var $existed MongoEntity */
         $this->assertEquals($ipAddress, $existed->getIPAddress());
         $this->assertEquals(1, $existed->delete());
     }
