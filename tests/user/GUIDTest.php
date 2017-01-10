@@ -53,8 +53,10 @@ class GUIDTest extends UserTestCase
     public function testFind($severalTimes)
     {
         $this->assertTrue($this->user->register());
+        $this->assertEquals(16, strlen((string)($this->user)));
         $this->assertInstanceOf(User::class, User::find()->guid($this->user)->one());
         $this->assertInstanceOf(User::class, User::find()->guid($this->user->guid)->one());
+        $this->assertEquals(User::find()->guid($this->user->guid)->one()->getGUID(), User::find()->guid($this->user)->one()->getGUID());
         $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->one());
         $this->assertTrue($this->user->deregister());
     }

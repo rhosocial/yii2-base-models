@@ -32,7 +32,7 @@ trait QueryTrait
      */
     protected function likeCondition($value, $attribute, $like = false)
     {
-        if (!is_string($attribute)) {
+        if (!is_string($attribute) || empty($attribute)) {
             return $this;
         }
         if ($like) {

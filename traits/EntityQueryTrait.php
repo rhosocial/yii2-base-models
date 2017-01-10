@@ -44,7 +44,7 @@ trait EntityQueryTrait
     public function guid($guid, $like = false)
     {
         $model = $this->noInitModel;
-        return $this->likeCondition($guid, $model->guidAttribute, $like);
+        return $this->likeCondition((string)$guid, $model->guidAttribute, $like);
     }
     
     /**
@@ -68,7 +68,8 @@ trait EntityQueryTrait
     public function createdAt($start = null, $end = null)
     {
         $model = $this->noInitModel;
-        if (!is_string($model->createdAtAttribute)) {
+        /* @var $model static */
+        if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
             return $this;
         }
         return static::range($this, $model->createdAtAttribute, $start, $end);
@@ -83,7 +84,8 @@ trait EntityQueryTrait
     public function updatedAt($start = null, $end = null)
     {
         $model = $this->noInitModel;
-        if (!is_string($model->updatedAtAttribute)) {
+        /* @var $model static */
+        if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
             return $this;
         }
         return static::range($this, $model->updatedAtAttribute, $start, $end);
