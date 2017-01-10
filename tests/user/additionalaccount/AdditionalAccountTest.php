@@ -66,7 +66,7 @@ class AdditionalAccountTest extends UserTestCase
      */
     public function testIndependentPassword()
     {
-        $this->user = new User(['password' => 123456]);
+        $this->user = new User(['password' => '123456']);
         $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
         /* @var $aa AdditionalAccount */
         $aa->password = $this->faker->randomLetter;
@@ -83,7 +83,7 @@ class AdditionalAccountTest extends UserTestCase
      */
     public function testNotIndependentPassword()
     {
-        $this->user = new User(['password' => 123456]);
+        $this->user = new User(['password' => '123456']);
         $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
         /* @var $aa AdditionalAccount */
         $aa->setEmptyPassword();

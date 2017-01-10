@@ -136,7 +136,7 @@ class TimestampTest extends UserTestCase
      */
     public function testNoExpiration()
     {
-        $this->user = new User(['password' => 123456]);
+        $this->user = new User(['password' => '123456']);
         $this->user->setExpiredAfter(1);
     }
     
