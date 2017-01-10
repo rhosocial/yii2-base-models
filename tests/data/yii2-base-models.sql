@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-06 12:16:53
--- 服务器版本： 5.7.17
--- PHP Version: 7.0.14
+-- Generation Time: 2017-01-10 15:07:44
+-- 服务器版本： 8.0.0-dmr
+-- PHP Version: 7.1.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -27,8 +27,7 @@ USE `yii2-base-models`;
 --
 -- 表的结构 `user`
 --
--- 创建时间： 2017-01-01 08:50:49
--- 最后更新： 2017-01-05 06:08:05
+-- 创建时间： 2017-01-10 05:51:10
 --
 
 DROP TABLE IF EXISTS `user`;
@@ -38,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `pass_hash` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `auth_key` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -46,8 +46,10 @@ CREATE TABLE IF NOT EXISTS `user` (
   `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `access_token_unique` (`access_token`) USING BTREE,
-  UNIQUE KEY `auth_key_unique` (`auth_key`) USING BTREE
+  UNIQUE KEY `user_id_unique` (`id`) USING BTREE,
+  UNIQUE KEY `user_access_token_unique` (`access_token`) USING BTREE,
+  UNIQUE KEY `user_auth_key_unique` (`auth_key`) USING BTREE,
+  KEY `user_password_reset_token_unique` (`password_reset_token`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -55,8 +57,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 -- 表的结构 `user_additional_account`
 --
--- 创建时间： 2017-01-02 08:27:57
--- 最后更新： 2017-01-05 05:24:20
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_additional_account`;
@@ -84,8 +85,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
 --
 -- 表的结构 `user_comment`
 --
--- 创建时间： 2017-01-02 12:03:56
--- 最后更新： 2017-01-05 05:24:45
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_comment`;
@@ -112,8 +112,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
 --
 -- 表的结构 `user_email`
 --
--- 创建时间： 2017-01-02 08:25:33
--- 最后更新： 2017-01-05 05:24:47
+-- 创建时间： 2017-01-07 07:51:51
 --
 
 DROP TABLE IF EXISTS `user_email`;
@@ -121,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -129,7 +128,8 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   `confirmed_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `confirm_code` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `user_email_id_unique` (`user_guid`,`id`) USING BTREE
+  UNIQUE KEY `user_email_id_unique` (`user_guid`,`id`) USING BTREE,
+  KEY `user_email_normal` (`email`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `user_email` (
 --
 -- 表的结构 `user_meta`
 --
--- 创建时间： 2017-01-05 11:05:36
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_meta`;
@@ -155,8 +155,7 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
 --
 -- 表的结构 `user_relation`
 --
--- 创建时间： 2017-01-04 07:05:43
--- 最后更新： 2017-01-05 05:26:17
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_relation`;
@@ -185,8 +184,7 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
 --
 -- 表的结构 `user_relation_group`
 --
--- 创建时间： 2017-01-03 15:31:31
--- 最后更新： 2017-01-05 05:26:17
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_relation_group`;
@@ -206,8 +204,7 @@ CREATE TABLE IF NOT EXISTS `user_relation_group` (
 --
 -- 表的结构 `user_single_relation`
 --
--- 创建时间： 2017-01-04 05:56:09
--- 最后更新： 2017-01-05 05:26:03
+-- 创建时间： 2017-01-07 07:39:45
 --
 
 DROP TABLE IF EXISTS `user_single_relation`;

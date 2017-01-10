@@ -9,7 +9,7 @@
          verbose="true">
     <testsuites>
         <testsuite name="Common">
-            <directory>./tests</directory>
+            <directory>./tests/user</directory>
         </testsuite>
     </testsuites>
     <filter>

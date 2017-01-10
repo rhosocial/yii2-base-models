@@ -8,11 +8,16 @@
  * @copyright Copyright (c) 2016 vistart
  * @license https://vistart.me/license/
  */
+
 namespace rhosocial\base\models\tests;
+
+use Faker\Factory;
+use Faker\Generator;
 use yii\di\Container;
 use yii\helpers\ArrayHelper;
 use Yii;
 use yii\db\Connection;
+
 /**
  * Description of TestCase
  *
@@ -20,13 +25,21 @@ use yii\db\Connection;
  */
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
     
+    /**
+     *
+     * @var Generator 
+     */
+    protected $faker = null;
+    
     public function sleep($seconds = 1) {
         for ($i = $seconds; $i > 0; $i--) {
             echo "$i\n";
             sleep(1);
         }
     }
+    
     public static $params;
+    
     /**
      * Returns a test configuration param from /data/config.php
      * @param  string $name params name
@@ -39,6 +52,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
         }
         return isset(static::$params[$name]) ? static::$params[$name] : $default;
     }
+    
     /**
      * Clean up after test.
      * By default the application created with [[mockApplication]] will be destroyed.
@@ -46,7 +60,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     protected function tearDown() {
         parent::tearDown();
         $this->destroyApplication();
+        $this->faker = null;
     }
+    
     /**
      * Populates Yii::$app with a new application
      * The application will be destroyed on tearDown() automatically.
@@ -60,6 +76,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                     'vendorPath' => dirname(__DIR__) . '/vendor',
                         ], $config));
     }
+    
     protected function mockWebApplication($config = [], $appClass = '\yii\web\Application') {
         new $appClass(ArrayHelper::merge([
                     'id' => 'testapp',
@@ -79,13 +96,24 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                     ]
                         ], $config));
     }
+    
     /**
      * Destroys application in Yii::$app by setting it to null.
      */
     protected function destroyApplication() {
+        $redis = Yii::$app->redis;
+        /* @var $redis \yii\redis\Connection */
+        $redis->executeCommand('flushall');
         Yii::$app = null;
         Yii::$container = new Container();
     }
+    
+    public function __construct($name = null, array $data = array(), $dataName = '') {
+        parent::__construct($name, $data, $dataName);
+        $this->faker = Factory::create();
+        $this->faker->seed(time() % 1000000);
+    }
+    
     protected function setUp() {
         $databases = self::getParam('databases');
         $params = isset($databases['mysql']) ? $databases['mysql'] : null;
@@ -101,7 +129,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
         }*/
         $this->mockWebApplication(['components' => ['redis' => $redis, 'multiDomainsManager' => $md, 'db' => $connection, 'cache' => $cacheParams]]);
         parent::setUp();
+        
     }
+    
     /**
      * @param  boolean    $reset whether to clean up the test database
      * @return Connection

@@ -24,6 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property-read array $createdAtRules
  * @property-read array $updatedAtRules
  * @property-read boolean isExpired
+ * @property int|false expiredAfter the expiration duration in seconds, or false if not expired.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -40,6 +41,8 @@ trait TimestampTrait
      * Set this property to false if you do not want to record the update time.
      */
     public $updatedAtAttribute = 'updated_at';
+    
+    public $expiredAfterAttribute = false;
 
     /**
      * @var integer Determine the format of timestamp.
@@ -49,12 +52,6 @@ trait TimestampTrait
     public static $timeFormatTimestamp = 1;
     public static $initDatetime = '1970-01-01 00:00:00';
     public static $initTimestamp = 0;
-
-    /**
-     * @var int|false the expiration in seconds, or false if it will not be expired.
-     */
-    
-    public $expiredAt = false;
     /**
      * @var Closure
      */
@@ -68,10 +65,10 @@ trait TimestampTrait
     public function getIsExpired()
     {
         $createdAt = $this->getCreatedAt();
-        if ($this->expiredAt === false || $createdAt === null) {
+        if ($this->getExpiredAfter() === false || $createdAt === null) {
             return false;
         }
-        return $this->offsetDatetime($this->currentDatetime(), -$this->expiredAt) > $createdAt;
+        return $this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()) > $createdAt;
     }
     
     /**
@@ -84,10 +81,25 @@ trait TimestampTrait
             if (($this->expiredRemovingCallback instanceof Closure || is_array($this->expiredRemovingCallback)) && is_callable($this->expiredRemovingCallback)) {
                 $result = call_user_func($this->expiredRemovingCallback, $this);
             }
-            $result = $this->delete();
+            try {
+                $result = $this->removeSelf();
+            } catch (\Exception $ex) {
+                $result = false;
+            }
             $this->trigger(static::$eventExpiredRemoved, new ModelEvent(['data' => ['result' => $result]]));
         }
         return false;
+    }
+    
+    /**
+     * Remove self.
+     * You can override this method for implementing more complex features.
+     * @see delete()
+     * @return integer
+     */
+    public function removeSelf()
+    {
+        return $this->delete();
     }
     
     /**
@@ -221,7 +233,7 @@ trait TimestampTrait
     public function getCreatedAt()
     {
         $createdAtAttribute = $this->createdAtAttribute;
-        if (!is_string($createdAtAttribute)) {
+        if (!is_string($createdAtAttribute) || empty($createdAtAttribute)) {
             return null;
         }
         return $this->$createdAtAttribute;
@@ -233,7 +245,7 @@ trait TimestampTrait
      */
     public function getCreatedAtRules()
     {
-        if (!$this->createdAtAttribute) {
+        if (!is_string($this->createdAtAttribute) || empty($this->createdAtAttribute)) {
             return [];
         }
         return [
@@ -248,7 +260,7 @@ trait TimestampTrait
     public function getUpdatedAt()
     {
         $updatedAtAttribute = $this->updatedAtAttribute;
-        if (!is_string($updatedAtAttribute)) {
+        if (!is_string($updatedAtAttribute) || empty($updatedAtAttribute)) {
             return null;
         }
         return $this->$updatedAtAttribute;
@@ -260,11 +272,50 @@ trait TimestampTrait
      */
     public function getUpdatedAtRules()
     {
-        if (!$this->updatedAtAttribute) {
+        if (!is_string($this->updatedAtAttribute) || empty ($this->updatedAtAttribute)) {
             return [];
         }
         return [
             [[$this->updatedAtAttribute], 'safe'],
+        ];
+    }
+    
+    /**
+     * Get expiration duration.
+     * @return boolean
+     */
+    public function getExpiredAfter()
+    {
+        if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
+            return false;
+        }
+        return (int)($this->{$this->expiredAfterAttribute});
+    }
+    
+    /**
+     * Set expiration duration.
+     * @param integer $expiredAfter
+     * @return boolean|integer
+     */
+    public function setExpiredAfter($expiredAfter)
+    {
+        if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
+            return false;
+        }
+        return (int)($this->{$this->expiredAfterAttribute} = (int)$expiredAfter);
+    }
+    
+    /**
+     * Get rules associated with `expiredAfterAttribute`.
+     * @return array
+     */
+    public function getExpiredAfterRules()
+    {
+        if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
+            return [];
+        }
+        return [
+            [[$this->expiredAfterAttribute], 'integer', 'min' => 0],
         ];
     }
     
@@ -275,11 +326,14 @@ trait TimestampTrait
     public function enabledTimestampFields()
     {
         $fields = [];
-        if (is_string($this->createdAtAttribute)) {
+        if (is_string($this->createdAtAttribute) && !empty($this->createdAtAttribute)) {
             $fields[] = $this->createdAtAttribute;
         }
-        if (is_string($this->updatedAtAttribute)) {
+        if (is_string($this->updatedAtAttribute) && !empty($this->updatedAtAttribute)) {
             $fields[] = $this->updatedAtAttribute;
+        }
+        if (is_string($this->expiredAfterAttribute) && !empty($this->expiredAfterAttribute)) {
+            $fields[] = $this->expiredAfterAttribute;
         }
         return $fields;
     }

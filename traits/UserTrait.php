@@ -92,6 +92,16 @@ trait UserTrait
         }
         return $model;
     }
+    
+    /**
+     * This method is only used for overriding [[removeSelf()]] in [[TimestampTrait]].
+     * @see deregister()
+     * @return boolean
+     */
+    public function removeSelf()
+    {
+        return $this->deregister();
+    }
 
     /**
      * Get all rules with current user properties.
@@ -101,12 +111,12 @@ trait UserTrait
     {
         return array_merge(
             parent::rules(),
-            $this->passwordHashRules,
-            $this->passwordResetTokenRules,
-            $this->sourceRules,
-            $this->statusRules,
-            $this->authKeyRules,
-            $this->accessTokenRules
+            $this->getPasswordHashRules(),
+            $this->getPasswordResetTokenRules(),
+            $this->getSourceRules(),
+            $this->getStatusRules(),
+            $this->getAuthKeyRules(),
+            $this->getAccessTokenRules()
         );
     }
     

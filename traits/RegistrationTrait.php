@@ -105,14 +105,14 @@ trait RegistrationTrait
      */
     public function register($associatedModels = [], $authRoles = [])
     {
-        if (!$this->isNewRecord) {
+        if (!$this->getIsNewRecord()) {
             return false;
         }
         $this->trigger(static::$eventBeforeRegister);
         $transaction = $this->getDb()->beginTransaction();
         try {
             if (!$this->save()) {
-                throw new IntegrityException('Registration Error(s) Occured.', $this->errors);
+                throw new IntegrityException('Registration Error(s) Occured.', $this->getErrors());
             }
             if ($authManager = $this->getAuthManager() && !empty($authRoles)) {
                 if (is_string($authRoles) || $authRoles instanceof Role || !is_array($authRoles)) {
@@ -135,7 +135,7 @@ trait RegistrationTrait
                 }
             }
             $transaction->commit();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $transaction->rollBack();
             $this->trigger(static::$eventRegisterFailed);
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
@@ -164,7 +164,7 @@ trait RegistrationTrait
      */
     public function deregister()
     {
-        if ($this->isNewRecord) {
+        if ($this->getIsNewRecord()) {
             return false;
         }
         $this->trigger(static::$eventBeforeDeregister);
@@ -172,10 +172,10 @@ trait RegistrationTrait
         try {
             $result = $this->delete();
             if ($result != 1) {
-                throw new IntegrityException('Deregistration Error(s) Occured.', $this->errors);
+                throw new IntegrityException('Deregistration Error(s) Occured.', $this->getErrors());
             }
             $transaction->commit();
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $transaction->rollBack();
             $this->trigger(static::$eventDeregisterFailed);
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {

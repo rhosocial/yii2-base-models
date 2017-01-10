@@ -32,7 +32,7 @@ $config = [
         'class' => 'yii\redis\Connection',
         'hostname' => 'localhost',
         'port' => 6379,
-        'database' => 0,
+        'database' => 10,
     ],
     'mongodb' => [
         'class' => 'yii\mongodb\Connection',

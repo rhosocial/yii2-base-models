@@ -8,8 +8,10 @@
  * @copyright Copyright (c) 2016 vistart
  * @license https://vistart.me/license/
  */
+
 namespace rhosocial\base\models\tests\data\ar;
 use Yii;
+
 /**
  * Description of ActiveRecord
  * @property-read UserEmail[] $emails
@@ -18,15 +20,18 @@ use Yii;
  * @since 1.0
  */
 class User extends \rhosocial\base\models\models\BaseUserModel {
+    
     public $idAttributePrefix = '4';
     public $idAttributeType = 1;
     public $idAttributeLength = 8;
+    
     /**
      * @inheritdoc
      */
     public static function tableName() {
         return '{{%user}}';
     }
+    
     /**
      * @inheritdoc
      */
@@ -46,6 +51,7 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
             'source' => Yii::t('app', 'Source'),
         ];
     }
+    
     /**
      * @return \rhosocial\base\models\queries\BaseBlameableQuery
      */

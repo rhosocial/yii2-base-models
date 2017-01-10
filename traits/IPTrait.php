@@ -81,7 +81,7 @@ trait IPTrait
      */
     protected function getIPv4Address()
     {
-        return inet_ntop($this->{$this->ipAttribute});
+        return $this->{$this->ipTypeAttribute} == IP::IPv4 ? inet_ntop($this->{$this->ipAttribute}) : null;
     }
     
     /**
@@ -90,7 +90,7 @@ trait IPTrait
      */
     protected function getIPv6Address()
     {
-        return inet_ntop($this->{$this->ipAttribute});
+        return $this->{$this->ipTypeAttribute} == IP::IPv6 ? inet_ntop($this->{$this->ipAttribute}) : null;
     }
     
     /**
@@ -122,19 +122,19 @@ trait IPTrait
         if (!$this->enableIP) {
             return null;
         }
-        if ($this->enableIP & static::$ipAll) {
+        if ($this->enableIP == static::$ipv4) {
+            return $this->getIPv4Address();
+        } else
+        if ($this->enableIP == static::$ipv6) {
+            return $this->getIPv6Address();
+        } else
+        if ($this->enableIP == static::$ipAll) {
             if ($this->{$this->ipTypeAttribute} == IP::IPv4) {
                 return $this->getIPv4Address();
             }
             if ($this->{$this->ipTypeAttribute} == IP::IPv6) {
                 return $this->getIPv6Address();
             }
-        } else
-        if ($this->enableIP & static::$ipv4) {
-            return $this->getIPv4Address();
-        } else
-        if ($this->enableIP & static::$ipv6) {
-            return $this->getIPv6Address();
         }
         return null;
     }
