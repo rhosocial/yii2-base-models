@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\user;
 
+use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\ExpiredUser;
 use rhosocial\base\models\tests\user\UserTestCase;
 
@@ -127,6 +128,16 @@ class TimestampTest extends UserTestCase
     public function testEnabledFields()
     {
         $this->assertNotEmpty($this->user->enabledTimestampFields());
+    }
+    
+    /**
+     * @group user
+     * @group timestamp
+     */
+    public function testNoExpiration()
+    {
+        $this->user = new User(['password' => 123456]);
+        $this->user->setExpiredAfter(1);
     }
     
     public function timestampProvider()

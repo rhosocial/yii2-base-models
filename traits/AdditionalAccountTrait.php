@@ -36,11 +36,22 @@ trait AdditionalAccountTrait
     public $enableLoginAttribute = false;
     
     /**
-     * @var boolean|string  Determines whether login with current additional
+     * @var boolean  Determines whether login with current additional
      * account with an independent password or not. If you set $enableLoginAttribute
      * to false, this feature will be skipped.
      */
-    public $independentPassword = false;
+    public function getPasswordIsIndependent()
+    {
+        return $this->getCanBeLogon() && $this->getIsEmptyPassword();
+    }
+    
+    /**
+     * 
+     */
+    public function setPasswordIndependent()
+    {
+        $this->setEmptyPassword();
+    }
     
     /**
      * Get this additional account could be used for logging-in.
@@ -48,7 +59,7 @@ trait AdditionalAccountTrait
      */
     public function getCanBeLogon()
     {
-        if (!$this->enableLoginAttribute) {
+        if (!$this->enableLoginAttribute || empty($this->enableLoginAttribute)) {
             return false;
         }
         $enableLoginAttribute = $this->enableLoginAttribute;
@@ -62,7 +73,7 @@ trait AdditionalAccountTrait
      */
     public function setCanBeLogon($can)
     {
-        if (!$this->enableLoginAttribute) {
+        if (!$this->enableLoginAttribute || empty($this->enableLoginAttribute)) {
             return;
         }
         $enableLoginAttribute = $this->enableLoginAttribute;
@@ -77,7 +88,7 @@ trait AdditionalAccountTrait
      */
     public function getEnableLoginAttributeRules()
     {
-        return $this->enableLoginAttribute && is_string($this->enableLoginAttribute) ? [
+        return $this->enableLoginAttribute && is_string($this->enableLoginAttribute && !empty($this->enableLoginAttribute)) ? [
             [[$this->enableLoginAttribute], 'boolean'],
             [[$this->enableLoginAttribute], 'default', 'value' => true],
             ] : [];
@@ -90,7 +101,7 @@ trait AdditionalAccountTrait
     public function getAdditionalAccountRules()
     {
         $rules = $this->getEnableLoginAttributeRules();
-        if ($this->independentPassword) {
+        if ($this->getPasswordIsIndependent()) {
             $rules = array_merge($rules, $this->getPasswordHashRules());
         }
         return $rules;

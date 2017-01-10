@@ -37,6 +37,18 @@ class PasswordTest extends UserTestCase
         $this->assertTrue($this->user->deregister());
     }
     
+    /**
+     * @group user
+     * @group password
+     */
+    public function testEmptyPassword()
+    {
+        $this->user->setEmptyPassword();
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->user->getIsEmptyPassword());
+        $this->assertTrue($this->user->deregister());
+    }
+    
     public function passwordProvider()
     {
         for ($i = 0; $i < 3; $i++) {

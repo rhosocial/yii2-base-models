@@ -139,10 +139,10 @@ trait RegistrationTrait
             $transaction->rollBack();
             $this->trigger(static::$eventRegisterFailed);
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::class . '\register');
+                Yii::error($ex->getMessage(), static::class . '\register');
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::class . '\register');
+            Yii::warning($ex->getMessage(), static::class . '\register');
             return false;
         }
         $this->trigger(static::$eventAfterRegister);
@@ -179,10 +179,10 @@ trait RegistrationTrait
             $transaction->rollBack();
             $this->trigger(static::$eventDeregisterFailed);
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::class . '\deregister');
+                Yii::error($ex->getMessage(), static::class . '\deregister');
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::class . '\deregister');
+            Yii::warning($ex->getMessage(), static::class . '\deregister');
             return false;
         }
         $this->trigger(static::$eventAfterDeregister);

@@ -14,12 +14,12 @@ namespace rhosocial\base\models\tests\user\additionalaccount;
 
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\AdditionalAccount;
-use rhosocial\base\models\tests\TestCase;
+use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
  * @author vistart <i@vistart.me>
  */
-class AdditionalAccountTest extends TestCase
+class AdditionalAccountTest extends UserTestCase
 {
     /**
      * @group user
@@ -58,5 +58,39 @@ class AdditionalAccountTest extends TestCase
         
         // 测试完毕，注销账户。
         $this->assertTrue($user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group additionalaccount
+     */
+    public function testIndependentPassword()
+    {
+        $this->user = new User(['password' => 123456]);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
+        /* @var $aa AdditionalAccount */
+        $aa->password = $this->faker->randomLetter;
+        $this->assertTrue($this->user->register([$aa]));
+        $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
+        $aa = $this->user->additionalAccounts[0];
+        $this->assertFalse($aa->getIsEmptyPassword());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group additionalaccount
+     */
+    public function testNotIndependentPassword()
+    {
+        $this->user = new User(['password' => 123456]);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
+        /* @var $aa AdditionalAccount */
+        $aa->setEmptyPassword();
+        $this->assertTrue($this->user->register([$aa]));
+        $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
+        $aa = $this->user->additionalAccounts[0];
+        $this->assertTrue($aa->getIsEmptyPassword());
+        $this->assertTrue($this->user->deregister());
     }
 }

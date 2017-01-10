@@ -18,10 +18,12 @@ use yii\base\ModelEvent;
 /**
  * User features concerning identity.
  *
- * @property-read string $authKey
- * @property array $statusRules
- * @property array $authKeyRules
+ * @property string $accessToken
  * @property array $accessTokenRules
+ * @property string $authKey
+ * @property array $authKeyRules
+ * @property integer $status
+ * @property array $statusRules
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -40,7 +42,7 @@ trait IdentityTrait
     /**
      * Finds an identity by the given ID.
      * @param string|integer $identity
-     * @return type
+     * @return static
      */
     public static function findIdentity($identity)
     {
@@ -51,18 +53,18 @@ trait IdentityTrait
     /**
      * Finds an identity by the given GUID.
      * @param string $guid
-     * @return type
+     * @return static
      */
     public static function findIdentityByGuid($guid)
     {
-        return static::findOne($guid);
+        return static::findOne((string)$guid);
     }
 
     /**
      * Finds an identity by the given token.
      * @param string $token
-     * @param type $type
-     * @return type
+     * @param mixed $type
+     * @return static
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
@@ -77,7 +79,7 @@ trait IdentityTrait
     public function getAuthKey()
     {
         $authKeyAttribute = $this->authKeyAttribute;
-        return is_string($authKeyAttribute) ? $this->$authKeyAttribute : null;
+        return (is_string($authKeyAttribute) && !empty($authKeyAttribute)) ? $this->$authKeyAttribute : null;
     }
 
     /**
@@ -88,7 +90,7 @@ trait IdentityTrait
     public function setAuthKey($key)
     {
         $authKeyAttribute = $this->authKeyAttribute;
-        return is_string($authKeyAttribute) ? $this->$authKeyAttribute = $key : null;
+        return (is_string($authKeyAttribute) && !empty($authKeyAttribute)) ? $this->$authKeyAttribute = $key : null;
     }
 
     /**
@@ -147,7 +149,7 @@ trait IdentityTrait
     public function getAccessToken()
     {
         $accessTokenAttribute = $this->accessTokenAttribute;
-        return is_string($accessTokenAttribute) ? $this->$accessTokenAttribute : null;
+        return (is_string($accessTokenAttribute) && !empty($accessTokenAttribute)) ? $this->$accessTokenAttribute : null;
     }
 
     /**
@@ -158,7 +160,7 @@ trait IdentityTrait
     public function setAccessToken($token)
     {
         $accessTokenAttribute = $this->accessTokenAttribute;
-        return is_string($accessTokenAttribute) ? $this->$accessTokenAttribute = $token : null;
+        return (is_string($accessTokenAttribute) && !empty($accessTokenAttribute)) ? $this->$accessTokenAttribute = $token : null;
     }
 
     /**
@@ -207,7 +209,7 @@ trait IdentityTrait
     public function getStatus()
     {
         $statusAttribute = $this->statusAttribute;
-        return is_string($statusAttribute) ? $this->$statusAttribute : null;
+        return (is_string($statusAttribute) && !empty($statusAttribute)) ? $this->$statusAttribute : null;
     }
 
     /**
@@ -218,7 +220,7 @@ trait IdentityTrait
     public function setStatus($status)
     {
         $statusAttribute = $this->statusAttribute;
-        return is_string($statusAttribute) ? $this->$statusAttribute = $status : null;
+        return (is_string($statusAttribute) && !empty($statusAttribute)) ? $this->$statusAttribute = $status : null;
     }
 
     /**

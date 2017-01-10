@@ -22,7 +22,7 @@ class InitTest extends UserTestCase
      * @group registration
      * @dataProvider severalTimes
      */
-    public function testRegister($i)
+    public function testRegister($severalTimes)
     {
         $this->assertTrue($this->user->getIsNewRecord());
         $this->assertFalse($this->user->deregister(), 'False if not registered.');

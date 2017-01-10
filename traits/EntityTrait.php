@@ -146,7 +146,7 @@ trait EntityTrait
             $this->entityLocalRules = $cache->get($this->getEntityRulesCacheKey());
         }
         if (empty($this->entityLocalRules) || !is_array($this->entityLocalRules)) {
-            $rules = array_merge($this->getGuidRules(), $this->getIdRules(), $this->getCreatedAtRules(), $this->getUpdatedAtRules(), $this->getIpRules());
+            $rules = array_merge($this->getGuidRules(), $this->getIdRules(), $this->getCreatedAtRules(), $this->getUpdatedAtRules(), $this->getExpiredAfterRules(), $this->getIpRules());
             $this->setEntityRules($rules);
         }
         return $this->entityLocalRules;
