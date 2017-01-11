@@ -143,6 +143,51 @@ class IdentityTest extends UserTestCase
         $this->assertFalse($this->user->validate());
     }
     
+    /**
+     * @group user
+     * @group identity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testAuthKey($severalTimes)
+    {
+        $this->assertNotEmpty($this->user->authKey);
+        $this->assertTrue($this->user->register());
+        $this->assertNotEmpty($this->user->getAuthKey());
+        $authKey = $this->user->getAuthKey();
+        $this->user->authKey = sha1(\Yii::$app->security->generateRandomString());
+        $this->assertFalse($this->user->validateAuthKey($authKey));
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group identity
+     */
+    public function testAuthKeyRulesPass()
+    {
+        $this->user->authKey = sha1(\Yii::$app->security->generateRandomString());
+        $this->user->authKeyRules = [
+            [[$this->user->authKeyAttribute], 'required'],
+            [[$this->user->authKeyAttribute], 'string', 'max' => mb_strlen($this->user->authKey, 'utf8') + 1],
+        ];
+        $this->assertTrue($this->user->validate());
+    }
+    
+    /**
+     * @group user
+     * @group identity
+     */
+    public function testAuthKeyRulesNotPass()
+    {
+        $this->user->authKey = sha1(\Yii::$app->security->generateRandomString());
+        $this->user->authKeyRules = [
+            [[$this->user->authKeyAttribute], 'required'],
+            [[$this->user->authKeyAttribute], 'string', 'max' => mb_strlen($this->user->authKey, 'utf8') - 1],
+        ];
+        $this->assertFalse($this->user->validate());
+    }
+    
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++) {

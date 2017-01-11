@@ -9,6 +9,7 @@
          verbose="true">
     <testsuites>
         <testsuite name="Common">
+            <directory>./tests/entity</directory>
             <directory>./tests/user</directory>
         </testsuite>
     </testsuites>

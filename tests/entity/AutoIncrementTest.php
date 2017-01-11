@@ -1,0 +1,47 @@
+<?php
+
+/**
+ *   _   __ __ _____ _____ ___  ____  _____
+ *  | | / // // ___//_  _//   ||  __||_   _|
+ *  | |/ // /(__  )  / / / /| || |     | |
+ *  |___//_//____/  /_/ /_/ |_||_|     |_|
+ * @link https://vistart.me/
+ * @copyright Copyright (c) 2016 vistart
+ * @license https://vistart.me/license/
+ */
+
+namespace rhosocial\base\models\tests\entity;
+
+use rhosocial\base\models\tests\data\ar\EntityAI;
+
+/**
+ * @author vistart <i@vistart.me>
+ */
+class AutoIncrementTest extends EntityTestCase
+{
+    protected function setUp() {
+        parent::setUp();
+        $this->entity = new EntityAI();
+    }
+    
+    /**
+     * @group entity
+     * @group id
+     */
+    public function testNew()
+    {
+        $this->assertTrue($this->entity->save());
+    }
+    
+    /**
+     * @group entity
+     * @group id
+     */
+    public function testNotSafe()
+    {
+        $rules = $this->entity->rules();
+        $this->entity = new EntityAI(['idAttributeType' => EntityAI::$idTypeInteger]);
+        $this->assertTrue($this->entity->resetCacheKey($this->entity->getEntityRulesCacheKey()));
+        $this->assertNotEquals($rules, $this->entity->rules());
+    }
+}
