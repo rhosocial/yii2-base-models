@@ -55,4 +55,46 @@ class PasswordTest extends UserTestCase
             yield [$this->faker->password($this->faker->randomElement([1, 2, 3, 4, 5, 6]), $this->faker->randomElement([16, 17, 18, 19, 20, 21]))];
         }
     }
+    
+    /**
+     * @group user
+     * @group password
+     */
+    public function testPasswordRulesPass()
+    {
+        $this->user->setPasswordHashRules([
+            [[$this->user->passwordHashAttribute], 'string', 'max' => $this->user->passwordHashAttributeLength + 1],
+        ]);
+        $this->user->setPassword();
+        $this->assertTrue($this->user->validate());
+    }
+    
+    /**
+     * @group user
+     * @group password
+     */
+    public function testPasswordRulesNotPass()
+    {
+        $this->user->setPasswordHashRules([
+            [[$this->user->passwordHashAttribute], 'string', 'max' => $this->user->passwordHashAttributeLength - 1],
+        ]);
+        $this->user->setPassword();
+        $this->assertFalse($this->user->validate());
+    }
+    
+    /**
+     * @group user
+     * @group password
+     */
+    public function testApplyforNewPassword()
+    {
+        $this->assertFalse($this->user->applyForNewPassword());
+        
+        $this->assertTrue($this->user->register());
+        $this->user->passwordResetTokenRules = null;
+        $this->assertTrue($this->user->applyForNewPassword());
+        
+        $this->user->passwordResetTokenAttribute = 'password_reset_token';
+        $this->assertTrue($this->user->applyForNewPassword());
+    }
 }

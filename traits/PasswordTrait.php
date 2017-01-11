@@ -187,7 +187,7 @@ trait PasswordTrait
      * Set new password.
      * @param string $password the new password to be set.
      */
-    public function setPassword($password)
+    public function setPassword($password = null)
     {
         if (empty($password)) {
             $password = $this->emptyPasswordSpecialty;
