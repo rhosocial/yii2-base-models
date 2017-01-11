@@ -14,6 +14,8 @@ namespace rhosocial\base\models\tests\entity;
 
 use rhosocial\base\models\tests\data\ar\Entity;
 use rhosocial\base\models\tests\data\ar\ExpiredEntity;
+use rhosocial\base\models\tests\data\ar\ExpiredCallbackEntity;
+
 /**
  * @author vistart <i@vistart.me>
  */
@@ -57,6 +59,24 @@ class TimestampTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testRemoveIfExpired($severalTimes)
+    {
+        $this->entity = new ExpiredEntity();
+        $this->entity->setExpiredAfter(1);
+        $this->assertTrue($this->entity->save());
+        sleep(2);
+        $entity = ExpiredCallbackEntity::findOne($this->entity->getGUID());
+        $this->assertTrue(is_array($entity->expiredRemovingCallback) && is_callable($entity->expiredRemovingCallback));
+        $this->assertEquals(0, $entity->delete());
+        
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
      */
     public function testEnabledFields()
     {
@@ -85,9 +105,42 @@ class TimestampTest extends EntityTestCase
      * @group entity
      * @group timestamp
      */
+    public function testCurrentDatetime()
+    {
+        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->currentDatetime());
+        
+        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->assertEquals(time(), $this->entity->currentDatetime());
+        
+        $this->entity = new Entity(['timeFormat' => -1]);
+        $this->assertNull($this->entity->currentDatetime());
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testOffsetDatetime()
+    {
+        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->assertEquals(date('Y-m-d H:i:s', strtotime("2 seconds")), $this->entity->offsetDatetime(date('Y-m-d H:i:s'), 2));
+        
+        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->assertEquals(time() + 2, $this->entity->offsetDatetime(null, 2));
+        
+        $this->entity = new Entity(['timeFormat' => -1]);
+        $this->assertNull($this->entity->offsetDatetime());
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
     public function testCreatedAtRules()
     {
         $this->entity = new Entity(['createdAtAttribute' => false]);
+        $this->assertNull($this->entity->getCreatedAt());
         $this->assertEmpty($this->entity->getCreatedAtRules());
         $this->assertTrue($this->entity->save());
     }
@@ -112,6 +165,7 @@ class TimestampTest extends EntityTestCase
     public function testUpdatedAtRules()
     {
         $this->entity = new Entity(['updatedAtAttribute' => false]);
+        $this->assertNull($this->entity->getUpdatedAt());
         $this->assertEmpty($this->entity->getUpdatedAtRules());
         $this->assertTrue($this->entity->save());
     }

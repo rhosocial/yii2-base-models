@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-10 15:07:44
+-- Generation Time: 2017-01-11 18:36:33
 -- 服务器版本： 8.0.0-dmr
 -- PHP Version: 7.1.0
 
@@ -21,6 +21,50 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `yii2-base-models` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `yii2-base-models`;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `entity`
+--
+-- 创建时间： 2017-01-11 08:44:51
+--
+
+DROP TABLE IF EXISTS `entity`;
+CREATE TABLE IF NOT EXISTS `entity` (
+  `guid` varbinary(16) NOT NULL,
+  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
+  `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `entity_id` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `entity_ai`
+--
+-- 创建时间： 2017-01-11 06:40:10
+--
+
+DROP TABLE IF EXISTS `entity_ai`;
+CREATE TABLE IF NOT EXISTS `entity_ai` (
+  `guid` varbinary(16) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
+  `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `entity_ai_id` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- --------------------------------------------------------
 
@@ -112,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
 --
 -- 表的结构 `user_email`
 --
--- 创建时间： 2017-01-07 07:51:51
+-- 创建时间： 2017-01-10 07:13:02
 --
 
 DROP TABLE IF EXISTS `user_email`;
@@ -120,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',

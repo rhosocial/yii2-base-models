@@ -14,6 +14,7 @@ namespace rhosocial\base\models\tests\entity;
 
 use rhosocial\base\models\tests\TestCase;
 use rhosocial\base\models\tests\data\ar\Entity;
+use rhosocial\base\models\tests\data\ar\ExpiredEntity;
 
 class EntityTestCase extends TestCase {
 
@@ -31,6 +32,9 @@ class EntityTestCase extends TestCase {
     protected function tearDown() {
         if ($this->entity instanceof Entity) {
             if ($entity = Entity::findOne($this->entity->getGUID())) {
+                $entity->delete();
+            }
+            if ($entity = ExpiredEntity::findOne($this->entity->getGUID())) {
                 $entity->delete();
             }
             $this->entity = null;
