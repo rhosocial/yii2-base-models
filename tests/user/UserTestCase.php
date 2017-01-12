@@ -31,12 +31,7 @@ class UserTestCase extends TestCase
     
     protected function tearDown()
     {
-        if ($this->user instanceof User) {
-            if ($user = User::findOne($this->user->getGUID())) {
-                $user->delete();
-            }
-            $this->user = null;
-        }
+        User::deleteAll();
         parent::tearDown();
     }
 }
