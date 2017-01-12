@@ -5,4 +5,4 @@ tools:
     external_code_coverage:
         timeout: 900
     php_sim: false
-php_cpd: false
+    php_cpd: false
