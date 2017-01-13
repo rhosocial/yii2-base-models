@@ -100,6 +100,41 @@ class PasswordTest extends UserTestCase
      * @group user
      * @group password
      */
+    public function testPasswordResetTokenRulesNotPass()
+    {
+        $rules = [
+            [[$this->user->passwordResetTokenAttribute], 'string', 'length' => 41],
+        ];
+        $this->user->setPasswordResetTokenRules($rules);
+        
+        $token = $this->user->setPasswordResetToken(sha1(\Yii::$app->security->generateRandomString()));
+        
+        $this->assertFalse($this->user->validate());
+    }
+    
+    /**
+     * @group user
+     * @group password
+     */
+    public function testPasswordResetTokenRulesPass()
+    {
+        $rules = [
+            [[$this->user->passwordResetTokenAttribute], 'string', 'max' => 41],
+        ];
+        $this->user->setPasswordResetTokenRules($rules);
+        if ($this->user->validate()) {
+            $this->assertTrue(true);
+        } else {
+            var_dump($this->user->getPasswordResetTokenRules());
+            var_dump($this->user->getErrors());
+        }
+        $this->assertTrue($this->user->save());
+    }
+    
+    /**
+     * @group user
+     * @group password
+     */
     public function testApplyforNewPassword()
     {
         $this->assertFalse($this->user->applyForNewPassword());
@@ -110,5 +145,16 @@ class PasswordTest extends UserTestCase
         
         $this->user->passwordResetTokenAttribute = 'password_reset_token';
         $this->assertTrue($this->user->applyForNewPassword());
+        
+        $token = $this->user->getPasswordResetToken();
+        $this->assertNotNull($token);
+        $this->assertFalse($this->user->resetPassword('', $token . '1'));
+        
+        $this->assertNotNull($this->user->getPasswordResetToken());
+        
+        $password = \Yii::$app->security->generateRandomString();
+        $this->assertTrue($this->user->resetPassword($password, $token));
+        
+        $this->assertTrue($this->user->validatePassword($password));
     }
 }

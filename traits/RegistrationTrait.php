@@ -123,14 +123,14 @@ trait RegistrationTrait
                         $role = $authManager->getRole($role);
                     }
                     if ($role instanceof Role) {
-                        $authManager->assign($role, $this->guid);
+                        $authManager->assign($role, $this->getGUID());
                     }
                 }
             }
             if (!empty($associatedModels) && is_array($associatedModels)) {
                 foreach ($associatedModels as $model) {
                     if (!$model->save()) {
-                        throw new IntegrityException('Registration Error(s) Occured.', $model->errors);
+                        throw new IntegrityException('Registration Error(s) Occured.', $model->getErrors());
                     }
                 }
             }

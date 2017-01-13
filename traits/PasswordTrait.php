@@ -17,16 +17,16 @@ use yii\base\ModelEvent;
 
 /**
  * User features concerning password.
- * 
+ *
  * Notice! Please DO NOT change password throughout modifying `pass_hash` property,
  * use `setPassword()` magic property instead!
- * 
+ *
  * Set or directly reset password:
  * ```php
  * $this->password = '<new password>'; // 'afterSetPassword' event will be triggered.
  * $this->save();
  * ```
- * 
+ *
  * @property-write string $password New password to be set.
  * @property array $passwordHashRules
  * @property array $passwordResetTokenRules
@@ -56,7 +56,7 @@ trait PasswordTrait
 
     /**
      * @var string The name of attribute used for storing password reset token.
-     * If you do not want to provide password reset feature, please set `false`. 
+     * If you do not want to provide password reset feature, please set `false`.
      */
     public $passwordResetTokenAttribute = 'password_reset_token';
 
@@ -75,7 +75,7 @@ trait PasswordTrait
     
     /**
      * Return the empty password specialty.
-     * NOTE: PLEASE SPECIFY YOUR OWN EMPTY PASSWORD SPECIALTY.
+     * NOTE: PLEASE OVERRIDE THIS METHOD TO SPECIFY YOUR OWN EMPTY PASSWORD SPECIALTY.
      * - The length of specialty should be greater than 18.
      * - Uppercase and lowercase letters, punctuation marks, numbers, and underscores are required.
      * @return string The string regarded as empty password.
@@ -202,7 +202,7 @@ trait PasswordTrait
     }
     
     /**
-     * 
+     * Set empty password.
      */
     public function setEmptyPassword()
     {
@@ -210,12 +210,14 @@ trait PasswordTrait
     }
     
     /**
-     * 
+     * Check whether password is empty.
      * @return boolean
      */
     public function getIsEmptyPassword()
     {
-        return (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) ? true : $this->validatePassword($this->getEmptyPasswordSpecialty());
+        return 
+        (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) ? 
+        true : $this->validatePassword($this->getEmptyPasswordSpecialty());
     }
 
     /**
@@ -251,8 +253,8 @@ trait PasswordTrait
     /**
      * Reset password with password reset token.
      * It will validate password reset token, before reseting password.
-     * @param string $password
-     * @param string $token
+     * @param string $password New password to be reset.
+     * @param string $token Password reset token.
      * @return boolean whether reset password successfully or not.
      */
     public function resetPassword($password, $token)
@@ -263,8 +265,7 @@ trait PasswordTrait
         $this->trigger(static::$eventBeforeResetPassword);
         $this->password = $password;
         if (is_string($this->passwordResetTokenAttribute)) {
-            $prtAttribute = $this->passwordResetTokenAttribute;
-            $this->$prtAttribute = '';
+            $this->setPasswordResetToken();
         }
         if (!$this->save()) {
             $this->trigger(static::$eventResetPasswordFailed);
@@ -305,8 +306,7 @@ trait PasswordTrait
         if (!is_string($this->passwordResetTokenAttribute)) {
             return true;
         }
-        $prtAttribute = $this->passwordResetTokenAttribute;
-        return $this->$prtAttribute === $token;
+        return $this->getPasswordResetToken() === $token;
     }
 
     /**
@@ -319,7 +319,25 @@ trait PasswordTrait
         if (!is_string($sender->passwordResetTokenAttribute)) {
             return;
         }
-        $prtAttribute = $sender->passwordResetTokenAttribute;
-        $sender->$prtAttribute = '';
+        $this->setPasswordResetToken();
+    }
+    
+    /**
+     * Set password reset token.
+     * @param string $token
+     * @return string
+     */
+    public function setPasswordResetToken($token = '')
+    {
+        return $this->{$this->passwordResetTokenAttribute} = $token;
+    }
+    
+    /**
+     * Get password reset token.
+     * @return string
+     */
+    public function getPasswordResetToken()
+    {
+        return $this->{$this->passwordResetTokenAttribute};
     }
 }

@@ -40,4 +40,18 @@ class EntityTest extends EntityTestCase
             $this->assertTrue(true);
         }
     }
+    
+    /**
+     * @group entity
+     */
+    public function testSelfFields()
+    {
+        $unsetArray = $this->entity->unsetSelfFields();
+        if (empty($unsetArray)) {
+            $this->fail();
+        } else {
+            $this->assertArrayHasKey('content', $unsetArray);
+            $this->assertArrayHasKey('expired_after', $unsetArray);
+        }
+    }
 }

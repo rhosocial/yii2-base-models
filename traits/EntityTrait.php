@@ -285,7 +285,7 @@ trait EntityTrait
         if (is_string($this->idAttribute) && !empty($this->idAttribute)) {
             return $this->getId();
         }
-        return null;
+        return parent::__toString();
     }
     
     /**
