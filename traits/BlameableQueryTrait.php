@@ -12,7 +12,7 @@
 
 namespace rhosocial\base\models\traits;
 
-use rhosocial\base\models\BaseUserModel;
+use rhosocial\base\models\models\BaseUserModel;
 use Yii;
 
 /**

@@ -159,6 +159,21 @@ class PostTest extends BlameableTestCase
     /**
      * @group blameable
      */
+    public function testFindByCreator()
+    {
+        $results = UserPost::find()->createdBy($this->user)->all();
+        $this->assertCount(0, $results);
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $results = UserPost::find()->createdBy($this->user)->all();
+        $this->assertCount(1, $results);
+        $this->assertTrue($this->user->deregister());
+        $results = UserPost::find()->createdBy($this->user)->all();
+        $this->assertCount(0, $results);
+    }
+    
+    /**
+     * @group blameable
+     */
     public function testFindByUpdater()
     {
         $results = UserPost::find()->updatedBy($this->user)->all();
