@@ -18,7 +18,7 @@ use yii\db\AfterSaveEvent;
 /**
  * This trait should be used in models extended from models used BlameableTrait.
  * Notice: The models used [[BlameableTrait]] are also models used [[EntityTrait]].
- * 
+ *
  * @property-read array $messageRules
  * @property mixed $readAt
  * @property mixed $receivedAt
@@ -106,7 +106,7 @@ trait MessageTrait
     }
     
     /**
-     * 
+     *
      * @param ModelEvent $event
      */
     public function onInitReceivedAtAttribute($event)
@@ -117,7 +117,7 @@ trait MessageTrait
     }
     
     /**
-     * 
+     *
      * @param ModelEvent $event
      */
     public function onInitReadAtAttribute($event)
@@ -195,7 +195,7 @@ trait MessageTrait
     }
     
     /**
-     * 
+     *
      * @param AfterSaveEvent $event
      */
     public function onMessageUpdated($event)
@@ -213,7 +213,7 @@ trait MessageTrait
     }
     
     /**
-     * 
+     *
      */
     public function initMessageEvents()
     {

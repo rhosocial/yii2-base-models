@@ -30,7 +30,7 @@ use yii\db\IntegrityException;
  *     parent::init();
  * }
  * ```
- * 
+ *
  * @property static $parent
  * @property-read static[] $ancestors
  * @property-read string[] $ancestorChain
@@ -349,7 +349,7 @@ trait SelfBlameableTrait
      * Get ancestor chain. (Ancestors' GUID Only!)
      * If this model has ancestor, the return array consists all the ancestor in order.
      * The first element is parent, and the last element is root, otherwise return empty array.
-     * If you want to get ancestor model, you can simplify instance a query and specify the 
+     * If you want to get ancestor model, you can simplify instance a query and specify the
      * condition with the return value. But it will not return models under the order of ancestor chain.
      * @param string[] $ancestor
      * @return string[]

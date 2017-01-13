@@ -316,7 +316,7 @@ trait TimestampTrait
     }
     
     /**
-     * 
+     *
      * @return array
      */
     public function enabledTimestampFields()

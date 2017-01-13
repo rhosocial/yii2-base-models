@@ -44,7 +44,7 @@ trait EntityTrait
     public static $cacheTagEntityBehaviors = 'tag_entity_behaviors';
     
     /**
-     * @var string cache component id. 
+     * @var string cache component id.
      */
     public $cacheId = 'cache';
     
@@ -76,14 +76,14 @@ trait EntityTrait
      *     ['guid', 'required'],
      *     ['guid', 'unique'],
      *     ['guid', 'string', 'max' => 36],
-     * 
+     *
      *     ['id', 'required'],
      *     ['id', 'unique'],
      *     ['id', 'string', 'max' => 4],
-     * 
+     *
      *     ['created_at', 'safe'],
      *     ['updated_at', 'safe'],
-     * 
+     *
      *     ['ip_type', 'in', 'range' => [4, 6]],
      *     ['ip', 'number', 'integerOnly' => true, 'min' => 0],
      * ]

@@ -67,7 +67,7 @@ trait UserTrait
      * Find existed, or create new model.
      * If model to be found doesn't exist, and $config is null, the parameter
      * `$condition` will be regarded as properties of new model.
-     * If you want to know whether the returned model is new model, please check 
+     * If you want to know whether the returned model is new model, please check
      * the return value of `getIsNewRecord()` method.
      * @param string $className Full qualified class name.
      * @param array $condition Search condition, or properties if not found and
@@ -124,7 +124,7 @@ trait UserTrait
      * @var string[] Subsidiary map.
      * Array key represents class alias,
      * array value represents the full qualified class name corresponds to the alias.
-     * 
+     *
      * For example:
      * ```php
      * public $subsidiaryMap = [
@@ -139,14 +139,14 @@ trait UserTrait
      *         'max' => 1,
      *     ]
      * ];
-     * 
+     *
      * If you want to create subsidiary model and the class is not found, the array elements will be taken.
      * @see normalizeSubsidiaryClass
      */
     public $subsidiaryMap = [];
     
     /**
-     * 
+     *
      * @param string $class
      * @return integer|null
      */
@@ -159,7 +159,7 @@ trait UserTrait
     }
     
     /**
-     * 
+     *
      * @param type $class
      * @param type $config
      * @return type
@@ -173,12 +173,10 @@ trait UserTrait
         $className = '';
         if (class_exists($class)) {
             $className = $class;
-        } else
-        if (array_key_exists($class, $this->subsidiaryMap)) {
+        } elseif (array_key_exists($class, $this->subsidiaryMap)) {
             if (class_exists($this->subsidiaryMap[$class])) {
                 $className = $this->subsidiaryMap[$class];
-            } else
-            if (class_exists($this->subsidiaryMap[$class]['class'])) {
+            } elseif (class_exists($this->subsidiaryMap[$class]['class'])) {
                 $className = $this->subsidiaryMap[$class]['class'];
             }
         } else {
@@ -188,7 +186,7 @@ trait UserTrait
     }
     
     /**
-     * 
+     *
      * @param string $name
      * @param array $params
      * @return type

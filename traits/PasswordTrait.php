@@ -66,20 +66,24 @@ trait PasswordTrait
     public $passwordCost = 13;
 
     /**
-     * @var string The string regarded as empty password.
-     * NOTE: PLEASE SPECIFY YOUR OWN EMPTY PASSWORD SPECIALTY.
-     * - The length of specialty should be greater than 18.
-     * - Uppercase and lowercase letters, punctuation marks, numbers, and underscores are required.
-     */
-    public $emptyPasswordSpecialty = 'Rrvl-7}cXt_<iAx[5s';
-
-    /**
      * @var integer if $passwordHashStrategy equals 'crypt', this value statically
      * equals 60.
      */
     public $passwordHashAttributeLength = 60;
     private $passwordHashRules = [];
     private $passwordResetTokenRules = [];
+    
+    /**
+     * Return the empty password specialty.
+     * NOTE: PLEASE SPECIFY YOUR OWN EMPTY PASSWORD SPECIALTY.
+     * - The length of specialty should be greater than 18.
+     * - Uppercase and lowercase letters, punctuation marks, numbers, and underscores are required.
+     * @return string The string regarded as empty password.
+     */
+    protected function getEmptyPasswordSpecialty()
+    {
+        return 'Rrvl-7}cXt_<iAx[5s';
+    }
 
     /**
      * Get rules of password hash.
@@ -190,10 +194,10 @@ trait PasswordTrait
     public function setPassword($password = null)
     {
         if (empty($password)) {
-            $password = $this->emptyPasswordSpecialty;
+            $password = $this->getEmptyPasswordSpecialty();
         }
         $phAttribute = $this->passwordHashAttribute;
-        $this->$phAttribute = Yii::$app->security->generatePasswordHash($password);
+        $this->$phAttribute = $this->generatePasswordHash($password);
         $this->trigger(static::$eventAfterSetPassword);
     }
     
@@ -202,7 +206,7 @@ trait PasswordTrait
      */
     public function setEmptyPassword()
     {
-        $this->password = $this->emptyPasswordSpecialty;
+        $this->password = $this->getEmptyPasswordSpecialty();
     }
     
     /**
@@ -211,7 +215,7 @@ trait PasswordTrait
      */
     public function getIsEmptyPassword()
     {
-        return (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) ? true : $this->validatePassword($this->emptyPasswordSpecialty);
+        return (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) ? true : $this->validatePassword($this->getEmptyPasswordSpecialty());
     }
 
     /**

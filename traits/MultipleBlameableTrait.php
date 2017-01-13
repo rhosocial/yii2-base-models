@@ -150,7 +150,7 @@ trait MultipleBlameableTrait
      * Add specified blame, or create it before adding if doesn't exist.
      * But you should save the blame instance before adding, or the operation
      * will fail.
-     * @param {$this->multiBlamesClass}|string|array $blame 
+     * @param {$this->multiBlamesClass}|string|array $blame
      * It will be regarded as blame's guid if it is a string. And assign the
      * reference parameter $blame the instance if it existed, or create one if not
      * found.

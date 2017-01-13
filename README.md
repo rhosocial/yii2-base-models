@@ -7,6 +7,8 @@ The Base Models for Yii 2 Applications
 [![Reference Status](https://www.versioneye.com/php/rhosocial:yii2-base-models/reference_badge.svg)](https://www.versioneye.com/php/rhosocial:yii2-base-models/references)
 [![Build Status](https://img.shields.io/travis/rhosocial/yii2-base-models.svg)](http://travis-ci.org/rhosocial/yii2-base-models)
 [![Dependency Status](https://www.versioneye.com/php/rhosocial:yii2-base-models/dev-master/badge.png)](https://www.versioneye.com/php/rhosocial:yii2-base-models/dev-master)
+[![Code Coverage](https://scrutinizer-ci.com/g/rhosocial/yii2-base-models/badges/coverage.png)](https://scrutinizer-ci.com/g/rhosocial/yii2-base-models/)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/rhosocial/yii2-base-models/badges/quality-score.png)](https://scrutinizer-ci.com/g/rhosocial/yii2-base-models/)
 [![Code Climate](https://img.shields.io/codeclimate/github/rhosocial/yii2-base-models.svg)](https://codeclimate.com/github/rhosocial/yii2-base-models)
 
 Installation

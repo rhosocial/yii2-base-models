@@ -150,18 +150,16 @@ trait BlameableTrait
      *     ['guid', 'required'],
      *     ['guid', 'unique'],
      *     ['guid', 'string', 'max' => 36],
-     * 
+     *
      *     ['id', 'required'],
      *     ['id', 'unique'],
      *     ['id', 'string', 'max' => 4],
-     * 
+     *
      *     ['created_at', 'safe'],
      *     ['updated_at', 'safe'],
-     * 
+     *
      *     ['ip_type', 'in', 'range' => [4, 6]],
      *     ['ip', 'number', 'integerOnly' => true, 'min' => 0],
-     * 
-     * 
      * ]
      * @return array
      */
@@ -508,7 +506,7 @@ trait BlameableTrait
     }
     
     /**
-     * 
+     *
      * @param BaseUserModel|string $user
      * @return boolean
      */
@@ -544,7 +542,7 @@ trait BlameableTrait
     }
     
     /**
-     * 
+     *
      * @param BaseUserModel|string $user
      * @return boolean
      */

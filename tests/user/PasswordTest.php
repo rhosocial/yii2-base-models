@@ -41,6 +41,20 @@ class PasswordTest extends UserTestCase
      * @group user
      * @group password
      */
+    public function testValidatePassword()
+    {
+        $password = \Yii::$app->security->generateRandomString();
+        $this->user->password = $password;
+        $this->assertTrue($this->user->validatePassword($password));
+        
+        $this->user->password = $password . '1';
+        $this->assertFalse($this->user->validatePassword($password));
+    }
+    
+    /**
+     * @group user
+     * @group password
+     */
     public function testEmptyPassword()
     {
         $this->user->setEmptyPassword();

@@ -18,7 +18,7 @@ use yii\base\ModelEvent;
 use yii\web\Request;
 
 /**
- * 
+ *
  * @property string|null $ipAddress
  * @property integer $ipType
  * @proeperty array $ipRules
@@ -29,7 +29,7 @@ trait IPTrait
 {
     /**
      * @var integer REQUIRED. Determine whether the IP attributes if enabled.
-     * All the parameters accepted are listed below. 
+     * All the parameters accepted are listed below.
      */
     public $enableIP = 0x3;
     public static $noIP = 0x0;
@@ -94,7 +94,7 @@ trait IPTrait
     }
     
     /**
-     * 
+     *
      * @param string $ipAddress IPv4 address.
      * @return string
      */
@@ -104,7 +104,7 @@ trait IPTrait
     }
     
     /**
-     * 
+     *
      * @param string $ipAddress IPv6 address.
      * @return string
      */
@@ -114,7 +114,7 @@ trait IPTrait
     }
     
     /**
-     * 
+     *
      * @return string
      */
     public function getIPAddress()
@@ -124,11 +124,9 @@ trait IPTrait
         }
         if ($this->enableIP == static::$ipv4) {
             return $this->getIPv4Address();
-        } else
-        if ($this->enableIP == static::$ipv6) {
+        } elseif ($this->enableIP == static::$ipv6) {
             return $this->getIPv6Address();
-        } else
-        if ($this->enableIP == static::$ipAll) {
+        } elseif ($this->enableIP == static::$ipAll) {
             if ($this->{$this->ipTypeAttribute} == IP::IPv4) {
                 return $this->getIPv4Address();
             }
@@ -154,8 +152,7 @@ trait IPTrait
         $ipType = IP::judgeIPtype($ipAddress);
         if ($ipType == IP::IPv4 && $this->enableIP & static::$ipv4) {
             $this->setIPv4Address($ipAddress);
-        } else
-        if ($ipType == Ip::IPv6 && $this->enableIP & static::$ipv6) {
+        } elseif ($ipType == Ip::IPv6 && $this->enableIP & static::$ipv6) {
             $this->setIPv6Address($ipAddress);
         } else {
             return 0;
