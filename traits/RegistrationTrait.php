@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2017 vistart
  * @license https://vistart.me/license/
  */
 
@@ -112,7 +112,7 @@ trait RegistrationTrait
         $transaction = $this->getDb()->beginTransaction();
         try {
             if (!$this->save()) {
-                throw new IntegrityException('Registration Error(s) Occured.', $this->getErrors());
+                throw new IntegrityException('Registration Error(s) Occured: User Save Failed.', $this->getErrors());
             }
             if ($authManager = $this->getAuthManager() && !empty($authRoles)) {
                 if (is_string($authRoles) || $authRoles instanceof Role || !is_array($authRoles)) {
@@ -130,7 +130,7 @@ trait RegistrationTrait
             if (!empty($associatedModels) && is_array($associatedModels)) {
                 foreach ($associatedModels as $model) {
                     if (!$model->save()) {
-                        throw new IntegrityException('Registration Error(s) Occured.', $model->getErrors());
+                        throw new IntegrityException('Registration Error(s) Occured: Associated Models Save Failed.', $model->getErrors());
                     }
                 }
             }

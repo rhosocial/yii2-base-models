@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-11 18:36:33
+-- Generation Time: 2017-01-14 00:05:19
 -- 服务器版本： 8.0.0-dmr
 -- PHP Version: 7.1.0
 
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `entity` (
 --
 -- 表的结构 `entity_ai`
 --
--- 创建时间： 2017-01-11 06:40:10
+-- 创建时间： 2017-01-11 10:39:37
 --
 
 DROP TABLE IF EXISTS `entity_ai`;
@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS `entity_ai` (
   PRIMARY KEY (`guid`),
   UNIQUE KEY `entity_ai_id` (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- --------------------------------------------------------
 
@@ -129,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
 --
 -- 表的结构 `user_comment`
 --
--- 创建时间： 2017-01-07 07:39:45
+-- 创建时间： 2017-01-13 16:03:35
 --
 
 DROP TABLE IF EXISTS `user_comment`;
@@ -138,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `parent_guid` varbinary(16) NOT NULL DEFAULT '',
   `user_guid` varbinary(16) NOT NULL,
+  `post_guid` varbinary(16) NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -148,7 +148,8 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   `confirm_code` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_comment_id_unique` (`id`,`user_guid`) USING BTREE,
-  KEY `user_guid` (`user_guid`)
+  KEY `user_guid` (`user_guid`),
+  KEY `post_guid` (`post_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -192,6 +193,29 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
   `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `meta__key_unique` (`user_guid`,`key`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `user_post`
+--
+-- 创建时间： 2017-01-13 15:58:47
+--
+
+DROP TABLE IF EXISTS `user_post`;
+CREATE TABLE IF NOT EXISTS `user_post` (
+  `guid` varbinary(16) NOT NULL,
+  `user_guid` varbinary(16) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
+  `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `post_id_unique` (`id`) USING BTREE,
+  KEY `user_post_guid_fkey` (`user_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -285,7 +309,8 @@ ALTER TABLE `user_additional_account`
 -- 限制表 `user_comment`
 --
 ALTER TABLE `user_comment`
-  ADD CONSTRAINT `user_comment_ibfk_1` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `user_comment_ibfk_1` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_comment_ibfk_2` FOREIGN KEY (`post_guid`) REFERENCES `user_post` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 限制表 `user_email`
@@ -298,6 +323,12 @@ ALTER TABLE `user_email`
 --
 ALTER TABLE `user_meta`
   ADD CONSTRAINT `user_meta_fkey` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- 限制表 `user_post`
+--
+ALTER TABLE `user_post`
+  ADD CONSTRAINT `user_post_guid_fkey` FOREIGN KEY (`user_guid`) REFERENCES `user` (`guid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 限制表 `user_relation`

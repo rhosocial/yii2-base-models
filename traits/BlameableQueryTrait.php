@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2017 vistart
  * @license https://vistart.me/license/
  */
 
@@ -89,7 +89,7 @@ trait BlameableQueryTrait
             return $this;
         }
         if ($guid instanceof BaseUserModel) {
-            $guid = $guid->guid;
+            $guid = $guid->getGUID();
         }
         return $this->andWhere([$model->createdByAttribute => $guid]);
     }
@@ -106,7 +106,7 @@ trait BlameableQueryTrait
             return $this;
         }
         if ($guid instanceof BaseUserModel) {
-            $guid = $guid->guid;
+            $guid = $guid->getGUID();
         }
         return $this->andWhere([$model->updatedByAttribute => $guid]);
     }
@@ -124,6 +124,6 @@ trait BlameableQueryTrait
         if (!$identity || !$identity->canGetProperty('guid')) {
             return $this;
         }
-        return $this->createdBy($identity->guid);
+        return $this->createdBy($identity->getGUID());
     }
 }

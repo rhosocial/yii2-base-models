@@ -17,12 +17,12 @@ use rhosocial\base\models\tests\data\ar\RedisEntity;
 
 class RedisEntityTestCase extends EntityTestCase
 {
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->entity = new RedisEntity();
     }
     
-    public function tearDown() {
+    protected function tearDown() {
         RedisEntity::deleteAll();
         parent::tearDown();
     }

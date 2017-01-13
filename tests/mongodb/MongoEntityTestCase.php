@@ -17,12 +17,12 @@ use rhosocial\base\models\tests\MongoTestCase;
 
 class MongoEntityTestCase extends MongoTestCase
 {
-    public function setUp() {
+    protected function setUp() {
         parent::setUp();
         $this->entity = new MongoEntity();
     }
     
-    public function tearDown()
+    protected function tearDown()
     {
         MongoEntity::deleteAll();
         parent::tearDown();

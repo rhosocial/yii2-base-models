@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2017 vistart
  * @license https://vistart.me/license/
  */
 
@@ -250,7 +250,7 @@ trait BlameableTrait
         if (!$createdAtAttribute || !$updatedAtAttribute) {
             return false;
         }
-        return $this->$createdAtAttribute === $this->$updatedAtAttribute;
+        return $this->$createdAtAttribute !== $this->$updatedAtAttribute;
     }
 
     /**
@@ -662,7 +662,8 @@ trait BlameableTrait
         if (is_string($this->createdByAttribute) && !empty($this->createdByAttribute)) {
             $fields[] = $this->createdByAttribute;
         }
-        if (is_string($this->updatedByAttribute) && !empty($this->updatedByAttribute) && $this->createdByAttribute != $this->updatedByAttribute) {
+        if (is_string($this->updatedByAttribute) && !empty($this->updatedByAttribute) &&
+            $this->createdByAttribute != $this->updatedByAttribute) {
             $fields[] = $this->updatedByAttribute;
         }
         if (is_string($this->contentAttribute)) {
@@ -731,7 +732,7 @@ trait BlameableTrait
      */
     public static function countByIdentity($identity = null)
     {
-        return static::findByIdentity($identity)->count();
+        return (int)(static::findByIdentity($identity)->count());
     }
 
     /**
