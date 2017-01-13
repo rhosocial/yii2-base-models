@@ -155,4 +155,40 @@ class PostTest extends BlameableTestCase
         $this->assertEquals(1, UserPost::countByIdentity($this->user));
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group blameable
+     */
+    public function testFindByUpdater()
+    {
+        $results = UserPost::find()->updatedBy($this->user)->all();
+        $this->assertCount(0, $results);
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $results = UserPost::find()->updatedBy($this->user)->all();
+        $this->assertCount(1, $results);
+        $this->assertTrue($this->user->deregister());
+        $results = UserPost::find()->updatedBy($this->user)->all();
+        $this->assertCount(0, $results);
+    }
+
+    /**
+     * @group blameable
+     */
+    public function testFindByContent()
+    {
+        $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent())->all();
+        $this->assertCount(0, $results);
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent())->all();
+        $this->assertCount(1, $results);
+        $results = UserPost::find()->updatedBy($this->user)->content(substr($this->post->getContent(), 0, 1))->all();
+        $this->assertCount(0, $results);
+        $results = UserPost::find()->updatedBy($this->user)->content(substr($this->post->getContent(), 0, 1), 'like')->all();
+        $this->assertCount(1, $results);
+        $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent() . '1')->all();
+        $this->assertCount(0, $results);
+        $this->assertTrue($this->user->deregister());
+        $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent())->all();
+        $this->assertCount(0, $results);
+    }
 }
