@@ -10,7 +10,9 @@
  */
 
 namespace rhosocial\base\models\tests\data\ar;
+
 use Yii;
+use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
 
 /**
  * Description of ActiveRecord

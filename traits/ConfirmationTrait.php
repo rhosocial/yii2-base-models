@@ -79,13 +79,11 @@ trait ConfirmationTrait
      */
     public function applyConfirmation()
     {
-        if (!$this->confirmCodeAttribute) {
+        if (!$this->confirmCodeAttribute || empty($this->confirmCodeAttribute)) {
             throw new \yii\base\NotSupportedException('This method is not implemented.');
         }
-        $this->confirmCode = $this->generateConfirmationCode();
-        if (!$this->save()) {
-            return false;
-        }
+        $this->setConfirmCode($this->generateConfirmationCode());
+        return $this->save();
     }
 
     /**
@@ -94,7 +92,7 @@ trait ConfirmationTrait
      */
     public function setConfirmCode($code)
     {
-        if (!$this->confirmCodeAttribute) {
+        if (!$this->confirmCodeAttribute || empty($this->confirmCodeAttribute)) {
             return;
         }
         $confirmCodeAttribute = $this->confirmCodeAttribute;
@@ -117,7 +115,7 @@ trait ConfirmationTrait
     public function getConfirmCode()
     {
         $confirmCodeAttribute = $this->confirmCodeAttribute;
-        return is_string($confirmCodeAttribute) ? $this->$confirmCodeAttribute : null;
+        return (is_string($confirmCodeAttribute) && !empty($confirmCodeAttribute)) ? $this->$confirmCodeAttribute : null;
     }
 
     /**
@@ -130,7 +128,7 @@ trait ConfirmationTrait
         if (!$this->confirmationAttribute || !$this->validateConfirmationCode($code)) {
             return false;
         }
-        $this->confirmation = self::$confirmTrue;
+        $this->confirmation = static::$confirmTrue;
         return $this->save();
     }
 
@@ -140,7 +138,7 @@ trait ConfirmationTrait
      */
     public function generateConfirmationCode()
     {
-        return substr(sha1(Yii::$app->security->generateRandomString()), 0, 8);
+        return substr(sha1(Yii::$app->security->generateRandomString()), 0, 17);
     }
 
     /**
@@ -151,7 +149,7 @@ trait ConfirmationTrait
     public function validateConfirmationCode($code)
     {
         $ccAttribute = $this->confirmCodeAttribute;
-        if (!$ccAttribute) {
+        if (!$ccAttribute || empty($ccAttribute)) {
             return true;
         }
         return $this->$ccAttribute === $code;
@@ -164,7 +162,7 @@ trait ConfirmationTrait
     public function getIsConfirmed()
     {
         $cAttribute = $this->confirmationAttribute;
-        return is_string($cAttribute) ? $this->$cAttribute > static::$confirmFalse : true;
+        return (is_string($cAttribute) && !empty($cAttribute)) ? $this->$cAttribute > static::$confirmFalse : true;
     }
 
     /**
@@ -176,10 +174,11 @@ trait ConfirmationTrait
     public function onInitConfirmation($event)
     {
         $sender = $event->sender;
-        if (!$sender->confirmationAttribute) {
+        /* @var $sender static */
+        if (!$sender->confirmationAttribute || empty($sender->confirmationAttribute)) {
             return;
         }
-        $sender->confirmation = self::$confirmFalse;
+        $sender->confirmation = static::$confirmFalse;
         $sender->confirmCode = '';
     }
 
@@ -190,11 +189,11 @@ trait ConfirmationTrait
     public function setConfirmation($value)
     {
         $cAttribute = $this->confirmationAttribute;
-        if (!$cAttribute) {
+        if (!$cAttribute || empty($cAttribute)) {
             return;
         }
         $this->$cAttribute = $value;
-        $this->trigger(self::$eventConfirmationChanged);
+        $this->trigger(static::$eventConfirmationChanged);
     }
 
     /**
@@ -204,7 +203,7 @@ trait ConfirmationTrait
     public function getConfirmation()
     {
         $cAttribute = $this->confirmationAttribute;
-        return is_string($cAttribute) ? $this->$cAttribute : null;
+        return (is_string($cAttribute) && !empty($cAttribute)) ? $this->$cAttribute : null;
     }
 
     /**
@@ -219,16 +218,16 @@ trait ConfirmationTrait
     {
         $sender = $event->sender;
         $cAttribute = $sender->confirmationAttribute;
-        if (!$cAttribute) {
+        if (!$cAttribute || empty($cAttribute)) {
             return;
         }
         if ($sender->isAttributeChanged($cAttribute)) {
             $sender->confirmCode = '';
-            if ($sender->$cAttribute == self::$confirmFalse) {
-                $sender->trigger(self::$eventConfirmationCanceled);
+            if ($sender->$cAttribute == static::$confirmFalse) {
+                $sender->trigger(static::$eventConfirmationCanceled);
                 return;
             }
-            $sender->trigger(self::$eventConfirmationSuceeded);
+            $sender->trigger(static::$eventConfirmationSuceeded);
             $sender->resetOthersConfirmation();
         }
     }
@@ -255,18 +254,18 @@ trait ConfirmationTrait
     protected function resetConfirmation()
     {
         $contentAttribute = $this->contentAttribute;
-        if (!$contentAttribute) {
+        if (!$contentAttribute || empty($contentAttribute)) {
             return;
         }
         if (is_array($contentAttribute)) {
             foreach ($contentAttribute as $attribute) {
                 if ($this->isAttributeChanged($attribute)) {
-                    $this->confirmation = self::$confirmFalse;
+                    $this->confirmation = static::$confirmFalse;
                     break;
                 }
             }
         } elseif ($this->isAttributeChanged($contentAttribute)) {
-            $this->confirmation = self::$confirmFalse;
+            $this->confirmation = static::$confirmFalse;
         }
     }
 
@@ -278,12 +277,12 @@ trait ConfirmationTrait
         if (!$this->confirmationAttribute || empty($this->userClass)) {
             return;
         }
-        $contents = self::find()
-            ->where([$this->contentAttribute => $this->content])
-            ->andWhere(['not', $this->createdByAttribute, $this->creator])
+        $contents = static::find()
+            ->where([$this->contentAttribute => $this->getContent()])
+            ->andWhere(['not like', $this->createdByAttribute, $this->user->getGUID()])
             ->all();
         foreach ($contents as $content) {
-            $content->confirmation = self::$confirmFalse;
+            $content->confirmation = static::$confirmFalse;
             $content->save();
         }
     }

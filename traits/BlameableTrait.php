@@ -572,7 +572,8 @@ trait BlameableTrait
     public function onContentChanged($event)
     {
         $sender = $event->sender;
-        $sender->resetConfirmation();
+        /* @var $sender static */
+        return $sender->resetConfirmation();
     }
 
     /**

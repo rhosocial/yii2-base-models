@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-14 00:05:19
+-- Generation Time: 2017-01-14 16:14:59
 -- 服务器版本： 8.0.0-dmr
 -- PHP Version: 7.1.0
 
@@ -128,13 +128,13 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
 --
 -- 表的结构 `user_comment`
 --
--- 创建时间： 2017-01-13 16:03:35
+-- 创建时间： 2017-01-13 16:21:43
 --
 
 DROP TABLE IF EXISTS `user_comment`;
 CREATE TABLE IF NOT EXISTS `user_comment` (
   `guid` varbinary(16) NOT NULL,
-  `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `parent_guid` varbinary(16) NOT NULL DEFAULT '',
   `user_guid` varbinary(16) NOT NULL,
   `post_guid` varbinary(16) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
 --
 -- 表的结构 `user_email`
 --
--- 创建时间： 2017-01-10 07:13:02
+-- 创建时间： 2017-01-14 07:44:00
 --
 
 DROP TABLE IF EXISTS `user_email`;
@@ -171,7 +171,8 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `confirmed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `confirmed_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `confirm_code` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `confirm_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_email_id_unique` (`user_guid`,`id`) USING BTREE,
   KEY `user_email_normal` (`email`) USING BTREE
