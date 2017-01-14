@@ -17,6 +17,11 @@ use rhosocial\base\models\tests\data\ar\RedisEntity;
 
 class RedisEntityTestCase extends EntityTestCase
 {
+    /**
+     * @var RedisEntity;
+     */
+    protected $entity = null;
+    
     protected function setUp() {
         parent::setUp();
         $this->entity = new RedisEntity();

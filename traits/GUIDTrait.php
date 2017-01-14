@@ -78,7 +78,7 @@ trait GUIDTrait
      */
     public static function checkGuidExists($guid)
     {
-        return (self::findOne($guid) !== null);
+        return static::findOne($guid) !== null;
     }
     
     /**

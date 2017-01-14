@@ -24,9 +24,9 @@ class RedisBlameableTestCase extends UserTestCase
      *
      * @var RedisBlameable
      */
-    public $blameable = null;
+    protected $blameable = null;
     
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->blameable = $this->user->create(RedisBlameable::class, ['content' => \Yii::$app->security->generateRandomString()]);

@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\models;
 
+use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectID;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\helpers\IP;
@@ -37,25 +38,50 @@ abstract class BaseMongoEntityModel extends ActiveRecord
         if (is_string($this->guidAttribute) || !empty($this->guidAttribute)) {
             $rules = [
                 [[$this->guidAttribute], 'required',],
-                [[$this->guidAttribute], 'unique',],
             ];
         }
         return $rules;
     }
-
-    /**
-     * Generate GUID in binary.
-     * @return string GUID.
-     */
-    public static function generateGuid()
+    
+    public function getGUID()
     {
-        return Number::guid();
+        $guidAttribute = $this->guidAttribute;
+        return (!is_string($guidAttribute) || empty($guidAttribute)) ? null : $this->$guidAttribute->getData();
     }
     
     public function setGUID($guid)
     {
         $guidAttribute = $this->guidAttribute;
-        return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
+        if (!is_string($guidAttribute) || empty($guidAttribute)) {
+            return null;
+        }
+        if (preg_match(Number::GUID_REGEX, $guid)) {
+            $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
+        }
+        return $this->$guidAttribute = new Binary($guid, Binary::TYPE_UUID);
+    }
+    
+    /**
+     * Check if the $guid existed in current database table.
+     * @param string|Binary $guid the GUID to be checked.
+     * @return boolean Whether the $guid exists or not.
+     */
+    public static function checkGuidExists($guid)
+    {
+        if (is_string($guid)) {
+            if (strlen($guid) == 16) {
+                $binary = new Binary($guid, Binary::TYPE_UUID);
+            } elseif (preg_match(Number::GUID_REGEX, $guid)) {
+                $binary = new Binary(Number::guid_bin($guid), Binary::TYPE_UUID);
+            } else {
+                return false;
+            }
+            return static::findOne($binary) !== null;
+        }
+        if ($guid instanceof Binary) {
+            return static::findOne($guid) !== null;
+        }
+        return false;
     }
     
     /**

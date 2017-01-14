@@ -29,6 +29,10 @@ class MongoEntity extends BaseMongoEntityModel
         return ['yii2-base-models', 'entity'];
     }
     
+    public static function primaryKey() {
+        return [static::buildNoInitModel()->guidAttribute];
+    }
+    
     /**
      * 
      * @return BaseMongoEntityQuery

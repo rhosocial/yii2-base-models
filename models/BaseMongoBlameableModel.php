@@ -82,7 +82,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $userClass = $this->userClass;
         $user = $userClass::buildNoInitModel();
         /* @var BaseUserModel $user */
-        return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->createdByAttribute]);
+        return $this->hasOne($userClass::className(), [$user->guidAttribute => $this->createdByAttribute]);
     }
     
     /**
@@ -118,7 +118,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $userClass = $this->userClass;
         $user = $userClass::buildNoInitModel();
         /* @var $user BaseUserModel */
-        return $this->hasOne($userClass::className(), [$user->readableGuidAttribute => $this->updatedByAttribute]);
+        return $this->hasOne($userClass::className(), [$user->guidAttribute => $this->updatedByAttribute]);
     }
     
     /**

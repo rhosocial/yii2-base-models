@@ -17,6 +17,12 @@ use rhosocial\base\models\tests\MongoTestCase;
 
 class MongoEntityTestCase extends MongoTestCase
 {
+    /**
+     *
+     * @var MongoEntity
+     */
+    protected $entity = null;
+    
     protected function setUp() {
         parent::setUp();
         $this->entity = new MongoEntity();

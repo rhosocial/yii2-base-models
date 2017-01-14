@@ -121,7 +121,7 @@ trait BlameableQueryTrait
         if (!$identity) {
             $identity = Yii::$app->user->identity;
         }
-        if (!$identity || !$identity->canGetProperty('guid')) {
+        if (!$identity || (method_exists($identity, 'canGetProperty') && !$identity->canGetProperty('guid'))) {
             return $this;
         }
         return $this->createdBy($identity->getGUID());

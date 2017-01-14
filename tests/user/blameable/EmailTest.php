@@ -116,4 +116,17 @@ class EmailTest extends BlameableTestCase
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group blameable
+     * @group email
+     */
+    public function testDescription()
+    {
+        $this->assertTrue($this->user->register([$this->email]));
+        $desc = \Yii::$app->security->generateRandomString();
+        $this->email->setDescription($desc);
+        $this->assertEquals($desc, $this->email->getDescription());
+        $this->assertTrue($this->user->deregister());
+    }
 }

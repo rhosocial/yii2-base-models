@@ -23,6 +23,14 @@ use rhosocial\base\models\traits\EntityQueryTrait;
 class BaseRedisEntityQuery extends \yii\redis\ActiveQuery
 {
     use EntityQueryTrait;
+    
+    protected static function range($query, $attribute, $start = null, $end = null)
+    {
+        if (!isset($attribute, $start, $end)) {
+            throw new \yii\db\Exception("`attribute`, `start` and `end` must be specified.");
+        }
+        return $query->andWhere(['between', $attribute, $start, $end]);
+    }
 
     public function init()
     {
