@@ -121,12 +121,62 @@ class EmailTest extends BlameableTestCase
      * @group blameable
      * @group email
      */
+    public function testQueryConfirmed()
+    {
+        $this->assertTrue($this->user->register([$this->email]));
+        $this->assertFalse($this->email->getIsConfirmed());
+        $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
+        $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
+        
+        $this->email->confirmation = UserEmail::$confirmTrue;
+        $this->assertTrue($this->email->save());
+        $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
+        $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group email
+     */
     public function testDescription()
     {
         $this->assertTrue($this->user->register([$this->email]));
         $desc = \Yii::$app->security->generateRandomString();
         $this->email->setDescription($desc);
         $this->assertEquals($desc, $this->email->getDescription());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group blameable
+     * @group email
+     */
+    public function testFindOneOrCreate()
+    {
+        $this->assertTrue($this->user->register([$this->email]));
+        $faker = $this->faker->email;
+        $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email], ['email' => $faker]);
+        /* @var $email UserEmail */
+        $this->assertInstanceOf(UserEmail::class, $email);
+        $this->assertFalse($email->getIsNewRecord());
+        $this->assertNotEquals($faker, $email->email);
+        
+        $this->assertGreaterThanOrEqual(1, $email->delete());
+        $faker = $this->faker->email;
+        $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email], ['email' => $faker]);
+        $this->assertInstanceOf(UserEmail::class, $email);
+        $this->assertTrue($email->getIsNewRecord());
+        $this->assertEquals($faker, $email->email);
+        
+        $faker = $this->faker->email;
+        $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email]);
+        $this->assertInstanceOf(UserEmail::class, $email);
+        $this->assertTrue($email->getIsNewRecord());
+        $this->assertNotEquals($faker, $this->email->email);
+        $this->assertNotEquals($faker, $email->email);
+        
         $this->assertTrue($this->user->deregister());
     }
 }

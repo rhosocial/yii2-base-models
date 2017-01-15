@@ -37,6 +37,15 @@ class AutoIncrementTest extends EntityTestCase
      * @group entity
      * @group id
      */
+    public function testGenerateID()
+    {
+        $this->assertNull($this->entity->generateId());
+    }
+    
+    /**
+     * @group entity
+     * @group id
+     */
     public function testNotSafe()
     {
         $rules = $this->entity->rules();

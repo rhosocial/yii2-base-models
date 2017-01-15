@@ -107,7 +107,7 @@ trait IDTrait
         if ($sender->idPreassigned) {
             return;
         }
-        if ($sender->idAttributeType === self::$idTypeAutoIncrement) {
+        if ($sender->idAttributeType === static::$idTypeAutoIncrement) {
             $sender->idAttributeSafe = true;
             return;
         }
@@ -126,17 +126,17 @@ trait IDTrait
      */
     public function generateId()
     {
-        if ($this->idAttributeType == self::$idTypeInteger) {
+        if ($this->idAttributeType == static::$idTypeInteger) {
             do {
                 $result = Number::randomNumber($this->idAttributePrefix, $this->idAttributeLength);
             } while ($this->checkIdExists((int) $result));
             return $result;
         }
-        if ($this->idAttributeType == self::$idTypeString) {
+        if ($this->idAttributeType == static::$idTypeString) {
             return $this->idAttributePrefix .
                 Yii::$app->security->generateRandomString($this->idAttributeLength - strlen($this->idAttributePrefix));
         }
-        if ($this->idAttributeType == self::$idTypeAutoIncrement) {
+        if ($this->idAttributeType == static::$idTypeAutoIncrement) {
             return null;
         }
         return false;
@@ -176,16 +176,16 @@ trait IDTrait
                 [[$this->idAttribute], 'required'],
                 [[$this->idAttribute], 'unique'],
             ];
-            if ($this->idAttributeType === self::$idTypeInteger) {
+            if ($this->idAttributeType === static::$idTypeInteger) {
                 $rules[] = [
                     [$this->idAttribute], 'number', 'integerOnly' => true
                 ];
             }
-            if ($this->idAttributeType === self::$idTypeString) {
+            if ($this->idAttributeType === static::$idTypeString) {
                 $rules[] = [[$this->idAttribute], 'string',
                     'max' => $this->idAttributeLength,];
             }
-            if ($this->idAttributeType === self::$idTypeAutoIncrement) {
+            if ($this->idAttributeType === static::$idTypeAutoIncrement) {
                 $rules[] = [
                     [$this->idAttribute], 'safe',
                 ];

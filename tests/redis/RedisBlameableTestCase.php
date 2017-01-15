@@ -29,7 +29,7 @@ class RedisBlameableTestCase extends UserTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->blameable = $this->user->create(RedisBlameable::class, ['content' => \Yii::$app->security->generateRandomString()]);
+        $this->blameable = $this->user->create(RedisBlameable::class, ['class' => RedisBlameable::class, 'content' => \Yii::$app->security->generateRandomString()]);
     }
     
     protected function tearDown()

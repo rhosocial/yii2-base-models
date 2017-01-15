@@ -36,6 +36,7 @@ class UserTestCase extends TestCase
     
     protected function tearDown()
     {
+        $this->user = null;
         User::deleteAll();
         parent::tearDown();
     }

@@ -6,21 +6,17 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2017 vistart
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\base\models\tests\data\ar;
+namespace rhosocial\base\models\tests\data\ar\redis;
 
 use rhosocial\base\models\models\BaseRedisEntityModel;
 
-/**
- * @author vistart <i@vistart.me>
- */
-class RedisEntity extends BaseRedisEntityModel
+class TimestampEntity extends BaseRedisEntityModel
 {
-    public $guidAttribute = false;
-    public $idAttribute = 'alpha2';
+    public $timeFormat = 1;
     
     public function attributes()
     {

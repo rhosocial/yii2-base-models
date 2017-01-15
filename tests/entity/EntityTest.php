@@ -54,4 +54,29 @@ class EntityTest extends EntityTestCase
             $this->assertArrayHasKey('expired_after', $unsetArray);
         }
     }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testHasEverEdited()
+    {
+        $this->assertNotEmpty($this->entity->createdAtAttribute);
+        $this->assertNotEmpty($this->entity->updatedAtAttribute);
+        $this->assertNotEquals($this->entity->createdAtAttribute, $this->entity->updatedAtAttribute);
+        $this->assertTrue($this->entity->save());
+        $this->assertFalse($this->entity->hasEverEdited());
+        sleep(1);
+        $this->assertTrue($this->entity->save());
+        $this->assertEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
+        $this->assertFalse($this->entity->hasEverEdited());
+        
+        $this->entity->content = \Yii::$app->security->generateRandomString();
+        sleep(1);
+        $this->assertTrue($this->entity->save());
+        $this->assertNotEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
+        $this->assertTrue($this->entity->hasEverEdited());
+        
+        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+    }
 }

@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\redis;
 
+use rhosocial\base\models\tests\data\ar\redis\TimestampEntity;
 use rhosocial\base\models\tests\data\ar\RedisEntity;
 use rhosocial\base\models\tests\data\ar\GUIDRedisEntity;
 
@@ -23,8 +24,10 @@ class RedisEntityTest extends RedisEntityTestCase
     /**
      * @group redis
      * @group entity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testNew()
+    public function testNew($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
@@ -33,8 +36,10 @@ class RedisEntityTest extends RedisEntityTestCase
     /**
      * @group redis
      * @group entity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testPrimaryKey()
+    public function testPrimaryKey($severalTimes)
     {
         $this->assertEquals([$this->entity->idAttribute], RedisEntity::primaryKey());
         
@@ -45,8 +50,10 @@ class RedisEntityTest extends RedisEntityTestCase
     /**
      * @group redis
      * @group entity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testCreatedAt()
+    public function testCreatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->getCreatedAt());
@@ -56,8 +63,10 @@ class RedisEntityTest extends RedisEntityTestCase
     /**
      * @group redis
      * @group entity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testUpdatedAt()
+    public function testUpdatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->getUpdatedAt());
@@ -68,8 +77,10 @@ class RedisEntityTest extends RedisEntityTestCase
      * @group redis
      * @group entity
      * @depends testCreatedAt
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testFindByCreatedAt()
+    public function testFindByCreatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $entities = RedisEntity::find()->createdAt(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'))->all();
@@ -81,8 +92,10 @@ class RedisEntityTest extends RedisEntityTestCase
      * @group redis
      * @group entity
      * @depends testUpdatedAt
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testFindByUpdatedAt()
+    public function testFindByUpdatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $entities = RedisEntity::find()->updatedAt(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'))->all();
@@ -93,8 +106,10 @@ class RedisEntityTest extends RedisEntityTestCase
     /**
      * @group redis
      * @group entity
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
      */
-    public function testFindFailed()
+    public function testFindFailed($severalTimes)
     {
         $this->assertTrue($this->entity->save());
         try {
@@ -105,5 +120,37 @@ class RedisEntityTest extends RedisEntityTestCase
             $this->assertInstanceOf(\yii\db\Exception::class, $ex);
         }
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+    }
+    
+    /**
+     * @group redis
+     * @group entity
+     * @group timestamp
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testHasEverEdited($severalTimes)
+    {
+        $this->assertTrue($this->entity->save());
+        $this->assertFalse($this->entity->hasEverEdited());
+        $createdAt = $this->entity->getCreatedAt();
+        $updatedAt = $this->entity->getUpdatedAt();
+        $this->entity = RedisEntity::findOne((string)($this->entity));
+        sleep(1);
+        $this->entity->content = (\Yii::$app->security->generateRandomString());
+        $this->assertTrue($this->entity->save());
+        $this->entity = RedisEntity::findOne((string)($this->entity));
+        $this->assertEquals($createdAt, $this->entity->getCreatedAt());
+        $this->assertNotEquals($updatedAt, $this->entity->getUpdatedAt());
+        $this->assertTrue($this->entity->hasEverEdited());
+        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+    }
+    
+    public function severalTimes()
+    {
+        for ($i = 0; $i < 3; $i++)
+        {
+            yield [$i];
+        }
     }
 }

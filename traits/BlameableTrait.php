@@ -240,20 +240,6 @@ trait BlameableTrait
     }
 
     /**
-     * Check it has been ever edited.
-     * @return boolean Whether this content has ever been edited.
-     */
-    public function hasEverEdited()
-    {
-        $createdAtAttribute = $this->createdByAttribute;
-        $updatedAtAttribute = $this->updatedByAttribute;
-        if (!$createdAtAttribute || !$updatedAtAttribute) {
-            return false;
-        }
-        return $this->$createdAtAttribute !== $this->$updatedAtAttribute;
-    }
-
-    /**
      * Get blameable rules cache key.
      * @return string cache key.
      */

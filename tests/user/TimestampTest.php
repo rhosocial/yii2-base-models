@@ -140,6 +140,31 @@ class TimestampTest extends UserTestCase
         $this->user->setExpiredAfter(1);
     }
     
+    /**
+     * @group user
+     * @group timestamp
+     */
+    public function testHasEverEdited()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertNotEmpty($this->user->createdAtAttribute);
+        $this->assertNotEmpty($this->user->updatedAtAttribute);
+        $this->assertEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
+        $this->assertNotEmpty($this->user->getCreatedAt());
+        $this->assertFalse($this->user->hasEverEdited());
+        sleep(2);
+        $this->user->password = \Yii::$app->security->generateRandomString();
+        $this->assertTrue($this->user->save());
+        $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
+        $this->assertTrue($this->user->hasEverEdited());
+        
+        $this->user->setExpiredAfter(1);
+        $this->assertTrue($this->user->save());
+        sleep(2);
+        $this->assertFalse($this->user->refresh());
+    }
+    
+    
     public function timestampProvider()
     {
         for ($i = 0; $i < 3; $i++)

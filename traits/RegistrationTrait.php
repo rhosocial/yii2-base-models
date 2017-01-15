@@ -171,6 +171,9 @@ trait RegistrationTrait
         $transaction = $this->getDb()->beginTransaction();
         try {
             $result = $this->delete();
+            if ($result == 0) {
+                throw new IntegrityException('User has not existed.');
+            }
             if ($result != 1) {
                 throw new IntegrityException('Deregistration Error(s) Occured.', $this->getErrors());
             }

@@ -170,6 +170,23 @@ class TimestampTest extends EntityTestCase
         $this->assertTrue($this->entity->save());
     }
     
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testRange()
+    {
+        $this->assertTrue($this->entity->save());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), -1))->one());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt(null, $this->entity->offsetDatetime($this->entity->currentDatetime(), 1))->one());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), -1), $this->entity->offsetDatetime($this->entity->currentDatetime(), 1))->one());
+        
+        $this->assertNull(Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), +1))->one());
+        $this->assertNull(Entity::find()->createdAt(null, $this->entity->offsetDatetime($this->entity->currentDatetime(), -1))->one());
+        $this->assertNull(Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), 1), $this->entity->offsetDatetime($this->entity->currentDatetime(), -1))->one());
+        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+    }
+    
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++)

@@ -42,6 +42,10 @@ trait TimestampTrait
      */
     public $updatedAtAttribute = 'updated_at';
     
+    /**
+     * @var string|false the attribute that determine when this entity expire.
+     * If this entity does not expire, set to false.
+     */
     public $expiredAfterAttribute = false;
 
     /**
@@ -60,6 +64,10 @@ trait TimestampTrait
     
     /**
      * Check this entity whether expired.
+     * This feature require creation time. If creation time didn't record, false
+     * is returned.
+     * This feature also need expiration duration. If expiration duration didn't
+     * record, false is returned.
      * @return boolean
      */
     public function getIsExpired()
@@ -73,6 +81,9 @@ trait TimestampTrait
     
     /**
      * Remove myself if expired.
+     * The `expiredRemovingCallback` will be called before removing itself,
+     * then it would trigger `static::$eventExpiredRemoved` event, and attach
+     * the removing results.
      * @return boolean
      */
     public function removeIfExpired()
@@ -83,6 +94,7 @@ trait TimestampTrait
             }
             $result = $this->removeSelf();
             $this->trigger(static::$eventExpiredRemoved, new ModelEvent(['data' => ['result' => $result]]));
+            return true;
         }
         return false;
     }
@@ -126,10 +138,10 @@ trait TimestampTrait
      */
     public function currentDatetime()
     {
-        if ($this->timeFormat === self::$timeFormatDatetime) {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
             return date('Y-m-d H:i:s');
         }
-        if ($this->timeFormat === self::$timeFormatTimestamp) {
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
             return time();
         }
         return null;
@@ -143,10 +155,10 @@ trait TimestampTrait
      */
     public function offsetDatetime($time = null, $offset = 0)
     {
-        if ($this->timeFormat === self::$timeFormatDatetime) {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
             return date('Y-m-d H:i:s', strtotime(($offset >= 0 ? "+$offset" : $offset) . " seconds", is_string($time) ? strtotime($time) : (is_int($time) ? $time : time())));
         }
-        if ($this->timeFormat === self::$timeFormatTimestamp) {
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
             return (is_int($time) ? $time : time()) + $offset;
         }
         return null;
@@ -169,10 +181,10 @@ trait TimestampTrait
      */
     public function initDatetime()
     {
-        if ($this->timeFormat === self::$timeFormatDatetime) {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
             return static::$initDatetime;
         }
-        if ($this->timeFormat === self::$timeFormatTimestamp) {
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
             return static::$initTimestamp;
         }
         return null;
@@ -185,10 +197,10 @@ trait TimestampTrait
      */
     protected function isInitDatetime($attribute)
     {
-        if ($this->timeFormat === self::$timeFormatDatetime) {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
             return $attribute == static::$initDatetime || $attribute == null;
         }
-        if ($this->timeFormat === self::$timeFormatTimestamp) {
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
             return $attribute == static::$initTimestamp || $attribute == null;
         }
         return false;
@@ -203,7 +215,7 @@ trait TimestampTrait
      */
     public function onUpdateCurrentDatetime($event)
     {
-        return self::getCurrentDatetime($event);
+        return static::getCurrentDatetime($event);
     }
     
     /**
@@ -237,6 +249,10 @@ trait TimestampTrait
     
     /**
      * Get rules associated with createdAtAttribute.
+     * The default rule is safe. Because the [[TimestampBehavior]] will attach
+     * the creation time automatically.
+     * Under normal circumstances is not recommended to amend.
+     * If `createdAtAttribute` is not specified, the empty array will be given.
      * @return array rules
      */
     public function getCreatedAtRules()
@@ -264,6 +280,10 @@ trait TimestampTrait
     
     /**
      * Get rules associated with `updatedAtAttribute`.
+     * The default rule is safe. Because the [[TimestampBehavior]] will attach
+     * the last update time automatically.
+     * Under normal circumstances is not recommended to amend.
+     * If `updatedAtAttribute` is not specified, the empty array will be given.
      * @return array rules
      */
     public function getUpdatedAtRules()
@@ -278,6 +298,7 @@ trait TimestampTrait
     
     /**
      * Get expiration duration.
+     * If `expiredAfterAttribute` is not specified, false will be given.
      * @return boolean
      */
     public function getExpiredAfter()
@@ -289,8 +310,10 @@ trait TimestampTrait
     }
     
     /**
-     * Set expiration duration.
-     * @param integer $expiredAfter
+     * Set expiration duration (in seconds).
+     * If `expiredAfterAttribute` is not specified, this feature will be skipped,
+     * and return false.
+     * @param integer $expiredAfter the duration after which is expired (in seconds).
      * @return boolean|integer
      */
     public function setExpiredAfter($expiredAfter)
@@ -303,7 +326,10 @@ trait TimestampTrait
     
     /**
      * Get rules associated with `expiredAfterAttribute`.
-     * @return array
+     * The default rule is unsigned integer.
+     * Under normal circumstances is not recommended to amend.
+     * If `expiredAfterAttribute` is not specified, the empty array will be given.
+     * @return array The key of array is not specified.
      */
     public function getExpiredAfterRules()
     {
@@ -316,8 +342,9 @@ trait TimestampTrait
     }
     
     /**
-     *
-     * @return array
+     * Get enabled fields associated with timestamp, including `createdAtAttribute`,
+     * `updatedAtAttribute` and `expiredAfterAttribute`.
+     * @return array field list. The keys of array are not specified.
      */
     public function enabledTimestampFields()
     {
@@ -332,5 +359,21 @@ trait TimestampTrait
             $fields[] = $this->expiredAfterAttribute;
         }
         return $fields;
+    }
+
+    /**
+     * Check it has been ever edited.
+     * The judgement principle is to compare the creation time and the last update time,
+     * if one of the two does not exist, then that has not been modified,
+     * if both exist but not consistent, that modified.
+     * You can override this method to implement more complex function.
+     * @return boolean Whether this entity has ever been edited.
+     */
+    public function hasEverEdited()
+    {
+        if ($this->getCreatedAt() === null || $this->getUpdatedAt() === null) {
+            return false;
+        }
+        return $this->getCreatedAt() !== $this->getUpdatedAt();
     }
 }
