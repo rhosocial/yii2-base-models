@@ -1,5 +1,6 @@
 <?php
-/*
+
+/**
  *  _   __ __ _____ _____ ___  ____  _____
  * | | / // // ___//_  _//   ||  __||_   _|
  * | |/ // /(__  )  / / / /| || |     | |
@@ -12,6 +13,8 @@
 namespace rhosocial\base\models\tests\data\ar;
 
 use Yii;
+use rhosocial\base\models\queries\BaseBlameableQuery;
+use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
 
 /**
@@ -55,14 +58,14 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
     }
     
     /**
-     * @return \rhosocial\base\models\queries\BaseBlameableQuery
+     * @return BaseBlameableQuery
      */
     public function getEmails() {
         return $this->hasMany(UserEmail::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
     
     /**
-     * @return \rhosocial\base\models\queries\BaseBlameableQuery
+     * @return BaseBlameableQuery
      */
     public function getAdditionalAccounts() {
         return $this->hasMany(AdditionalAccount::class, ['user_guid' => 'guid'])->inverseOf('user');
@@ -70,7 +73,7 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
     
     /**
      * Friendly to IDE.
-     * @return \rhosocial\base\models\queries\BaseUserQuery
+     * @return BaseUserQuery
      */
     public static function find()
     {

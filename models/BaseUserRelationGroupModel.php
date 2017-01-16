@@ -32,11 +32,26 @@ abstract class BaseUserRelationGroupModel extends BaseBlameableModel
 
     public $confirmationAttribute = false;
     public $descriptionAttribute = 'description';
+    
+    /**
+     * @var false This feature does not need to record IP address. 
+     */
     public $enableIP = false;
     public $idAttribute = false;
+    
+    /**
+     * @var false This feature does not need to record last update time. 
+     */
     public $updatedAtAttribute = false;
+    
+    /**
+     * @var false This feature does not need to record the user who update this group. 
+     */
     public $updatedByAttribute = false;
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         if (!is_string($this->queryClass)) {

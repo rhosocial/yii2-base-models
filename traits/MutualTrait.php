@@ -63,7 +63,7 @@ trait MutualTrait
             return null;
         }
         $otherGuidAttribute = $this->otherGuidAttribute;
-        return $this->$otherGuidAttribute = $user->guid;
+        return $this->$otherGuidAttribute = $user->getGUID();
     }
 
     /**

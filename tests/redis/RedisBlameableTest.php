@@ -95,6 +95,28 @@ class RedisBlameableTest extends RedisBlameableTestCase
         $this->assertTrue($this->user->deregister());
     }
     
+    /**
+     * Redis 查询不支持 like。
+     * @group redis
+     * @group blameable
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testQuery($severalTimes)
+    {
+        $this->assertTrue($this->user->register([$this->blameable]));
+        $content = $this->blameable->content;
+        $this->assertInstanceOf(RedisBlameable::class, RedisBlameable::find()->content($content)->one());
+        try {
+            $this->assertInstanceOf(RedisBlameable::class, RedisBlameable::find()->content(substr($content, 2), 'like')->one());
+            $this->fail();
+        } catch (\yii\base\NotSupportedException $ex) {
+            $this->assertTrue(true);
+        }
+        $this->assertNull(RedisBlameable::find()->content(substr($content, 2))->one());
+        $this->assertTrue($this->user->deregister());
+    }
+    
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++)

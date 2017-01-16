@@ -24,4 +24,13 @@ class RedisBlameable extends \rhosocial\base\models\models\BaseRedisBlameableMod
     {
         return ['alpha2'];
     }
+    
+    /**
+     * Friendly to IDE.
+     * @return \rhosocial\base\models\queries\BaseRedisBlameableQuery
+     */
+    public static function find()
+    {
+        return parent::find();
+    }
 }

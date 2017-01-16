@@ -36,7 +36,15 @@ class UserTestCase extends TestCase
     
     protected function tearDown()
     {
-        $this->user = null;
+        if ($this->user instanceof User) {
+            try {
+                $this->user->deregister();
+            } catch (\Exception $ex) {
+
+            } finally {
+                $this->user = null;
+            }
+        }
         User::deleteAll();
         parent::tearDown();
     }

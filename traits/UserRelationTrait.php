@@ -110,7 +110,7 @@ trait UserRelationTrait
     public function getIsFavorite()
     {
         $favoriteAttribute = $this->favoriteAttribute;
-        return is_string($favoriteAttribute) ? (int) $this->$favoriteAttribute > 0 : null;
+        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ? (int) $this->$favoriteAttribute > 0 : null;
     }
 
     /**
@@ -120,7 +120,7 @@ trait UserRelationTrait
     public function setIsFavorite($fav)
     {
         $favoriteAttribute = $this->favoriteAttribute;
-        return is_string($favoriteAttribute) ? $this->$favoriteAttribute = ($fav ? 1 : 0) : null;
+        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ? $this->$favoriteAttribute = ($fav ? 1 : 0) : null;
     }
 
     /**
@@ -301,7 +301,7 @@ trait UserRelationTrait
     public static function buildSuspendRelation($user, $other)
     {
         $relation = static::buildRelation($user, $other);
-        if ($relation->relationType != static::$relationMutual) {
+        if (!$relation || $relation->relationType != static::$relationMutual) {
             return null;
         }
         $btAttribute = $relation->mutualTypeAttribute;
@@ -321,6 +321,9 @@ trait UserRelationTrait
     public static function buildNormalRelation($user, $other)
     {
         $relation = static::buildRelation($user, $other);
+        if (!$relation) {
+            return null;
+        }
         if ($relation->relationType == static::$relationMutual) {
             $btAttribute = $relation->mutualTypeAttribute;
             $relation->$btAttribute = static::$mutualTypeNormal;
@@ -352,10 +355,10 @@ trait UserRelationTrait
             $userClass = $noInit->userClass;
             if ($user instanceof BaseUserModel) {
                 $userClass = $userClass ? : $user->className();
-                $user = $user->guid;
+                $user = $user->getGUID();
             }
             if ($other instanceof BaseUserModel) {
-                $other = $other->guid;
+                $other = $other->getGUID();
             }
             if (!$noInit->relationSelf && $user == $other) {
                 return null;
@@ -407,7 +410,7 @@ trait UserRelationTrait
      */
     public static function removeOneRelation($user, $other)
     {
-        return static::find()->initiators($user)->recipients($other)->one()->delete();
+        return static::find()->initiators($user)->recipients($other)->one()->remove();
     }
 
     /**

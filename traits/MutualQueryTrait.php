@@ -13,7 +13,6 @@
 namespace rhosocial\base\models\traits;
 
 use rhosocial\base\models\BaseUserModel;
-use yii\db\Query;
 
 /**
  * This trait is used for building query class which contains mutual relation operations.
@@ -51,9 +50,6 @@ trait MutualQueryTrait
         if (!empty($others)) {
             $query = $query->andWhere([$model->createdByAttribute => array_values($others)]);
         }
-        // $clone = clone $query;
-        /* @var $clone Query */
-        // echo $clone->createCommand($database)->getRawSql();
         return $query->all($database);
     }
 
