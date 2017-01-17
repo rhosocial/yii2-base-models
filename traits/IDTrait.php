@@ -194,5 +194,19 @@ trait IDTrait
         }
         return [];
     }
+    
+    public static function compositeIDs($models)
+    {
+        if (!is_array($models) && $models instanceof static) {
+            return $models->getID();
+        }
+        $ids = [];
+        foreach ($models as $model) {
+            if ($models instanceof static) {
+                $ids[] = $model->getID();
+            }
+        }
+        return $ids;
+    }
 }
 

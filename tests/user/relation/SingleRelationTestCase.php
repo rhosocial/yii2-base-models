@@ -48,6 +48,11 @@ class SingleRelationTestCase extends UserTestCase
         return UserSingleRelation::buildNormalRelation($user, $other);
     }
     
+    protected function prepareSingleRelationMutually($user, $other)
+    {
+        return [$this->prepareSingleRelation($user, $other), $this->prepareSingleRelation($other, $user)];
+    }
+    
     protected function tearDown()
     {
         if ($this->relation instanceof UserSingleRelation) {

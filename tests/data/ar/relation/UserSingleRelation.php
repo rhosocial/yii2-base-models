@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\data\ar\relation;
 
+use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\queries\BaseUserRelationQuery;
 use rhosocial\base\models\models\BaseUserRelationModel;
 
@@ -28,6 +29,7 @@ class UserSingleRelation extends BaseUserRelationModel
      */
     public function init()
     {
+        $this->userClass = User::class;
         $this->relationType = static::$relationSingle;
         $this->multiBlamesClass = UserRelationGroup::class;
         parent::init();

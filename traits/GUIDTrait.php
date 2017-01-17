@@ -134,4 +134,18 @@ trait GUIDTrait
         }
         return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
     }
+    
+    public static function compositeGUIDs($models)
+    {
+        if (!is_array($models) && $models instanceof static) {
+            return $models->getGUID();
+        }
+        $guids = [];
+        foreach ($models as $model) {
+            if ($model && method_exists($model, 'getGUID')) {
+                $guids[] = $model->getGUID();
+            }
+        }
+        return $guids;
+    }
 }

@@ -45,6 +45,11 @@ use rhosocial\base\models\traits\BlameableTrait;
  *             ...
  *         ];
  *     }
+ *     public function init()
+ *     {
+ *         $this->userClass = User::class;
+ *         parent::init();
+ *     }
  * }
  * ~~~
  * Well, when you're signed-in, you can create and save a new `Comment` instance:
@@ -76,6 +81,8 @@ abstract class BaseBlameableModel extends BaseEntityModel
     /**
      * Initialize the blameable model.
      * If query class is not specified, [[BaseBlameableQuery]] will be taken.
+     * Note: You must override this method and specify your own user class before
+     * execute the parent one.
      */
     public function init()
     {

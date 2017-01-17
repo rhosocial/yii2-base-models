@@ -12,7 +12,7 @@
 
 namespace rhosocial\base\models\traits;
 
-use rhosocial\base\models\BaseUserModel;
+use rhosocial\base\models\models\BaseUserModel;
 
 /**
  * This trait is used for building query class which contains mutual relation operations.
@@ -33,6 +33,12 @@ trait MutualQueryTrait
     public function opposite($user, $other, $database = null)
     {
         $model = $this->noInitModel;
+        if ($user instanceof BaseUserModel) {
+            $user = $user->getGUID();
+        }
+        if ($other instanceof BaseUserModel) {
+            $other = $other->getGUID();
+        }
         return $this->andWhere([$model->createdByAttribute => $other, $model->otherGuidAttribute => $user])->one($database);
     }
 
@@ -46,8 +52,16 @@ trait MutualQueryTrait
     public function opposites($user, $others = [], $database = null)
     {
         $model = $this->noInitModel;
+        if ($user instanceof BaseUserModel) {
+            $user = $user->getGUID();
+        }
         $query = $this->andWhere([$model->otherGuidAttribute => $user]);
         if (!empty($others)) {
+            if ($others instanceof BaseUserModel) {
+                $others = [$others->getGUID()];
+            } elseif (is_array($others)) {
+                $others = BaseUserModel::compositeGUIDs($others);
+            }
             $query = $query->andWhere([$model->createdByAttribute => array_values($others)]);
         }
         return $query->all($database);
@@ -65,6 +79,11 @@ trait MutualQueryTrait
             return $this;
         }
         $model = $this->noInitModel;
+        if ($users instanceof BaseUserModel) {
+            $users = $users->getGUID();
+        } elseif (is_array($users)) {
+            $users = BaseUserModel::compositeGUIDs($users);
+        }
         return $this->andWhere([$model->createdByAttribute => $users]);
     }
 
@@ -80,6 +99,11 @@ trait MutualQueryTrait
             return $this;
         }
         $model = $this->noInitModel;
+        if ($users instanceof BaseUserModel) {
+            $users = $users->getGUID();
+        } elseif (is_array($users)) {
+            $users = BaseUserModel::compositeGUIDs($users);
+        }
         return $this->andWhere([$model->otherGuidAttribute => $users]);
     }
 }

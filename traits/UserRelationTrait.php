@@ -15,6 +15,10 @@ namespace rhosocial\base\models\traits;
 use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\traits\MultipleBlameableTrait as mb;
 use yii\base\ModelEvent;
+use yii\base\InvalidConfigException;
+use yii\base\InvalidValueException;
+use yii\db\Connection;
+use yii\db\IntegrityException;
 
 /**
  * Relation features.
@@ -227,9 +231,7 @@ trait UserRelationTrait
         if ($this->isNewRecord) {
             return null;
         }
-        $createdByAttribute = $this->createdByAttribute;
-        $otherGuidAttribute = $this->otherGuidAttribute;
-        return static::find()->opposite($this->$createdByAttribute, $this->$otherGuidAttribute);
+        return static::find()->opposite($this->initiator, $this->recipient);
     }
 
     /**
@@ -390,6 +392,46 @@ trait UserRelationTrait
         }
         return $opposite;
     }
+    
+    /**
+     * Insert relation, the process is placed in a transaction.
+     * Note: This feature only support relational databases and skip all errors.
+     * If you don't want to use transaction or database doesn't support it,
+     * please use `save()` directly.
+     * @param static $relation
+     * @param Connection $db
+     * @return boolean
+     * @throws InvalidValueException
+     * @throws InvalidConfigException
+     * @throws IntegrityException
+     */
+    public static function insertRelation($relation, Connection $db = null)
+    {
+        if (!$relation || !($relation instanceof static)) {
+            return false;
+        }
+        if (!$relation->getIsNewRecord()) {
+            throw new InvalidValueException('This relation is not new one.');
+        }
+        if (!$db && isset(\Yii::$app->db) && \Yii::$ap->db instanceof Connection) {
+            $db = \Yii::$app->db;
+        }
+        if (!$db) {
+            throw new InvalidConfigException('Invalid database connection.');
+        }
+        /* @var $db Connection */
+        $transaction = $db->beginTransaction();
+        try {
+            if (!$relation->save()) {
+                throw new IntegrityException('Relation insert failed.');
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Remove myself.
@@ -487,6 +529,7 @@ trait UserRelationTrait
      * The opposite relation should be inserted without triggering events
      * simultaneously after new relation inserted,
      * @param ModelEvent $event
+     * @throws IntegrityException throw if insert failed.
      */
     public function onInsertRelation($event)
     {
@@ -496,6 +539,7 @@ trait UserRelationTrait
             $opposite->off(static::EVENT_AFTER_INSERT, [$opposite, 'onInsertRelation']);
             if (!$opposite->save()) {
                 $opposite->recordWarnings();
+                throw new IntegrityException('Reverse relation insert failed.');
             }
             $opposite->on(static::EVENT_AFTER_INSERT, [$opposite, 'onInsertRelation']);
         }
@@ -506,6 +550,7 @@ trait UserRelationTrait
      * The opposite relation should be updated without triggering events
      * simultaneously after existed relation removed.
      * @param ModelEvent $event
+     * @throw IntegrityException throw if update failed.
      */
     public function onUpdateRelation($event)
     {
@@ -515,6 +560,7 @@ trait UserRelationTrait
             $opposite->off(static::EVENT_AFTER_UPDATE, [$opposite, 'onUpdateRelation']);
             if (!$opposite->save()) {
                 $opposite->recordWarnings();
+                throw new IntegrityException('Reverse relation update failed.');
             }
             $opposite->on(static::EVENT_AFTER_UPDATE, [$opposite, 'onUpdateRelation']);
         }
