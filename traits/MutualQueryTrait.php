@@ -33,7 +33,9 @@ trait MutualQueryTrait
     public function opposite($user, $other, $database = null)
     {
         $model = $this->noInitModel;
-        return $this->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($other), $model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)])->one($database);
+        return $this->andWhere(
+                [$model->createdByAttribute => BaseUserModel::compositeGUIDs($other),
+                 $model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)])->one($database);
     }
 
     /**
@@ -46,10 +48,7 @@ trait MutualQueryTrait
     public function opposites($user, $others = [], $database = null)
     {
         $model = $this->noInitModel;
-        if ($user instanceof BaseUserModel) {
-            $user = $user->getGUID();
-        }
-        $query = $this->andWhere([$model->otherGuidAttribute => $user]);
+        $query = $this->andWhere([$model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)]);
         if (!empty($others)) {
             $query = $query->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($others)]);
         }

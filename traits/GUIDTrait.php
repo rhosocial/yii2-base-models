@@ -137,6 +137,9 @@ trait GUIDTrait
     
     public static function compositeGUIDs($models)
     {
+        if (empty($models)) {
+            return null;
+        }
         if (!is_array($models) && $models instanceof static) {
             return $models->getGUID();
         }
@@ -145,7 +148,7 @@ trait GUIDTrait
         }
         $guids = [];
         foreach ($models as $model) {
-            if ($model && method_exists($model, 'getGUID')) {
+            if ($model instanceof static) {
                 $guids[] = $model->getGUID();
             }
         }

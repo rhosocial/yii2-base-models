@@ -148,7 +148,12 @@ class SingleRelationMultiUserTest extends SingleRelationTestCase
         $this->registerUsers();
         $relations = $this->generateRelations();
         
-        $r = UserSingleRelation::find()->initiators($this->user)->recipients($this->others)->initiators()->recipients()->all();
+        $r = UserSingleRelation::find()->
+                initiators($this->user)->
+                recipients($this->others)->
+                initiators()->
+                recipients()->
+                all();
         $this->assertCount(10, $r);
         foreach ($r as $relation) {
             /* @var $relation UserSingleRelation */
