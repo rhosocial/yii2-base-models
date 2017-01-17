@@ -33,13 +33,7 @@ trait MutualQueryTrait
     public function opposite($user, $other, $database = null)
     {
         $model = $this->noInitModel;
-        if ($user instanceof BaseUserModel) {
-            $user = $user->getGUID();
-        }
-        if ($other instanceof BaseUserModel) {
-            $other = $other->getGUID();
-        }
-        return $this->andWhere([$model->createdByAttribute => $other, $model->otherGuidAttribute => $user])->one($database);
+        return $this->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($other), $model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)])->one($database);
     }
 
     /**
@@ -57,12 +51,7 @@ trait MutualQueryTrait
         }
         $query = $this->andWhere([$model->otherGuidAttribute => $user]);
         if (!empty($others)) {
-            if ($others instanceof BaseUserModel) {
-                $others = [$others->getGUID()];
-            } elseif (is_array($others)) {
-                $others = BaseUserModel::compositeGUIDs($others);
-            }
-            $query = $query->andWhere([$model->createdByAttribute => array_values($others)]);
+            $query = $query->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($others)]);
         }
         return $query->all($database);
     }
@@ -79,12 +68,7 @@ trait MutualQueryTrait
             return $this;
         }
         $model = $this->noInitModel;
-        if ($users instanceof BaseUserModel) {
-            $users = $users->getGUID();
-        } elseif (is_array($users)) {
-            $users = BaseUserModel::compositeGUIDs($users);
-        }
-        return $this->andWhere([$model->createdByAttribute => $users]);
+        return $this->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($users)]);
     }
 
     /**
@@ -99,11 +83,6 @@ trait MutualQueryTrait
             return $this;
         }
         $model = $this->noInitModel;
-        if ($users instanceof BaseUserModel) {
-            $users = $users->getGUID();
-        } elseif (is_array($users)) {
-            $users = BaseUserModel::compositeGUIDs($users);
-        }
-        return $this->andWhere([$model->otherGuidAttribute => $users]);
+        return $this->andWhere([$model->otherGuidAttribute => BaseUserModel::compositeGUIDs($users)]);
     }
 }

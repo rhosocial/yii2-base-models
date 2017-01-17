@@ -466,7 +466,7 @@ trait UserRelationTrait
         $rni = static::buildNoInitModel();
         $createdByAttribute = $rni->createdByAttribute;
         $otherGuidAttribute = $rni->otherGuidAttribute;
-        return static::deleteAll([$createdByAttribute => $user, $otherGuidAttribute => $other]);
+        return static::deleteAll([$createdByAttribute => BaseUserModel::compositeGUIDs($user), $otherGuidAttribute => BaseUserModel::compositeGUIDs($other)]);
     }
 
     /**

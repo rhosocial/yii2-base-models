@@ -140,6 +140,9 @@ trait GUIDTrait
         if (!is_array($models) && $models instanceof static) {
             return $models->getGUID();
         }
+        if (is_string($models) && strlen($models)) {
+            return $models;
+        }
         $guids = [];
         foreach ($models as $model) {
             if ($model && method_exists($model, 'getGUID')) {
