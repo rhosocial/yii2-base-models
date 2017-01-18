@@ -42,12 +42,19 @@ class SingleRelationTestCase extends UserTestCase
      * Prepare single relation.
      * @param User $user
      * @param User $other
+     * @return UserSingleRelation
      */
     protected function prepareSingleRelation($user, $other)
     {
         return UserSingleRelation::buildNormalRelation($user, $other);
     }
-    
+
+    /**
+     * Prepare single relation mutually.
+     * @param User $user
+     * @param User $other
+     * @return UserSingleRelation
+     */
     protected function prepareSingleRelationMutually($user, $other)
     {
         return [$this->prepareSingleRelation($user, $other), $this->prepareSingleRelation($other, $user)];
@@ -59,6 +66,7 @@ class SingleRelationTestCase extends UserTestCase
             $this->relation->remove();
         }
         $this->relation = null;
+        UserSingleRelation::deleteAll();
         if ($this->other instanceof User) {
             try {
                 $this->other->deregister();

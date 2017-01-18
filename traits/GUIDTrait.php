@@ -143,7 +143,7 @@ trait GUIDTrait
         if (!is_array($models) && $models instanceof static) {
             return $models->getGUID();
         }
-        if (is_string($models) && strlen($models)) {
+        if (is_string($models) && strlen($models) == 16) {
             return $models;
         }
         $guids = [];
