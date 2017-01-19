@@ -489,6 +489,40 @@ trait UserRelationTrait
         }
         return true;
     }
+    
+    /**
+     * Remove relation, the process is placed in transaction.
+     * Note: This feature only support relational databases and skip all errors.
+     * If you don't want to use transaction or database doesn't support it,
+     * please use `remove()` directly.
+     * @param static $relation
+     * @param Connection $db
+     * @return boolean|integer
+     * @throws InvalidConfigException
+     */
+    public static function removeRelation($relation, Connection $db = null)
+    {
+        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord()) {
+            return false;
+        }
+        
+        if (!$db && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
+            $db = \Yii::$app->db;
+        }
+        if (!$db) {
+            throw new InvalidConfigException('Invalid database connection.');
+        }
+        /* @var $db Connection */
+        $transaction = $db->beginTransaction();
+        try {
+            $result = $relation->remove();
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            return false;
+        }
+        return $result;
+    }
 
     /**
      * Remove myself.

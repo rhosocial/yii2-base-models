@@ -201,4 +201,25 @@ class MutualRelationBasicTest extends MutualRelationTestCase
         $this->assertEquals(0, $this->relationNormal->remove());
         $this->assertTrue($this->other1->deregister());
     }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testRemoveRelation()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertFalse(UserRelation::removeRelation(null));
+        $this->assertFalse(UserRelation::removeRelation($this->user));
+        $this->assertFalse(UserRelation::removeRelation($this->relationNormal));
+        $this->assertTrue($this->relationNormal->save());
+        $this->assertEquals(1, UserRelation::removeRelation($this->relationNormal));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
 }
