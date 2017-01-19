@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\tests\user\relation;
 
+use rhosocial\base\models\tests\data\ar\relation\UserRelation;
+
 /**
  * @author vistart <i@vistart.me>
  */
@@ -26,9 +28,142 @@ class MutualRelationBasicTest extends MutualRelationTestCase
     {
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other1->register());
+        
+        $this->assertEquals(UserRelation::$relationMutual, $this->relationNormal->relationType);
+        $this->assertCount(0, UserRelation::find()->initiators($this->user)->recipients($this->other1)->all());
         $this->assertTrue($this->relationNormal->save());
+        $this->assertCount(1, UserRelation::find()->initiators($this->user)->recipients($this->other1)->all());
+        $this->assertCount(1, UserRelation::find()->recipients($this->user)->initiators($this->other1)->all());
         $this->assertTrue($this->user->deregister());
         $this->assertEquals(0, $this->relationNormal->remove());
         $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testSuspend()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        $this->assertEquals(UserRelation::$relationMutual, $this->relationSuspend->relationType);
+        $this->assertTrue($this->relationSuspend->save());
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testNormalIsFriend()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertTrue($this->relationNormal->save());
+        $this->assertTrue(UserRelation::isFriend($this->user, $this->other1));
+        $this->assertTrue(UserRelation::isFriend($this->other1, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testSuspendIsFriend()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        
+        $this->assertTrue($this->relationSuspend->save());
+        $this->assertFalse(UserRelation::isFriend($this->user, $this->other2));
+        $this->assertFalse(UserRelation::isFriend($this->other2, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     * @depends testSuspendIsFriend
+     */
+    public function testSuspendToNormal()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        
+        $this->assertTrue($this->relationSuspend->save());
+        $this->assertTrue(UserRelation::transformSuspendToNormal($this->relationSuspend));
+        $this->assertTrue(UserRelation::isFriend($this->user, $this->other2));
+        $this->assertTrue(UserRelation::isFriend($this->other2, $this->user));
+        $this->assertEquals(UserRelation::$mutualTypeNormal, $this->relationSuspend->getMutualType());
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     * @depends testNormalIsFriend
+     */
+    public function testNormalToSuspend()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertTrue($this->relationNormal->save());
+        $this->assertTrue(UserRelation::revertNormalToSuspend($this->relationNormal));
+        $this->assertFalse(UserRelation::isFriend($this->user, $this->other1));
+        $this->assertFalse(UserRelation::isFriend($this->other1, $this->user));
+        $this->assertEquals(UserRelation::$mutualTypeSuspend, $this->relationNormal->getMutualType());
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testNormalInvalid()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testSuspendInvalid()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
     }
 }

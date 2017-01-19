@@ -76,7 +76,7 @@ trait UserRelationTrait
     public static $relationSingle = 0;
     public static $relationMutual = 1;
     public $relationType = 1;
-    public $relationTypes = [
+    public static $relationTypes = [
         0 => 'Single',
         1 => 'Mutual',
     ];
@@ -158,7 +158,7 @@ trait UserRelationTrait
     public function getRemark()
     {
         $remarkAttribute = $this->remarkAttribute;
-        return is_string($remarkAttribute) ? $this->$remarkAttribute : null;
+        return (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $this->$remarkAttribute : null;
     }
 
     /**
@@ -169,7 +169,7 @@ trait UserRelationTrait
     public function setRemark($remark)
     {
         $remarkAttribute = $this->remarkAttribute;
-        return is_string($remarkAttribute) ? $this->$remarkAttribute = $remark : null;
+        return (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $this->$remarkAttribute = $remark : null;
     }
 
     /**
@@ -306,8 +306,7 @@ trait UserRelationTrait
         if (!$relation || $relation->relationType != static::$relationMutual) {
             return null;
         }
-        $btAttribute = $relation->mutualTypeAttribute;
-        $relation->$btAttribute = static::$mutualTypeSuspend;
+        $relation->setMutualType(static::$mutualTypeSuspend);
         return $relation;
     }
 
@@ -327,10 +326,39 @@ trait UserRelationTrait
             return null;
         }
         if ($relation->relationType == static::$relationMutual) {
-            $btAttribute = $relation->mutualTypeAttribute;
-            $relation->$btAttribute = static::$mutualTypeNormal;
+            $relation->setMutualType(static::$mutualTypeNormal);
         }
         return $relation;
+    }
+    
+    /**
+     * Transform relation from suspend to normal.
+     * Note: You should ensure the relation model is not new one.
+     * @param static $relation
+     * @return boolean
+     */
+    public static function transformSuspendToNormal($relation)
+    {
+        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
+            return false;
+        }
+        $relation = static::buildNormalRelation($relation->initiator, $relation->recipient);
+        return $relation->save();
+    }
+    
+    /**
+     * Revert relation from normal to suspend.
+     * Note: You should ensure the relation model is not new one.
+     * @param static $relation
+     * @return boolean
+     */
+    public static function revertNormalToSuspend($relation)
+    {
+        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
+            return false;
+        }
+        $relation = static::buildSuspendRelation($relation->initiator, $relation->recipient);
+        return $relation->save();
     }
 
     /**
@@ -387,10 +415,39 @@ trait UserRelationTrait
         if ($relation->relationType == static::$relationSingle) {
             $opposite->relationType = static::$relationSingle;
         } elseif ($relation->relationType == static::$relationMutual) {
-            $mutualTypeAttribute = $relation->mutualTypeAttribute;
-            $opposite->$mutualTypeAttribute = $relation->$mutualTypeAttribute;
+            $opposite->setMutualType($relation->getMutualType());
         }
         return $opposite;
+    }
+    
+    /**
+     * Get mutual type.
+     * @return integer
+     */
+    public function getMutualType()
+    {
+        $btAttribute = $this->mutualTypeAttribute;
+        if (is_string($btAttribute) && !empty($btAttribute)) {
+            return $this->$btAttribute;
+        }
+        return static::$mutualTypeNormal;
+    }
+    
+    /**
+     * Set mutual type.
+     * @param integer $type
+     * @return integer
+     */
+    protected function setMutualType($type)
+    {
+        if (!array_key_exists($type, static::$mutualTypes)) {
+            $type = static::$mutualTypeNormal;
+        }
+        $btAttribute = $this->mutualTypeAttribute;
+        if (is_string($btAttribute) && !empty($btAttribute)) {
+            return $this->$btAttribute = $type;
+        }
+        return static::$mutualTypeNormal;
     }
     
     /**
@@ -413,7 +470,7 @@ trait UserRelationTrait
         if (!$relation->getIsNewRecord()) {
             throw new InvalidValueException('This relation is not new one.');
         }
-        if (!$db && isset(\Yii::$app->db) && \Yii::$ap->db instanceof Connection) {
+        if (!$db && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
             $db = \Yii::$app->db;
         }
         if (!$db) {

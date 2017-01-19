@@ -49,6 +49,7 @@ trait MutualQueryTrait
     {
         $model = $this->noInitModel;
         $query = $this->andWhere([$model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)]);
+        /* @var $query static */
         if (!empty($others)) {
             $query = $query->andWhere([$model->createdByAttribute => BaseUserModel::compositeGUIDs($others)]);
         }

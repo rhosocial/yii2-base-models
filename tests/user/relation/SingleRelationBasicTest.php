@@ -30,6 +30,7 @@ class SingleRelationBasicTest extends SingleRelationTestCase
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other->register());
         $this->assertNull(UserSingleRelation::buildNormalRelation($this->user, $this->user));
+        $this->assertEquals(UserSingleRelation::$relationSingle, $this->relation->relationType);
         $this->assertTrue($this->relation->save());
         
         $this->assertTrue($this->user->deregister());
