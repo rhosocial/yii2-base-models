@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\tests\entity;
 
+use rhosocial\base\models\tests\data\ar\Entity;
+
 /**
  * @author vistart <i@vistart.me>
  */
@@ -28,7 +30,7 @@ class IDTest extends EntityTestCase
         $id = $this->entity->getID();
         $this->entity->setID($this->entity->generateId());
         $this->assertTrue($this->entity->save());
-        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+        $this->assertEquals(1, $this->entity->delete());
     }
     
     /**
@@ -44,6 +46,20 @@ class IDTest extends EntityTestCase
         $this->assertTrue($this->entity->save());
         $this->assertFalse($this->entity->checkIdExists($id));
         $this->assertFalse($this->entity->checkIdExists(null));
-        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+        $this->assertEquals(1, $this->entity->delete());
+    }
+    
+    /**
+     * @group entity
+     * @group id
+     */
+    public function testCompositeIDs()
+    {
+        $this->assertTrue($this->entity->save());
+        
+        $this->assertEquals($this->entity->getID(), Entity::compositeIDs($this->entity));
+        $this->assertEquals([$this->entity->getID()], Entity::compositeIDs([$this->entity]));
+        
+        $this->assertEquals(1, $this->entity->delete());
     }
 }

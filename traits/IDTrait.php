@@ -202,7 +202,7 @@ trait IDTrait
         }
         $ids = [];
         foreach ($models as $model) {
-            if ($models instanceof static) {
+            if ($model instanceof static) {
                 $ids[] = $model->getID();
             }
         }

@@ -342,8 +342,8 @@ trait UserRelationTrait
         if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
             return false;
         }
-        $relation = static::buildNormalRelation($relation->initiator, $relation->recipient);
-        return $relation->save();
+        $new = static::buildNormalRelation($relation->initiator, $relation->recipient);
+        return $new->save() && $relation->refresh();
     }
     
     /**
@@ -357,8 +357,8 @@ trait UserRelationTrait
         if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
             return false;
         }
-        $relation = static::buildSuspendRelation($relation->initiator, $relation->recipient);
-        return $relation->save();
+        $new = static::buildSuspendRelation($relation->initiator, $relation->recipient);
+        return $new->save() && $relation->refresh();
     }
 
     /**

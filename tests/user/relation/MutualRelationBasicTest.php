@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\user\relation;
 
+use rhosocial\base\models\tests\data\ar\relation\UserSingleRelation;
 use rhosocial\base\models\tests\data\ar\relation\UserRelation;
 
 /**
@@ -147,6 +148,11 @@ class MutualRelationBasicTest extends MutualRelationTestCase
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other1->register());
         
+        $this->assertFalse(UserRelation::revertNormalToSuspend(null));
+        $this->assertFalse(UserRelation::revertNormalToSuspend($this->user));
+        $this->assertFalse(UserRelation::revertNormalToSuspend($this->relationNormal));
+        $this->assertFalse(UserRelation::revertNormalToSuspend(UserSingleRelation::buildNormalRelation($this->user, $this->other1)));
+        
         $this->assertTrue($this->user->deregister());
         $this->assertEquals(0, $this->relationNormal->remove());
         $this->assertTrue($this->other1->deregister());
@@ -162,8 +168,37 @@ class MutualRelationBasicTest extends MutualRelationTestCase
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other2->register());
         
+        $this->assertFalse(UserRelation::transformSuspendToNormal(null));
+        $this->assertFalse(UserRelation::transformSuspendToNormal($this->user));
+        $this->assertFalse(UserRelation::transformSuspendToNormal($this->relationSuspend));
+        $this->assertFalse(UserRelation::transformSuspendToNormal(UserSingleRelation::buildNormalRelation($this->user, $this->other2)));
+        
         $this->assertTrue($this->user->deregister());
         $this->assertEquals(0, $this->relationSuspend->remove());
         $this->assertTrue($this->other2->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testInsertRelation()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertFalse(UserRelation::insertRelation(null));
+        $this->assertTrue(UserRelation::insertRelation($this->relationNormal));
+        try {
+            UserRelation::insertRelation($this->relationNormal);
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertTrue(true);
+        }
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
     }
 }
