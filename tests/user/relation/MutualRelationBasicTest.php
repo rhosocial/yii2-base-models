@@ -222,4 +222,104 @@ class MutualRelationBasicTest extends MutualRelationTestCase
         $this->assertEquals(0, $this->relationNormal->remove());
         $this->assertTrue($this->other1->deregister());
     }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testNormalIsFollowed()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertFalse(UserRelation::isFollowed($this->user, $this->other1));
+        $this->assertFalse(UserRelation::isFollowed($this->other1, $this->user));
+        $this->assertTrue($this->relationNormal->save());
+        $this->assertTrue(UserRelation::isFollowed($this->user, $this->other1));
+        $this->assertTrue(UserRelation::isFollowed($this->other1, $this->user));
+        
+        $this->assertEquals(1, $this->relationNormal->remove());
+        $this->assertFalse(UserRelation::isFollowed($this->user, $this->other1));
+        $this->assertFalse(UserRelation::isFollowed($this->other1, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testNormalIsFollowing()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other1->register());
+        
+        $this->assertFalse(UserRelation::isFollowing($this->user, $this->other1));
+        $this->assertFalse(UserRelation::isFollowing($this->other1, $this->user));
+        $this->assertTrue($this->relationNormal->save());
+        $this->assertTrue(UserRelation::isFollowing($this->user, $this->other1));
+        $this->assertTrue(UserRelation::isFollowing($this->other1, $this->user));
+        
+        $this->assertEquals(1, $this->relationNormal->remove());
+        $this->assertFalse(UserRelation::isFollowing($this->user, $this->other1));
+        $this->assertFalse(UserRelation::isFollowing($this->other1, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationNormal->remove());
+        $this->assertTrue($this->other1->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testSuspendIsFollowed()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        
+        $this->assertFalse(UserRelation::isFollowed($this->user, $this->other2));
+        $this->assertFalse(UserRelation::isFollowed($this->other2, $this->user));
+        $this->assertTrue($this->relationSuspend->save());
+        $this->assertTrue(UserRelation::isFollowed($this->user, $this->other2));
+        $this->assertTrue(UserRelation::isFollowed($this->other2, $this->user));
+        
+        $this->assertEquals(1, $this->relationSuspend->remove());
+        $this->assertFalse(UserRelation::isFollowed($this->user, $this->other2));
+        $this->assertFalse(UserRelation::isFollowed($this->other2, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-mutual
+     */
+    public function testSuspendIsFollowing()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other2->register());
+        
+        $this->assertFalse(UserRelation::isFollowing($this->user, $this->other2));
+        $this->assertFalse(UserRelation::isFollowing($this->other2, $this->user));
+        $this->assertTrue($this->relationSuspend->save());
+        $this->assertTrue(UserRelation::isFollowing($this->user, $this->other2));
+        $this->assertTrue(UserRelation::isFollowing($this->other2, $this->user));
+        
+        $this->assertEquals(1, $this->relationSuspend->remove());
+        $this->assertFalse(UserRelation::isFollowing($this->user, $this->other2));
+        $this->assertFalse(UserRelation::isFollowing($this->other2, $this->user));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertEquals(0, $this->relationSuspend->remove());
+        $this->assertTrue($this->other2->deregister());
+    }
 }
