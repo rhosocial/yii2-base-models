@@ -46,6 +46,23 @@ use yii\db\IntegrityException;
  * @property-read array $nonGroupMembers
  * @property-read integer $groupsCount
  * @property-read array $groupsRules
+ *
+ * @method {$this->multiBlamesClass} createGroup(BaseUserModel $user, array $config = [])
+ * @method array|false addGroup({$this->multiBlamesClass} $blame)
+ * @method array|false addOrCreateGroup(){$this->multiBlamesClass} &$blame = null, BaseUserModel $user = null)
+ * @method array|false removeGroup({$this->multiBlamesClass} $blame)
+ * @method array|false removeAllGroups()
+ * @method {$this->multiBlamesClass} getGroup(string $blameGuid)
+ * @method {$this->multiBlamesClass} getOrCreateGroup(string $blameGuid, BaseUserModel $user = null))
+ * @method array getGroupMembers({$this->multiBlamesClass} $blame) Get all members that belongs to 
+ * @method array getGroupGuids(bool $checkValid = false)
+ * @method array|false setGroupGuids(array $guids = [], bool $checkValid = false)
+ * @method array getOwnGroups() Get all groups that owned this relation.
+ * @method array getAllGroups() Get all groups created by whom created this relation.
+ * @method array getNonGroupMembers(BaseUserModel $user) Get members that do not belong to any group.
+ * @method integer getGroupsCount() Get the count of groups of this relation.
+ * @method array getGroupsRules() Get rules associated with group attribute.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -63,6 +80,7 @@ trait UserRelationTrait
         mb::getBlameds as getGroupMembers;
         mb::getBlameGuids as getGroupGuids;
         mb::setBlameGuids as setGroupGuids;
+        mb::getOwnBlames as getOwnGroups;
         mb::getAllBlames as getAllGroups;
         mb::getNonBlameds as getNonGroupMembers;
         mb::getBlamesCount as getGroupsCount;

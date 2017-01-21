@@ -115,7 +115,7 @@ trait MultipleBlameableTrait
             $blameGuid = $blame;
         }
         if ($blame instanceof $this->multiBlamesClass) {
-            $blameGuid = $blame->guid;
+            $blameGuid = $blame->getGUID();
         }
         $blameGuids = $this->getBlameGuids(true);
         if (array_search($blameGuid, $blameGuids)) {
@@ -148,7 +148,7 @@ trait MultipleBlameableTrait
 
     /**
      * Add specified blame, or create it before adding if doesn't exist.
-     * But you should save the blame instance before adding, or the operation
+     * But you should save the blame instance before adding it, or the operation
      * will fail.
      * @param {$this->multiBlamesClass}|string|array $blame
      * It will be regarded as blame's guid if it is a string. And assign the
@@ -174,20 +174,20 @@ trait MultipleBlameableTrait
         }
         if (is_array($blame)) {
             if ($user == null) {
-                $user = $this->user;
+                $user = $this->host;
             }
             $blame = static::getOrCreateBlame($blame, $user);
             if (!$blame->save()) {
                 return false;
             }
-            return $this->addBlame($blame->guid);
+            return $this->addBlame($blame->getGUID());
         }
         $blameGuid = '';
         if (is_string($blame)) {
             $blameGuid = $blame;
         }
         if ($blame instanceof $this->multiBlamesClass) {
-            $blameGuid = $blame->guid;
+            $blameGuid = $blame->getGUID();
         }
         if (($mbi = static::getBlame($blameGuid)) !== null) {
             return $this->addBlame($mbi);
@@ -314,11 +314,45 @@ trait MultipleBlameableTrait
     public static function getBlame($blameGuid)
     {
         $self = static::buildNoInitModel();
-        if (empty($self->multiBlamesClass) || !is_string($self->multiBlamesClass) || $self->multiBlamesAttribute === false) {
+        if (empty($blameGuid) || empty($self->multiBlamesClass) || !is_string($self->multiBlamesClass) || $self->multiBlamesAttribute === false) {
             return null;
         }
         $mbClass = $self->multiBlamesClass;
         return $mbClass::findOne($blameGuid);
+    }
+    
+    /**
+     * Get all blames that owned this relation.
+     * @return array
+     */
+    public function getOwnBlames()
+    {
+        $guids = $this->getBlameGuids(true);
+        $class = $this->multiBlamesClass;
+        return $class::findAll($guids);
+    }
+    
+    /**
+     * Set blames which would own this relation.
+     * @param array $blames
+     */
+    public function setOwnBlames($blames)
+    {
+        $guids = static::compositeGUIDs($blames);
+        return $this->setBlameGuids($guids, true);
+    }
+    
+    /**
+     * Check blame owned this.
+     * @param {$this->multiBlamesClass} $blame
+     * @return boolean
+     */
+    public function BlameOwned($blame)
+    {
+        if (!($blame instanceof $this->multiBlamesClass) || $blame->getIsNewRecord() || !static::getBlame($blame->getGUID())) {
+            return false;
+        }
+        return array_search($blame->getGUID(), $this->getBlameGuids(true));
     }
 
     /**
@@ -330,10 +364,7 @@ trait MultipleBlameableTrait
     public static function getOrCreateBlame($blameGuid, $user = null)
     {
         if (is_string($blameGuid)) {
-            $blameGuid = static::getBlame($blameGuid);
-            if ($blameGuid !== null) {
-                return $blameGuid;
-            }
+            return static::getBlame($blameGuid);
         }
         if (is_array($blameGuid)) {
             return static::createBlame($user, $blameGuid);
@@ -346,43 +377,53 @@ trait MultipleBlameableTrait
      * @param {$this->multiBlamesClass} $blame
      * @return array
      */
-    public function getBlameds($blame)
+    public static function getBlameds($blame)
     {
-        $blameds = static::getBlame($blame->guid);
+        $blameds = static::getBlame($blame->getGUID());
         if (empty($blameds)) {
             return null;
         }
-        $createdByAttribute = $this->createdByAttribute;
-        return static::find()->where([$createdByAttribute => $this->$createdByAttribute])
-                ->andWhere(['like', $this->multiBlamesAttribute, $blame->guid])->all();
+        $noInit = static::buildNoInitModel();
+        /* @var $noInit static */
+        $createdByAttribute = $noInit->createdByAttribute;
+        return static::find()->where([$createdByAttribute => $noInit->$createdByAttribute])
+                ->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
     }
 
     /**
      * Get all the blames of record.
+     * @param BaseUserModel $user
      * @return array all blames.
      */
-    public function getAllBlames()
+    public static function getAllBlames($user)
     {
-        if (empty($this->multiBlamesClass) ||
-            !is_string($this->multiBlamesClass) ||
-            $this->multiBlamesAttribute === false) {
+        $noInit = static::buildNoInitModel();
+        if (empty($noInit->multiBlamesClass) ||
+            !is_string($noInit->multiBlamesClass) ||
+            $noInit->multiBlamesAttribute === false) {
             return null;
         }
-        $multiBlamesClass = $this->multiBlamesClass;
-        $createdByAttribute = $this->createdByAttribute;
-        return $multiBlamesClass::findAll([$createdByAttribute => $this->$createdByAttribute]);
+        $multiBlamesClass = $noInit->multiBlamesClass;
+        $createdByAttribute = $noInit->createdByAttribute;
+        return $multiBlamesClass::findAll([$createdByAttribute => $user->getGUID()]);
     }
 
     /**
      * Get all records which without any blames.
+     * @param BaseUserModel $user
      * @return array all non-blameds.
      */
-    public function getNonBlameds()
+    public static function getNonBlameds($user = null)
     {
-        $createdByAttribute = $this->createdByAttribute;
+        $noInit = static::buildNoInitModel();
+        /* @var $noInit static */
+        $createdByAttribute = $noInit->createdByAttribute;
+        if (!$user) {
+            $user = \Yii::$app->user->identity;
+        }
         $cond = [
-            $createdByAttribute => $this->$createdByAttribute,
-            $this->multiBlamesAttribute => ''
+            $createdByAttribute => $user->getGUID(),
+            $noInit->multiBlamesAttribute => ''
         ];
         return static::find()->where($cond)->all();
     }

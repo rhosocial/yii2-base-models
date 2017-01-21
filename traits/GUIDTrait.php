@@ -135,6 +135,11 @@ trait GUIDTrait
         return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
     }
     
+    /**
+     * Composite GUIDs from models.
+     * @param array|string $models
+     * @return array
+     */
     public static function compositeGUIDs($models)
     {
         if (empty($models)) {
@@ -150,6 +155,12 @@ trait GUIDTrait
         foreach ($models as $model) {
             if ($model instanceof static) {
                 $guids[] = $model->getGUID();
+            } elseif (is_string($model)) {
+                if (strlen($model) == 16) {
+                    $guids[] = $model;
+                } elseif (preg_match(Number::GUID_REGEX, $model)) {
+                    $guids[] = Number::guid_bin($model);
+                }
             }
         }
         return $guids;
