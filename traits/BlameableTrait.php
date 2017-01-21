@@ -136,7 +136,12 @@ trait BlameableTrait
      * when you use create() method of UserTrait, it will be assigned with
      * current user class.
      */
-    public $userClass;
+    //public $userClass;
+    
+    /**
+     * @var boolean|string 
+     */
+    public $hostClass;
     public static $cacheKeyBlameableRules = 'blameable_rules';
     public static $cacheTagBlameableRules = 'tag_blameable_rules';
     public static $cacheKeyBlameableBehaviors = 'blameable_behaviors';
@@ -485,10 +490,37 @@ trait BlameableTrait
      */
     public function getUser()
     {
-        $userClass = $this->userClass;
-        $model = $userClass::buildNoInitModel();
-        /* @var $model BaseUserModel */
-        return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->createdByAttribute]);
+        return $this->getHost();
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public function getHost()
+    {
+        $hostClass = $this->hostClass;
+        $model = $hostClass::buildNoInitModel();
+        return $this->hasOne($hostClass::className(), [$model->guidAttribute => $this->createdByAttribute]);
+    }
+    
+    /**
+     * 
+     * @param string $host
+     * @return type
+     */
+    public function setHost($host)
+    {
+        if ($host instanceof $this->hostClass || $host instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->createdByAttribute} = $host->getGUID();
+        }
+        if (is_string($host) && preg_match(Number::GUID_REGEX, $host)) {
+            return $this->{$this->createdByAttribute} = Number::guid_bin($host);
+        }
+        if (strlen($host) == 16) {
+            return $this->{$this->createdByAttribute} = $user;
+        }
+        return false;
     }
     
     /**
@@ -498,16 +530,7 @@ trait BlameableTrait
      */
     public function setUser($user)
     {
-        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
-            return $this->{$this->createdByAttribute} = $user->getGUID();
-        }
-        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
-            return $this->{$this->createdByAttribute} = Number::guid_bin($user);
-        }
-        if (strlen($user) == 16) {
-            return $this->{$this->createdByAttribute} = $user;
-        }
-        return false;
+        return $this->setHost($user);
     }
 
     /**
@@ -521,10 +544,10 @@ trait BlameableTrait
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return null;
         }
-        $userClass = $this->userClass;
-        $model = $userClass::buildNoInitModel();
+        $hostClass = $this->hostClass;
+        $model = $hostClass::buildNoInitModel();
         /* @var $model BaseUserModel */
-        return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->updatedByAttribute]);
+        return $this->hasOne($hostClass::className(), [$model->guidAttribute => $this->updatedByAttribute]);
     }
     
     /**
@@ -532,19 +555,19 @@ trait BlameableTrait
      * @param BaseUserModel|string $user
      * @return boolean
      */
-    public function setUpdater($user)
+    public function setUpdater($updater)
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
         }
-        if ($user instanceof $this->userClass || $user instanceof \yii\web\IdentityInterface) {
-            return $this->{$this->updatedByAttribute} = $user->getGUID();
+        if ($updater instanceof $this->hostClass || $updater instanceof \yii\web\IdentityInterface) {
+            return $this->{$this->updatedByAttribute} = $updater->getGUID();
         }
-        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
-            return $this->{$this->updatedByAttribute} = Number::guid_bin($user);
+        if (is_string($updater) && preg_match(Number::GUID_REGEX, $updater)) {
+            return $this->{$this->updatedByAttribute} = Number::guid_bin($updater);
         }
-        if (strlen($user) == 16) {
-            return $this->{$this->updatedByAttribute} = $user;
+        if (strlen($updater) == 16) {
+            return $this->{$this->updatedByAttribute} = $updater;
         }
         return false;
     }

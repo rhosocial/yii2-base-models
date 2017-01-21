@@ -27,7 +27,7 @@ use yii\caching\TagDependency;
  */
 trait EntityTrait
 {
-    use GUIDTrait, IDTrait, IPTrait, TimestampTrait;
+    use GUIDTrait, IDTrait, IPTrait, TimestampTrait, SubsidiaryTrait;
     
     private $entityLocalRules = [];
     private $entityLocalBehaviors = [];

@@ -20,6 +20,11 @@ class RedisBlameable extends \rhosocial\base\models\models\BaseRedisBlameableMod
     public $guidAttribute = false;
     public $idAttribute = 'alpha2';
     
+    public function init() {
+        $this->hostClass = User::class;
+        parent::init();
+    }
+    
     public static function primaryKey()
     {
         return ['alpha2'];

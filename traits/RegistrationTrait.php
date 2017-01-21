@@ -14,9 +14,8 @@ namespace rhosocial\base\models\traits;
 
 use Yii;
 use yii\base\ModelEvent;
-use yii\db\Exception;
 use yii\db\IntegrityException;
-use yii\rbac\BaseManager;
+use yii\rbac\ManagerInterface;
 use yii\rbac\Role;
 
 /**
@@ -77,7 +76,7 @@ trait RegistrationTrait
     /**
      * Get auth manager. If auth manager not configured, Yii::$app->authManager
      * will be given.
-     * @return BaseManager
+     * @return ManagerInterface
      */
     public function getAuthManager()
     {

@@ -26,7 +26,7 @@ class UserComment extends BaseBlameableModel
     
     public function init()
     {
-        $this->userClass = User::class;
+        $this->hostClass = User::class;
         parent::init();
         $this->setContent(\Yii::$app->security->generateRandomString());
     }

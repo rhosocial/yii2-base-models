@@ -28,7 +28,7 @@ class UserRelation extends BaseUserRelationModel
      */
     public function init()
     {
-        $this->userClass = User::class;
+        $this->hostClass = User::class;
         $this->multiBlamesClass = UserRelationGroup::class;
         parent::init();
     }

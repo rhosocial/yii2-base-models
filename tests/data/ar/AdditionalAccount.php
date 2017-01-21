@@ -19,7 +19,7 @@ class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAcco
 {
     public function init()
     {
-        $this->userClass = User::class;
+        $this->hostClass = User::class;
         parent::init();
     }
     

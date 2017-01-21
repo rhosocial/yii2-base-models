@@ -35,7 +35,7 @@ trait MutualTrait
      */
     public function getInitiator()
     {
-        return $this->getUser();
+        return $this->getHost();
     }
 
     /**
@@ -47,9 +47,9 @@ trait MutualTrait
         if (!is_string($this->otherGuidAttribute)) {
             return null;
         }
-        $userClass = $this->userClass;
-        $model = $userClass::buildNoInitModel();
-        return $this->hasOne($userClass::className(), [$model->guidAttribute => $this->otherGuidAttribute]);
+        $hostClass = $this->hostClass;
+        $model = $hostClass::buildNoInitModel();
+        return $this->hasOne($hostClass::className(), [$model->guidAttribute => $this->otherGuidAttribute]);
     }
 
     /**

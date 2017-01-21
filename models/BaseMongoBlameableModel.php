@@ -77,29 +77,29 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
-    public function getUser()
+    public function getHost()
     {
-        $userClass = $this->userClass;
-        $user = $userClass::buildNoInitModel();
+        $hostClass = $this->hostClass;
+        $user = $hostClass::buildNoInitModel();
         /* @var BaseUserModel $user */
-        return $this->hasOne($userClass::className(), [$user->guidAttribute => $this->createdByAttribute]);
+        return $this->hasOne($hostClass::className(), [$user->guidAttribute => $this->createdByAttribute]);
     }
     
     /**
      * 
-     * @param IdentityInterface $user
+     * @param IdentityInterface $host
      * @return boolean
      */
-    public function setUser($user)
+    public function setHost($host)
     {
-        if ($user instanceof $this->userClass || $user instanceof IdentityInterface) {
-            return $this->{$this->createdByAttribute} = $user->getReadableGUID();
+        if ($host instanceof $this->hostClass || $host instanceof IdentityInterface) {
+            return $this->{$this->createdByAttribute} = $host->getReadableGUID();
         }
-        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
-            return $this->{$this->createdByAttribute} = $user;
+        if (is_string($host) && preg_match(Number::GUID_REGEX, $host)) {
+            return $this->{$this->createdByAttribute} = $host;
         }
-        if (strlen($user) == 16) {
-            return $this->{$this->createdByAttribute} = Number::guid(false, false, $user);
+        if (strlen($host) == 16) {
+            return $this->{$this->createdByAttribute} = Number::guid(false, false, $host);
         }
         return false;
     }
@@ -115,10 +115,10 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return null;
         }
-        $userClass = $this->userClass;
-        $user = $userClass::buildNoInitModel();
+        $hostClass = $this->hostClass;
+        $host = $hostClass::buildNoInitModel();
         /* @var $user BaseUserModel */
-        return $this->hasOne($userClass::className(), [$user->guidAttribute => $this->updatedByAttribute]);
+        return $this->hasOne($hostClass::className(), [$host->guidAttribute => $this->updatedByAttribute]);
     }
     
     /**
@@ -126,19 +126,19 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * @param IdentityInterface $user
      * @return boolean
      */
-    public function setUpdater($user)
+    public function setUpdater($updater)
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
         }
-        if ($user instanceof $this->userClass || $user instanceof IdentityInterface) {
-            return $this->{$this->updatedByAttribute} = $user->getReadableGUID();
+        if ($updater instanceof $this->hostClass || $updater instanceof IdentityInterface) {
+            return $this->{$this->updatedByAttribute} = $updater->getReadableGUID();
         }
-        if (is_string($user) && preg_match(Number::GUID_REGEX, $user)) {
-            return $this->{$this->updatedByAttribute} = $user;
+        if (is_string($updater) && preg_match(Number::GUID_REGEX, $updater)) {
+            return $this->{$this->updatedByAttribute} = $updater;
         }
-        if (strlen($user) == 16) {
-            return $this->{$this->updatedByAttribute} = Number::guid(false, false, $user);
+        if (strlen($updater) == 16) {
+            return $this->{$this->updatedByAttribute} = Number::guid(false, false, $updater);
         }
         return false;
     }

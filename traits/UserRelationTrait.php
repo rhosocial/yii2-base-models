@@ -23,7 +23,7 @@ use yii\db\IntegrityException;
 /**
  * Relation features.
  * This trait should be used in user relation model which is extended from
- * [[BaseBlameableModel]], and is specified `$userClass` property. And the user
+ * [[BaseBlameableModel]], and is specified `$hostClass` property. And the user
  * class should be extended from [[BaseUserModel]], or any other classes used
  * [[UserTrait]].
  * Notice: Several methods associated with "inserting", "updating" and "removing" may
@@ -382,9 +382,9 @@ trait UserRelationTrait
         if (!$relation) {
             $createdByAttribute = $noInit->createdByAttribute;
             $otherGuidAttribute = $noInit->otherGuidAttribute;
-            $userClass = $noInit->userClass;
+            $hostClass = $noInit->hostClass;
             if ($user instanceof BaseUserModel) {
-                $userClass = $userClass ? : $user->className();
+                $hostClass = $hostClass ? : $user->className();
                 $user = $user->getGUID();
             }
             if ($other instanceof BaseUserModel) {
@@ -393,7 +393,7 @@ trait UserRelationTrait
             if (!$noInit->relationSelf && $user == $other) {
                 return null;
             }
-            $relation = new static([$createdByAttribute => $user, $otherGuidAttribute => $other, 'userClass' => $userClass]);
+            $relation = new static([$createdByAttribute => $user, $otherGuidAttribute => $other, 'hostClass' => $hostClass]);
         }
         return $relation;
     }
@@ -543,7 +543,11 @@ trait UserRelationTrait
      */
     public static function removeOneRelation($user, $other)
     {
-        return static::find()->initiators($user)->recipients($other)->one()->remove();
+        $model = static::find()->initiators($user)->recipients($other)->one();
+        if ($model instanceof static) {
+            return $model->remove();
+        }
+        return false;
     }
 
     /**
@@ -612,7 +616,7 @@ trait UserRelationTrait
     {
         $sender = $event->sender;
         $remarkAttribute = $sender->remarkAttribute;
-        is_string($remarkAttribute) ? $sender->$remarkAttribute = '' : null;
+        (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $sender->$remarkAttribute = '' : null;
     }
 
     /**

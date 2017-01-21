@@ -47,7 +47,7 @@ class UserEmail extends BaseBlameableModel
     
     public function init()
     {
-        $this->userClass = User::class;
+        $this->hostClass = User::class;
         $this->initDescription = Yii::$app->security->generateRandomString();
         parent::init();
     }

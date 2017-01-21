@@ -22,4 +22,18 @@ class MongoBlameable extends BaseMongoBlameableModel
     public static function collectionName() {
         return ['yii2-base-models', 'blameable'];
     }
+    
+    public function init() {
+        $this->hostClass = User::class;
+        parent::init();
+    }
+    
+    /**
+     * 
+     * @return \rhosocial\base\models\queries\BaseMongoBlameableQuery;
+     */
+    public static function find()
+    {
+        return parent::find();
+    }
 }
