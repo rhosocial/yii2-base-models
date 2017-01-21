@@ -56,6 +56,7 @@ Trait SubsidiaryTrait
         if (!is_string($name) || empty($name)) {
             throw new InvalidConfigException('Subsidiary name not specified.');
         }
+        $name = strtolower($name);
         if (!is_array($config)) {
             if (is_string($config) && !empty($config)) {
                 $this->subsidiaryMap[$name] = ['class' => $config];
@@ -79,6 +80,7 @@ Trait SubsidiaryTrait
      */
     public function removeSubsidiary($name)
     {
+        $name = strtolower($name);
         if (array_key_exists($name, $this->subsidiaryMap)) {
             unset($this->subsidiaryMap[$name]);
             return true;
@@ -93,6 +95,7 @@ Trait SubsidiaryTrait
      */
     public function getSubsidiaryClass($name)
     {
+        $name = strtolower($name);
         if (array_key_exists($name, $this->subsidiaryMap) && array_key_exists('class', $this->subsidiaryMap[$name]))
         {
             return class_exists($this->subsidiaryMap[$name]['class']) ? $this->subsidiaryMap[$name]['class'] : null;
@@ -100,61 +103,23 @@ Trait SubsidiaryTrait
         return null;
     }
     
-    /**
-     * 
-     * @param string $name
-     * @param integer $limit
-     * @return boolean
-     */
-    public function changeSubsidiaryLimit($name, $limit)
+    public function getSubsidiaries($name, $limit = 'all', $page = 0)
     {
-        if (!array_key_exists($name, $this->subsidiaryMap)) {
-            return false;
+        $class = $this->getSubsidiaryClass($name);
+        if (empty($class)) {
+            return null;
         }
-        $this->subsidiaryMap[$name]['limit'] = $limit;
-    }
-    
-    /**
-     * 
-     * @param string $name
-     * @return boolean
-     */
-    public function removeSubsidiaryLimit($name)
-    {
-        if (!array_key_exists($name, $this->subsidiaryMap)) {
-            return false;
+        $query = $class::find();
+        if (!method_exists($query, 'createdBy')) {
+            return null;
         }
-        if (array_key_exists('limit', $this->subsidiaryMap[$name]))
-        {
-            unset($this->subsidiaryMap[$name]['limit']);
-        }
-        return true;
-    }
-    
-    /**
-     * 
-     * @param string $name
-     * @return boolean
-     * @throws InvalidConfigException
-     */
-    public function getSubsidiaryLimit($name)
-    {
-        if (!array_key_exists($name, $this->subsidiaryMap)) {
-            throw new InvalidConfigException('Subsidiary not exists.');
-        }
-        if (!array_key_exists('limit', $this->subsidiaryMap[$name])) {
-            return false;
-        }
-        if (is_int($this->subsidiaryMap[$name]['limit']) && $this->subsidiaryMap[$name]['limit'] > 0) {
-            return $this->subsidiaryMap[$name]['limit'];
-        }
-        return false;
+        return $class::find()->createdBy($this)->page($limit, $page)->all();
     }
     
     public function __call($name, $arguments)
     {
         if (strpos(strtolower($name), "create") === 0) {
-            $class = substr($name, 6);
+            $class = strtolower(substr($name, 6));
             $config = (isset($arguments) && isset($arguments[0])) ? $arguments[0] : [];
             return $this->createSubsidiary($class, $config);
         }
@@ -230,7 +195,6 @@ Trait SubsidiaryTrait
      * @param string $name
      * @param array $config
      * @return type
-     * @todo 区分字符串和类的实例两种情况。
      */
     public function createSubsidiary($name, $config)
     {
