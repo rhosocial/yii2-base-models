@@ -37,8 +37,9 @@ class BlameableTestCase extends UserTestCase
         parent::setUp();
         $this->post = $this->user->create(UserPost::class);
         $this->comments = [];
-        for ($i = 0; $i < 10; $i++) {
-            $this->comments[] = $this->user->create(UserComment::class, ['post_guid' => $this->post->getGUID()]);
+        $this->comments[0] = $this->user->create(UserComment::class, ['post' => $this->post]);
+        for ($i = 1; $i < 10; $i++) {
+            $this->comments[] = $this->user->create(UserComment::class, ['post' => $this->post, 'parent' => $this->comments[$i - 1]]);
         }
     }
     

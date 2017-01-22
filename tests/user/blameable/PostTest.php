@@ -22,6 +22,7 @@ class PostTest extends BlameableTestCase
 {
     /**
      * @group blameable
+     * @group post
      */
     public function testNew()
     {
@@ -31,6 +32,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testCreator()
     {
@@ -45,6 +47,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testUpdater()
     {
@@ -59,6 +62,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testHasEverEdited()
     {
@@ -73,6 +77,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testEnabledFields()
     {
@@ -83,6 +88,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testFindAllByIdentityInBatch()
     {
@@ -100,6 +106,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testFindOneById()
     {
@@ -133,6 +140,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testFindByIdentity()
     {
@@ -148,6 +156,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testCountByIdentity()
     {
@@ -158,6 +167,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testFindByCreator()
     {
@@ -173,6 +183,7 @@ class PostTest extends BlameableTestCase
     
     /**
      * @group blameable
+     * @group post
      */
     public function testFindByUpdater()
     {
@@ -188,6 +199,7 @@ class PostTest extends BlameableTestCase
 
     /**
      * @group blameable
+     * @group post
      */
     public function testFindByContent()
     {

@@ -20,7 +20,7 @@ use rhosocial\base\models\models\BaseBlameableModel;
  */
 class UserComment extends BaseBlameableModel
 {
-    public $idAttributeLength = 255;
+    public $idAttributeLength = 16;
     
     public $parentAttribute = 'parent_guid';
     
@@ -43,5 +43,27 @@ class UserComment extends BaseBlameableModel
     public static function find()
     {
         return parent::find();
+    }
+    
+    /**
+     * 
+     * @return UserPost
+     */
+    public function getPost()
+    {
+        return UserPost::findOne($this->post_guid);
+    }
+    
+    /**
+     * 
+     * @param UserPost $post
+     */
+    public function setPost($post)
+    {
+        if ($post instanceof UserPost) {
+            $this->post_guid = $post->getGUID();
+        } else {
+            $this->post_guid = '';
+        }
     }
 }

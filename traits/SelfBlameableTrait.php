@@ -309,14 +309,14 @@ trait SelfBlameableTrait
      */
     public function setParent($parent)
     {
-        if (empty($parent) || $this->guid == $parent->guid || $parent->hasAncestor($this) || $parent->hasReachedAncestorLimit()) {
+        if (empty($parent) || $this->getGUID() == $parent->getGUID() || $parent->hasAncestor($this) || $parent->hasReachedAncestorLimit()) {
             return false;
         }
         unset($this->parent);
         unset($parent->children);
         $this->trigger(static::$eventParentChanged);
         $parent->trigger(static::$eventChildAdded);
-        return $this->{$this->parentAttribute} = $parent->guid;
+        return $this->{$this->parentAttribute} = $parent->getGUID();
     }
 
     /**
@@ -339,7 +339,7 @@ trait SelfBlameableTrait
         if (!$this->hasParent()) {
             return false;
         }
-        if ($this->parent->guid == $ancestor->guid) {
+        if ($this->parent->getGUID() == $ancestor->getGUID()) {
             return true;
         }
         return $this->parent->hasAncestor($ancestor);
@@ -362,7 +362,7 @@ trait SelfBlameableTrait
         if (!$this->hasParent()) {
             return $ancestor;
         }
-        $ancestor[] = $this->parent->guid;
+        $ancestor[] = $this->parent->getGUID();
         return $this->parent->getAncestorChain($ancestor);
     }
 
@@ -413,7 +413,7 @@ trait SelfBlameableTrait
             return null;
         }
         $ancestor = $this->getAncestorChain();
-        if (in_array($model->parent->guid, $ancestor)) {
+        if (in_array($model->parent->getGUID(), $ancestor)) {
             return $model->parent;
         }
         return $this->getCommonAncestor($model->parent);
