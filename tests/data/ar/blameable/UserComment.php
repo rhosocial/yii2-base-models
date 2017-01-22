@@ -16,7 +16,7 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseBlameableModel;
 
 /**
- * @author vistart <i@vistsart.me>
+ * @author vistart <i@vistart.me>
  */
 class UserComment extends BaseBlameableModel
 {
@@ -24,9 +24,13 @@ class UserComment extends BaseBlameableModel
     
     public $parentAttribute = 'parent_guid';
     
+    public function __construct($config = array()) {
+        $this->hostClass = User::class;
+        parent::__construct($config);
+    }
+    
     public function init()
     {
-        $this->hostClass = User::class;
         parent::init();
         $this->setContent(\Yii::$app->security->generateRandomString());
     }
@@ -65,5 +69,21 @@ class UserComment extends BaseBlameableModel
         } else {
             $this->post_guid = '';
         }
+    }
+    
+    /**
+     * Commit a comment.
+     * @param static $comment
+     * @param string $content
+     * @param User $user
+     * @return static
+     */
+    public static function commit($comment, $content, $user)
+    {
+        $sub = $comment->bear(['post' => $comment->post, 'user' => $user, 'content' => $content]);
+        if (!($sub instanceof static) || !$sub->save()) {
+            return false;
+        }
+        return $sub;
     }
 }

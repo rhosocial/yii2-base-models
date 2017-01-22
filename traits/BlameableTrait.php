@@ -518,7 +518,7 @@ trait BlameableTrait
             return $this->{$this->createdByAttribute} = Number::guid_bin($host);
         }
         if (strlen($host) == 16) {
-            return $this->{$this->createdByAttribute} = $user;
+            return $this->{$this->createdByAttribute} = $host;
         }
         return false;
     }

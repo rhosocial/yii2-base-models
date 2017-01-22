@@ -58,6 +58,7 @@ class SingleRelationMultiUserTest extends SingleRelationTestCase
                 $this->assertTrue($other->register());
             }
         } catch (\Exception $ex) {
+            echo $ex->getMessage();
             $this->fail();
         }
     }
@@ -71,6 +72,7 @@ class SingleRelationMultiUserTest extends SingleRelationTestCase
                 $this->assertTrue($other->deregister());
             }
         } catch (\Exception $ex) {
+            echo $ex->getMessage();
             $this->fail();
         }
     }

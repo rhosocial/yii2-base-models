@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\user\blameable;
 
+use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 use rhosocial\base\models\tests\user\UserTestCase;
@@ -33,8 +34,14 @@ class BlameableTestCase extends UserTestCase
      */
     public $comments = null;
     
+    /**
+     * @var User 
+     */
+    public $other = null;
+    
     protected function setUp() {
         parent::setUp();
+        $this->other = new User(['password' => \Yii::$app->security->generateRandomString()]);
         $this->post = $this->user->create(UserPost::class);
         $this->comments = [];
         $this->comments[0] = $this->user->create(UserComment::class, ['post' => $this->post]);

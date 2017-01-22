@@ -160,7 +160,7 @@ trait SelfBlameableTrait
         if ($this->ancestorLimit === false) {
             return false;
         }
-        if (!is_numeric($this->ancestorLimit)) {
+        if (!is_numeric($this->ancestorLimit) || $this->ancestorLimit < 0) {
             $this->ancestorLimit = 256;
         }
         return count($this->getAncestorChain()) >= $this->ancestorLimit;
@@ -177,7 +177,7 @@ trait SelfBlameableTrait
         if ($this->childrenLimit === false) {
             return false;
         }
-        if (!is_numeric($this->childrenLimit)) {
+        if (!is_numeric($this->childrenLimit) || $this->childrenLimit < 0) {
             $this->childrenLimit = 1024;
         }
         return ((int) $this->getChildren()->count()) >= $this->childrenLimit;
@@ -212,9 +212,11 @@ trait SelfBlameableTrait
         if (isset($config['class'])) {
             unset($config['class']);
         }
-        $refIdAttribute = $this->refIdAttribute;
-        $config[$this->parentAttribute] = $this->$refIdAttribute;
-        return new static($config);
+        $model = new static($config);
+        if ($this->addChild($model) === false) {
+            return false;
+        }
+        return $model;
     }
 
     /**
@@ -224,7 +226,7 @@ trait SelfBlameableTrait
      */
     public function addChild($child)
     {
-        return $this->hasReachedChildrenLimit() ? $child->setParent($this) : false;
+        return $this->hasReachedChildrenLimit() ? false : $child->setParent($this);
     }
 
     /**
@@ -236,6 +238,7 @@ trait SelfBlameableTrait
     public function onDeleteChildren($event)
     {
         $sender = $event->sender;
+        /* @var @sender static */
         if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
@@ -268,6 +271,7 @@ trait SelfBlameableTrait
     public function onUpdateChildren($event)
     {
         $sender = $event->sender;
+        /* @var @sender static */
         if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
@@ -305,7 +309,7 @@ trait SelfBlameableTrait
      * Set parent.
      * Don't forget save model after setting it.
      * @param static $parent
-     * @return false|string
+     * @return false|string False if restriction reached. Otherwise parent's GUID given.
      */
     public function setParent($parent)
     {
@@ -389,7 +393,8 @@ trait SelfBlameableTrait
      */
     public function getAncestors()
     {
-        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->getAncestorModels($this->getAncestorChain()) : null;
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
+        static::getAncestorModels($this->getAncestorChain()) : null;
     }
 
     /**
@@ -399,7 +404,7 @@ trait SelfBlameableTrait
      */
     public function hasCommonAncestor($model)
     {
-        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->getCommonAncestor($model) !== null : false;
+        return $this->getCommonAncestor($model) !== null;
     }
 
     /**
