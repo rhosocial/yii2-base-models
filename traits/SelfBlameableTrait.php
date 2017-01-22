@@ -238,7 +238,7 @@ trait SelfBlameableTrait
     public function onDeleteChildren($event)
     {
         $sender = $event->sender;
-        /* @var @sender static */
+        /* @var $sender static */
         if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
@@ -271,7 +271,7 @@ trait SelfBlameableTrait
     public function onUpdateChildren($event)
     {
         $sender = $event->sender;
-        /* @var @sender static */
+        /* @var $sender static */
         if (empty($sender->parentAttribute) || !is_string($sender->parentAttribute)) {
             return true;
         }
@@ -304,6 +304,28 @@ trait SelfBlameableTrait
     {
         return $this->hasOne(static::class, [$this->refIdAttribute => $this->parentAttribute]);
     }
+    
+    public function getRefId()
+    {
+        if ($this->refIdAttribute == $this->guidAttribute) {
+            return $this->getGUID();
+        }
+        if ($this->refIdAttribute == $this->idAttribute) {
+            return $this->getID();
+        }
+        return $this->{$this->refIdAttribute};
+    }
+    
+    public function setRefId($id)
+    {
+        if ($this->refIdAttribute == $this->guidAttribute) {
+            return $this->setGUID($id);
+        }
+        if ($this->refIdAttribute == $this->idAttribute) {
+            return $this->setID($id);
+        }
+        return $this->{$this->refIdAttribute} = $id;
+    }
 
     /**
      * Set parent.
@@ -313,14 +335,21 @@ trait SelfBlameableTrait
      */
     public function setParent($parent)
     {
-        if (empty($parent) || $this->getGUID() == $parent->getGUID() || $parent->hasAncestor($this) || $parent->hasReachedAncestorLimit()) {
+        if (empty($parent) || $this->getRefId() == $parent->getRefId() || $parent->hasAncestor($this) || $this->hasReachedAncestorLimit()) {
             return false;
         }
         unset($this->parent);
         unset($parent->children);
         $this->trigger(static::$eventParentChanged);
         $parent->trigger(static::$eventChildAdded);
-        return $this->{$this->parentAttribute} = $parent->getGUID();
+        return $this->{$this->parentAttribute} = $parent->getRefId();
+    }
+    
+    public function setNullParent()
+    {
+        unset($this->parent->children);
+        unset($this->parent);
+        $this->{$this->parentAttribute} = '';
     }
 
     /**
@@ -343,7 +372,7 @@ trait SelfBlameableTrait
         if (!$this->hasParent()) {
             return false;
         }
-        if ($this->parent->getGUID() == $ancestor->getGUID()) {
+        if ($this->parent->getRefId() == $ancestor->getRefId()) {
             return true;
         }
         return $this->parent->hasAncestor($ancestor);
@@ -366,7 +395,7 @@ trait SelfBlameableTrait
         if (!$this->hasParent()) {
             return $ancestor;
         }
-        $ancestor[] = $this->parent->getGUID();
+        $ancestor[] = $this->parent->getRefId();
         return $this->parent->getAncestorChain($ancestor);
     }
 
@@ -378,7 +407,7 @@ trait SelfBlameableTrait
     public static function getAncestorModels($ancestor)
     {
         if (empty($ancestor) || !is_array($ancestor)) {
-            return null;
+            return [];
         }
         $models = [];
         foreach ($ancestor as $self) {
@@ -418,7 +447,7 @@ trait SelfBlameableTrait
             return null;
         }
         $ancestor = $this->getAncestorChain();
-        if (in_array($model->parent->getGUID(), $ancestor)) {
+        if (in_array($model->parent->getRefId(), $ancestor)) {
             return $model->parent;
         }
         return $this->getCommonAncestor($model->parent);
@@ -464,11 +493,11 @@ trait SelfBlameableTrait
         $transaction = $this->getDb()->beginTransaction();
         try {
             foreach ($children as $child) {
+                /* @var $child static */
                 if ($value === false) {
-                    $refIdAttribute = $this->refIdAttribute;
-                    $child->$parentAttribute = $this->$refIdAttribute;
+                    $child->setParent($this);
                 } elseif (empty($value)) {
-                    $child->$parentAttribute = '';
+                    $child->setNullParent();
                 } else {
                     $child->$parentAttribute = $value;
                 }
@@ -509,6 +538,7 @@ trait SelfBlameableTrait
         $transaction = $this->getDb()->beginTransaction();
         try {
             foreach ($children as $child) {
+                /* @var $child static */
                 if (!$child->delete()) {
                     throw new IntegrityException('Delete failed:', $child->getErrors());
                 }

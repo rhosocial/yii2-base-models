@@ -218,4 +218,21 @@ class PostTest extends BlameableTestCase
         $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent())->all();
         $this->assertCount(0, $results);
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testFalseParentAttribute()
+    {
+        try {
+            $this->post->bear();
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertEquals("Parent Attribute Not Determined.", $ex->getMessage());
+        }
+        
+        $this->assertEmpty($this->post->getAncestorChain());
+        $this->assertEmpty($this->post->getCommonAncestor($this));
+    }
 }
