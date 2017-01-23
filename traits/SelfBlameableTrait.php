@@ -20,6 +20,7 @@ use yii\db\IntegrityException;
 
 /**
  * This trait is designed for the model who contains parent.
+ *
  * The BlameableTrait use this trait by default. If you want to use this trait
  * into seperate model, please call the `initSelfBlameableEvents()` method in
  * `init()` method, like following:
@@ -30,6 +31,22 @@ use yii\db\IntegrityException;
  *     parent::init();
  * }
  * ```
+ *
+ * The default reference ID attribute is `guid`. You can specify another attribute
+ * in [[__construct()]] method.
+ *
+ * We strongly recommend you to set ancestor limit and children limit, and should
+ * not be too large.
+ * The ancestor limit is preferably no more than 256, and children limit is no
+ * more than 1024.
+ * Too large number may seriously slow down the database response speed, especially
+ * in updating operation.
+ * 
+ * The the data consistency between reference ID attribute and parent attribute
+ * can only be ensured by my own. And update and delete operations should be placed
+ * in the transaction to avoid data inconsistencies.
+ * Even so, we cannot fully guarantee data consistency. Therefore, we provide a
+ * method [[clearInvalidParent()]] for clearing non-existing parent node.
  *
  * @property static $parent
  * @property-read static[] $ancestors
@@ -71,6 +88,10 @@ trait SelfBlameableTrait
         0 => 'none',
         1 => 'parent',
     ];
+    
+    /**
+     * @var string The constant determines the null parent. 
+     */
     public static $nullParent = '';
     public static $onNoAction = 0;
     public static $onRestrict = 1;
@@ -222,8 +243,9 @@ trait SelfBlameableTrait
 
     /**
      * Add a child.
+     * But if children limit reached, false will be given.
      * @param static $child
-     * @return boolean
+     * @return boolean Whether adding child succeeded or not.
      */
     public function addChild($child)
     {
@@ -232,6 +254,7 @@ trait SelfBlameableTrait
 
     /**
      * Event triggered before deleting itself.
+     * Note: DO NOT call it directly unless you know the consequences.
      * @param ModelEvent $event
      * @return boolean true if parentAttribute not specified.
      * @throws IntegrityException throw if $throwRestrictException is true when $onDeleteType is on restrict.
@@ -246,7 +269,7 @@ trait SelfBlameableTrait
         switch ($sender->onDeleteType) {
             case static::$onRestrict:
                 $event->isValid = $sender->children === null;
-                if ($this->throwRestrictException) {
+                if ($sender->throwRestrictException) {
                     throw new IntegrityException('Delete restricted.');
                 }
                 break;
@@ -265,6 +288,7 @@ trait SelfBlameableTrait
 
     /**
      * Event triggered before updating itself.
+     * Note: DO NOT call it directly unless you know the consequences.
      * @param ModelEvent $event
      * @return boolean true if parentAttribute not specified.
      * @throws IntegrityException throw if $throwRestrictException is true when $onUpdateType is on restrict.
@@ -279,7 +303,7 @@ trait SelfBlameableTrait
         switch ($sender->onUpdateType) {
             case static::$onRestrict:
                 $event->isValid = $sender->getOldChildren() === null;
-                if ($this->throwRestrictException) {
+                if ($sender->throwRestrictException) {
                     throw new IntegrityException('Update restricted.');
                 }
                 break;
@@ -306,16 +330,29 @@ trait SelfBlameableTrait
         return $this->hasOne(static::class, [$this->refIdAttribute => $this->parentAttribute]);
     }
     
+    /**
+     * Get parent ID.
+     * @return string|null null if parent attribute isn't enabled.
+     */
     public function getParentId()
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} : null;
     }
     
+    /**
+     * Set parent ID.
+     * @param string $id
+     * @return string|null null if parent attribute isn't enabled.
+     */
     public function setParentId($id)
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} = $id : null;
     }
     
+    /**
+     * Get reference ID.
+     * @return string
+     */
     public function getRefId()
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
@@ -327,6 +364,11 @@ trait SelfBlameableTrait
         return $this->{$this->refIdAttribute};
     }
     
+    /**
+     * Set reference ID.
+     * @param string $id
+     * @return string
+     */
     public function setRefId($id)
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
@@ -358,6 +400,8 @@ trait SelfBlameableTrait
     
     /**
      * Set null parent.
+     * This method would unset the lazy loading records before setting it.
+     * Don't forget save model after setting it.
      */
     public function setNullParent()
     {
@@ -379,7 +423,7 @@ trait SelfBlameableTrait
 
     /**
      * Check whether if $ancestor is the ancestor of myself.
-     * Note, Itself will not be regarded as the its ancestor.
+     * Note: Itself will not be regarded as the its ancestor.
      * @param static $ancestor
      * @return boolean
      */
@@ -461,8 +505,8 @@ trait SelfBlameableTrait
         if (empty($this->parentAttribute) || !is_string($this->parentAttribute) || empty($model) || !$model->hasParent()) {
             return null;
         }
-        $ancestor = $this->getAncestorChain();
-        if (in_array($model->parent->getRefId(), $ancestor)) {
+        $ancestors = $this->getAncestorChain();
+        if (in_array($model->parent->getRefId(), $ancestors)) {
             return $model->parent;
         }
         return $this->getCommonAncestor($model->parent);
@@ -579,6 +623,7 @@ trait SelfBlameableTrait
     public function onParentRefIdChanged($event)
     {
         $sender = $event->sender;
+        /* @var $sender static */
         if ($sender->isAttributeChanged($sender->refIdAttribute)) {
             return $sender->onUpdateChildren($event);
         }

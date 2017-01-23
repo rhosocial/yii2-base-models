@@ -45,10 +45,12 @@ use rhosocial\base\models\traits\BlameableTrait;
  *             ...
  *         ];
  *     }
- *     public function init()
+ *     
+ *     // You should specify the `userClass` property before constructing itself.
+ *     public function __construct($config = [])
  *     {
  *         $this->userClass = User::class;
- *         parent::init();
+ *         parent::__construct($config);
  *     }
  * }
  * ~~~
