@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-14 16:14:59
+-- Generation Time: 2017-01-23 12:28:26
 -- 服务器版本： 8.0.0-dmr
--- PHP Version: 7.1.0
+-- PHP Version: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
 --
 -- 表的结构 `user_comment`
 --
--- 创建时间： 2017-01-13 16:21:43
+-- 创建时间： 2017-01-23 03:40:35
 --
 
 DROP TABLE IF EXISTS `user_comment`;
@@ -149,7 +149,8 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_comment_id_unique` (`id`,`user_guid`) USING BTREE,
   KEY `user_guid` (`user_guid`),
-  KEY `post_guid` (`post_guid`)
+  KEY `post_guid` (`post_guid`),
+  KEY `parent_guid` (`parent_guid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -201,14 +202,14 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
 --
 -- 表的结构 `user_post`
 --
--- 创建时间： 2017-01-13 15:58:47
+-- 创建时间： 2017-01-14 08:17:46
 --
 
 DROP TABLE IF EXISTS `user_post`;
 CREATE TABLE IF NOT EXISTS `user_post` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
-  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
@@ -216,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `user_post` (
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `post_id_unique` (`id`) USING BTREE,
-  KEY `user_post_guid_fkey` (`user_guid`)
+  KEY `user_post_guid_fkey` (`user_guid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

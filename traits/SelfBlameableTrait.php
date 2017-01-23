@@ -71,6 +71,7 @@ trait SelfBlameableTrait
         0 => 'none',
         1 => 'parent',
     ];
+    public static $nullParent = '';
     public static $onNoAction = 0;
     public static $onRestrict = 1;
     public static $onCascade = 2;
@@ -355,11 +356,16 @@ trait SelfBlameableTrait
         return $this->{$this->parentAttribute} = $parent->getRefId();
     }
     
+    /**
+     * Set null parent.
+     */
     public function setNullParent()
     {
-        unset($this->parent->children);
+        if ($this->hasParent()) {
+            unset($this->parent->children);
+        }
         unset($this->parent);
-        $this->setParentId('');
+        $this->setParentId(static::$nullParent);
     }
 
     /**
@@ -591,11 +597,14 @@ trait SelfBlameableTrait
      * Clear invalid parent.
      * The invalid state depends on which if parent id exists but it's corresponding
      * parent cannot be found.
+     * @return boolean True if parent attribute is set null, False if parent valid.
      */
     public function clearInvalidParent()
     {
-        if ($this->getParentId() !== null && !$this->hasParent()) {
+        if ($this->getParentId() !== static::$nullParent && !$this->hasParent()) {
             $this->setNullParent();
+            return true;
         }
+        return false;
     }
 }
