@@ -305,6 +305,16 @@ trait SelfBlameableTrait
         return $this->hasOne(static::class, [$this->refIdAttribute => $this->parentAttribute]);
     }
     
+    public function getParentId()
+    {
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} : null;
+    }
+    
+    public function setParentId($id)
+    {
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} = $id : null;
+    }
+    
     public function getRefId()
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
@@ -349,7 +359,7 @@ trait SelfBlameableTrait
     {
         unset($this->parent->children);
         unset($this->parent);
-        $this->{$this->parentAttribute} = '';
+        $this->setParentId('');
     }
 
     /**
@@ -389,7 +399,7 @@ trait SelfBlameableTrait
      */
     public function getAncestorChain($ancestor = [])
     {
-        if (!is_string($this->parentAttribute)) {
+        if (!is_string($this->parentAttribute) || empty($this->parentAttribute)) {
             return [];
         }
         if (!$this->hasParent()) {
@@ -418,12 +428,11 @@ trait SelfBlameableTrait
 
     /**
      * Get ancestors.
-     * @return static[]|null
+     * @return static[]
      */
     public function getAncestors()
     {
-        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
-        static::getAncestorModels($this->getAncestorChain()) : null;
+        return static::getAncestorModels($this->getAncestorChain());
     }
 
     /**
@@ -489,7 +498,6 @@ trait SelfBlameableTrait
         if (empty($children)) {
             return true;
         }
-        $parentAttribute = $this->parentAttribute;
         $transaction = $this->getDb()->beginTransaction();
         try {
             foreach ($children as $child) {
@@ -499,7 +507,7 @@ trait SelfBlameableTrait
                 } elseif (empty($value)) {
                     $child->setNullParent();
                 } else {
-                    $child->$parentAttribute = $value;
+                    $child->setParentId($value);
                 }
                 if (!$child->save()) {
                     throw new IntegrityException('Update failed:', $child->getErrors());
@@ -577,5 +585,17 @@ trait SelfBlameableTrait
     {
         $this->on(static::EVENT_BEFORE_UPDATE, [$this, 'onParentRefIdChanged']);
         $this->on(static::EVENT_BEFORE_DELETE, [$this, 'onDeleteChildren']);
+    }
+    
+    /**
+     * Clear invalid parent.
+     * The invalid state depends on which if parent id exists but it's corresponding
+     * parent cannot be found.
+     */
+    public function clearInvalidParent()
+    {
+        if ($this->getParentId() !== null && !$this->hasParent()) {
+            $this->setNullParent();
+        }
     }
 }

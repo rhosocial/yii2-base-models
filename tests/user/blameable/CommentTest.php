@@ -345,6 +345,19 @@ class CommentTest extends BlameableTestCase
         for ($i = 0; $i < 10; $i++) {
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
+        
+        $this->comments[5]->throwRestrictException = false;
+        try {
+            $this->comments[5]->delete();
+        } catch (\Exception $ex) {
+            $this->fail($ex->getMessage());
+        }
+        for ($i = 0; $i < 10; $i++) {
+            $this->comments[$i]->refresh();
+        }
+        for ($i = 0; $i < 10; $i++) {
+            $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
+        }
     }
     
     /**
@@ -390,5 +403,87 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->hasParent());
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
         }
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testDeleteNoAction()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
+        }
+        for ($i = 0; $i < 9; $i++) {
+            $this->assertCount(1, $this->comments[$i]->children);
+            $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
+            $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
+        }
+        
+        $this->comments[5]->onDeleteType = UserComment::$onNoAction;
+        $this->assertEquals(1, $this->comments[5]->delete());
+        
+        for ($i = 0; $i < 10; $i++) {
+            $this->comments[$i]->refresh();
+        }
+        for ($i = 0; $i < 10; $i++) {
+            if ($i != 5) {
+                $comment = UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one();
+                $this->assertInstanceOf(UserComment::class, $comment);
+            } else {
+                $this->assertNull(UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
+            }
+        }
+        for ($i = 0; $i < 4; $i++) {
+            $this->assertCount(1, $this->comments[$i]->children, "Comment[$i] has " . count($this->comments[$i]->children) . " child(ren)");
+            $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
+            $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
+        }
+        $this->assertCount(0, $this->comments[4]->children, "Comment[4] has " . count($this->comments[4]->children) . " child(ren)");
+        $this->assertTrue($this->comments[5]->getIsNewRecord());
+        $this->assertFalse($this->comments[6]->hasParent());
+        $this->assertEquals($this->comments[5]->getRefId(), $this->comments[6]->{$this->comments[6]->parentAttribute});
+        for ($i = 6; $i < 9; $i++) {
+            $this->assertTrue($this->comments[$i + 1]->hasParent());
+            $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
+        }
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testUpdateCascade()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
+        }
+        for ($i = 0; $i < 9; $i++) {
+            $this->assertCount(1, $this->comments[$i]->children);
+            $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
+            $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
+        }
+        
+        $newGUID = UserComment::generateGuid();
+        $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
+        $this->comments[5]->setGUID($newGUID);
+        $this->assertTrue($this->comments[5]->save());
+        
+        for ($i = 0; $i < 10; $i++) {
+            $this->comments[$i]->refresh();
+        }
+        
+        $this->assertEquals($newGUID, $this->comments[5]->getGUID());
+        for ($i = 0; $i < 10; $i++) {
+            $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
+        }
+        for ($i = 0; $i < 9; $i++) {
+            $this->assertCount(1, $this->comments[$i]->children);
+            $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
+            $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
+        }
+        
     }
 }
