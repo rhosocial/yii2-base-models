@@ -16,7 +16,8 @@ use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\queries\BaseUserQuery;
 
 /**
- * Description of MutualTrait
+ * This trait defines two roles: initiator and recipient.
+ * The initiator is also the owner of this model.
  *
  * @property-read mixed $initiator
  * @property mixed $recipient
@@ -79,7 +80,7 @@ trait MutualTrait
         if (is_string($this->otherGuidAttribute)) {
             $rules = [
                 [$this->otherGuidAttribute, 'required'],
-                [$this->otherGuidAttribute, 'string', 'max' => 36],
+                [$this->otherGuidAttribute, 'string', 'max' => 16],
             ];
         }
         return $rules;

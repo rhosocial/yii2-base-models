@@ -71,8 +71,8 @@ trait BlameableQueryTrait
         if (!is_string($model->parentAttribute)) {
             return $this;
         }
-        if (empty($guid)) {
-            return $this->andWhere([$model->parentAttribute => '']);
+        if ($guid instanceof $model) {
+            $guid = $guid->getGUID();
         }
         return $this->andWhere([$model->parentAttribute => $guid]);
     }

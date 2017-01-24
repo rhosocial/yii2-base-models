@@ -235,4 +235,16 @@ class PostTest extends BlameableTestCase
         $this->assertEmpty($this->post->getAncestorChain());
         $this->assertEmpty($this->post->getCommonAncestor($this));
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testFindByGuid()
+    {
+        $this->assertTrue($this->user->register([$this->post]));
+        $post = UserPost::find()->guid($this->post->getGUID())->parentGuid($this->post->getGUID())->one();
+        $this->assertInstanceOf(UserPost::class, $post);
+        $this->assertTrue($this->user->deregister());
+    }
 }

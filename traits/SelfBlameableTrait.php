@@ -42,7 +42,7 @@ use yii\db\IntegrityException;
  * more than 1024.
  * Too large number may seriously slow down the database response speed, especially
  * in updating operation.
- * 
+ *
  * The data consistency between reference ID attribute and parent attribute can
  * only be ensured by my own. And update and delete operations should be placed
  * in the transaction to avoid data inconsistencies.
@@ -91,7 +91,7 @@ trait SelfBlameableTrait
     ];
     
     /**
-     * @var string The constant determines the null parent. 
+     * @var string The constant determines the null parent.
      */
     public static $nullParent = '';
     public static $onNoAction = 0;
@@ -337,17 +337,19 @@ trait SelfBlameableTrait
      */
     public function getParentId()
     {
-        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} : null;
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
+        $this->{$this->parentAttribute} : null;
     }
     
     /**
      * Set parent ID.
-     * @param string $id
+     * @param string $parentId
      * @return string|null null if parent attribute isn't enabled.
      */
-    public function setParentId($id)
+    public function setParentId($parentId)
     {
-        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ? $this->{$this->parentAttribute} = $id : null;
+        return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
+        $this->{$this->parentAttribute} = $parentId : null;
     }
     
     /**
@@ -367,18 +369,18 @@ trait SelfBlameableTrait
     
     /**
      * Set reference ID.
-     * @param string $id
+     * @param string $refId
      * @return string
      */
-    public function setRefId($id)
+    public function setRefId($refId)
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
-            return $this->setGUID($id);
+            return $this->setGUID($refId);
         }
         if ($this->refIdAttribute == $this->idAttribute) {
-            return $this->setID($id);
+            return $this->setID($refId);
         }
-        return $this->{$this->refIdAttribute} = $id;
+        return $this->{$this->refIdAttribute} = $refId;
     }
 
     /**
@@ -389,7 +391,8 @@ trait SelfBlameableTrait
      */
     public function setParent($parent)
     {
-        if (empty($parent) || $this->getRefId() == $parent->getRefId() || $parent->hasAncestor($this) || $this->hasReachedAncestorLimit()) {
+        if (empty($parent) || $this->getRefId() == $parent->getRefId() ||
+            $parent->hasAncestor($this) || $this->hasReachedAncestorLimit()) {
             return false;
         }
         unset($this->parent);
@@ -503,7 +506,8 @@ trait SelfBlameableTrait
      */
     public function getCommonAncestor($model)
     {
-        if (empty($this->parentAttribute) || !is_string($this->parentAttribute) || empty($model) || !$model->hasParent()) {
+        if (empty($this->parentAttribute) || !is_string($this->parentAttribute) ||
+            empty($model) || !$model->hasParent()) {
             return null;
         }
         $ancestors = $this->getAncestorChain();

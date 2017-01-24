@@ -17,10 +17,12 @@ namespace rhosocial\base\models\tests\data\ar;
  */
 class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAccountModel
 {
-    public function init()
+    public $seperateLoginAttribute = 'seperate_login';
+    
+    public function __construct($config = array())
     {
         $this->hostClass = User::class;
-        parent::init();
+        parent::__construct($config);
     }
     
     public static function tableName()

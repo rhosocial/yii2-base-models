@@ -54,7 +54,7 @@ use yii\db\IntegrityException;
  * @method array|false removeAllGroups()
  * @method {$this->multiBlamesClass} getGroup(string $blameGuid)
  * @method {$this->multiBlamesClass} getOrCreateGroup(string $blameGuid, BaseUserModel $user = null))
- * @method array getGroupMembers({$this->multiBlamesClass} $blame) Get all members that belongs to 
+ * @method array getGroupMembers({$this->multiBlamesClass} $blame) Get all members that belongs to
  * @method array getGroupGuids(bool $checkValid = false)
  * @method array|false setGroupGuids(array $guids = [], bool $checkValid = false)
  * @method array getOwnGroups() Get all groups that owned this relation.
@@ -127,7 +127,7 @@ trait UserRelationTrait
 
     /**
      * Permit to build self relation.
-     * @var boolean 
+     * @var boolean
      */
     public $relationSelf = false;
 
@@ -138,7 +138,8 @@ trait UserRelationTrait
     public function getIsFavorite()
     {
         $favoriteAttribute = $this->favoriteAttribute;
-        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ? (int) $this->$favoriteAttribute > 0 : null;
+        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ?
+        (int) $this->$favoriteAttribute > 0 : null;
     }
 
     /**
@@ -148,7 +149,8 @@ trait UserRelationTrait
     public function setIsFavorite($fav)
     {
         $favoriteAttribute = $this->favoriteAttribute;
-        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ? $this->$favoriteAttribute = ($fav ? 1 : 0) : null;
+        return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ?
+        $this->$favoriteAttribute = ($fav ? 1 : 0) : null;
     }
 
     /**
@@ -172,7 +174,10 @@ trait UserRelationTrait
                 [[$this->mutualTypeAttribute], 'default', 'value' => static::$mutualTypeNormal],
             ];
         }
-        return array_merge($rules, $this->getRemarkRules(), $this->getFavoriteRules(), $this->getGroupsRules(), $this->getOtherGuidRules());
+        return array_merge($rules, $this->getRemarkRules(),
+                $this->getFavoriteRules(),
+                $this->getGroupsRules(),
+                $this->getOtherGuidRules());
     }
 
     /**
@@ -227,7 +232,10 @@ trait UserRelationTrait
     public function getOtherGuidRules()
     {
         $rules = array_merge($this->getMutualRules(), [
-            [[$this->otherGuidAttribute, $this->createdByAttribute], 'unique', 'targetAttribute' => [$this->otherGuidAttribute, $this->createdByAttribute]],
+            [[$this->otherGuidAttribute,
+                $this->createdByAttribute],
+                'unique',
+                'targetAttribute' => [$this->otherGuidAttribute, $this->createdByAttribute]],
         ]);
         return $rules;
     }
@@ -308,8 +316,10 @@ trait UserRelationTrait
             return static::isMutual($initiator, $recipient);
         }
         if ($model->relationType == static::$relationMutual) {
-            $relation = static::find()->initiators($initiator)->recipients($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
-            $inverse = static::find()->recipients($initiator)->initiators($recipient)->andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
+            $relation = static::find()->initiators($initiator)->recipients($recipient)->
+                    andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
+            $inverse = static::find()->recipients($initiator)->initiators($recipient)->
+                    andWhere([$model->mutualTypeAttribute => static::$mutualTypeNormal])->exists();
             return $relation && $inverse;
         }
         return false;
@@ -336,7 +346,7 @@ trait UserRelationTrait
 
     /**
      * Build new or return existed normal relation.
-     * The status of mutual relation will be changed to normal if it is not. 
+     * The status of mutual relation will be changed to normal if it is not.
      * @see buildRelation()
      * @param BaseUserModel|string $user Initiator or its GUID.
      * @param BaseUserModel|string $other Recipient or its GUID.
@@ -363,7 +373,8 @@ trait UserRelationTrait
      */
     public static function transformSuspendToNormal($relation)
     {
-        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
+        if (!($relation instanceof static) || $relation->getIsNewRecord() ||
+                $relation->relationType != static::$relationMutual) {
             return false;
         }
         $new = static::buildNormalRelation($relation->initiator, $relation->recipient);
@@ -378,7 +389,8 @@ trait UserRelationTrait
      */
     public static function revertNormalToSuspend($relation)
     {
-        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord() || $relation->relationType != static::$relationMutual) {
+        if (!($relation instanceof static) || $relation->getIsNewRecord() ||
+                $relation->relationType != static::$relationMutual) {
             return false;
         }
         $new = static::buildSuspendRelation($relation->initiator, $relation->recipient);
@@ -476,28 +488,28 @@ trait UserRelationTrait
      * If you don't want to use transaction or database doesn't support it,
      * please use `save()` directly.
      * @param static $relation
-     * @param Connection $db
+     * @param Connection $connection
      * @return boolean
      * @throws InvalidValueException
      * @throws InvalidConfigException
      * @throws IntegrityException
      */
-    public static function insertRelation($relation, Connection $db = null)
+    public static function insertRelation($relation, Connection $connection = null)
     {
-        if (!$relation || !($relation instanceof static)) {
+        if (!($relation instanceof static)) {
             return false;
         }
         if (!$relation->getIsNewRecord()) {
             throw new InvalidValueException('This relation is not new one.');
         }
-        if (!$db && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
-            $db = \Yii::$app->db;
+        if (!$connection && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
+            $connection = \Yii::$app->db;
         }
-        if (!$db) {
+        if (!$connection) {
             throw new InvalidConfigException('Invalid database connection.');
         }
         /* @var $db Connection */
-        $transaction = $db->beginTransaction();
+        $transaction = $connection->beginTransaction();
         try {
             if (!$relation->save()) {
                 throw new IntegrityException('Relation insert failed.');
@@ -516,24 +528,24 @@ trait UserRelationTrait
      * If you don't want to use transaction or database doesn't support it,
      * please use `remove()` directly.
      * @param static $relation
-     * @param Connection $db
+     * @param Connection $connection
      * @return boolean|integer
      * @throws InvalidConfigException
      */
-    public static function removeRelation($relation, Connection $db = null)
+    public static function removeRelation($relation, Connection $connection = null)
     {
-        if (!$relation || !($relation instanceof static) || $relation->getIsNewRecord()) {
+        if (!($relation instanceof static) || $relation->getIsNewRecord()) {
             return false;
         }
         
-        if (!$db && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
-            $db = \Yii::$app->db;
+        if (!$connection && isset(\Yii::$app->db) && \Yii::$app->db instanceof Connection) {
+            $connection = \Yii::$app->db;
         }
-        if (!$db) {
+        if (!$connection) {
             throw new InvalidConfigException('Invalid database connection.');
         }
         /* @var $db Connection */
-        $transaction = $db->beginTransaction();
+        $transaction = $connection->beginTransaction();
         try {
             $result = $relation->remove();
             $transaction->commit();
@@ -581,7 +593,8 @@ trait UserRelationTrait
         $rni = static::buildNoInitModel();
         $createdByAttribute = $rni->createdByAttribute;
         $otherGuidAttribute = $rni->otherGuidAttribute;
-        return static::deleteAll([$createdByAttribute => BaseUserModel::compositeGUIDs($user), $otherGuidAttribute => BaseUserModel::compositeGUIDs($other)]);
+        return static::deleteAll([$createdByAttribute => BaseUserModel::compositeGUIDs($user),
+            $otherGuidAttribute => BaseUserModel::compositeGUIDs($other)]);
     }
 
     /**

@@ -23,13 +23,13 @@ use yii\data\Pagination;
 
 /**
  * This trait is used for building blameable model. It contains following features：
- * 1.单列内容；多列内容待定；
- * 2.内容类型；具体类型应当自定义；
- * 3.内容规则；自动生成；
- * 4.归属用户 GUID；
- * 5.创建用户 GUID；
- * 6.上次更新用户 GUID；
- * 7.Confirmation features, provided by [[ConfirmationTrait]];
+ * 1.Single-column(field) content;
+ * 2.Content type;
+ * 3.Content rules(generated automatically);
+ * 4.Creator(owner)'s GUID;
+ * 5.Updater's GUID;
+ * 6.Confirmation features, provided by [[ConfirmationTrait]];
+ * 7.Self referenced features, provided by [[SelfBlameableTrait]];
  * @property-read array $blameableAttributeRules Get all rules associated with
  * blameable.
  * @property array $blameableRules Get or set all the rules associated with
@@ -40,9 +40,9 @@ use yii\data\Pagination;
  * @property-read mixed $content Content.
  * @property-read boolean $contentCanBeEdited Whether this content could be edited.
  * @property-read array $contentRules Get content rules.
- * @property BserUserModel $host
- * @property BaseUserModel $user
- * @property BaseUserModel $updater
+ * @property BserUserModel $host The owner of this model.
+ * @property BaseUserModel $user The owner of this model(the same as $host).
+ * @property BaseUserModel $updater The updater who updated this model latest.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -495,7 +495,7 @@ trait BlameableTrait
     }
     
     /**
-     * 
+     * Get host of this model.
      * @return BaseUserQuery
      */
     public function getHost()
@@ -506,7 +506,7 @@ trait BlameableTrait
     }
     
     /**
-     * 
+     * Set host of this model.
      * @param string $host
      * @return type
      */

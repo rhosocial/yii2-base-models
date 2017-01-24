@@ -33,6 +33,10 @@ class CommentTest extends BlameableTestCase
     
     protected function tearDown()
     {
+        foreach ($this->comments as $comment) {
+            $comment->delete();
+        }
+        $this->post->delete();
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
         parent::tearDown();
@@ -660,5 +664,25 @@ class CommentTest extends BlameableTestCase
         $this->assertCount(2, $this->comments[4]->children);
         UserComment::getDb()->createCommand()->delete('user_comment', ['content' => $content])->execute();
         $this->assertInstanceOf(\yii\db\IntegrityException::class, $this->comments[4]->deleteChildren());
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testFindByParent()
+    {
+        $comment = UserComment::find()->parentGuid($this->comments[4])->one();
+        /* @var $comment UserComment */
+        $this->assertInstanceOf(UserComment::class, $comment);
+        $this->assertEquals($comment->{$comment->parentAttribute}, $this->comments[4]->getGUID());
+        $this->assertEquals($comment->getReadableGUID(), $this->comments[5]->getReadableGUID());
+        
+        $comment = UserComment::find()->parentGuid(UserComment::$nullParent)->one();
+        /* @var $comment UserComment */
+        $this->assertInstanceOf(UserComment::class, $comment);
+        $this->assertEquals($comment->{$comment->parentAttribute}, UserComment::$nullParent);
+        $this->assertEquals($comment->getReadableGUID(), $this->comments[0]->getReadableGUID());
     }
 }

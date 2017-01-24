@@ -37,9 +37,47 @@ class SingleRelationGroupTest extends SingleRelationTestCase
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other->register());
         $this->assertTrue($this->relation->save());
+        
         $group = $this->user->create(UserRelationGroup::class, ['content' => \Yii::$app->security->generateRandomString()]);
         $this->assertTrue($group->save());
         $this->assertEquals(1, $group->delete());
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     * @group relation-group
+     */
+    public function testGetInvalidGroup()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        
+        $this->assertNull(UserSingleRelation::getBlame(null));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     * @group relation-group
+     */
+    public function testIsInvalidGroupContained()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        
+        $this->assertFalse($this->relation->isGroupContained(null));
+        
         $this->assertTrue($this->user->deregister());
         $this->assertTrue($this->other->deregister());
     }
@@ -142,6 +180,8 @@ class SingleRelationGroupTest extends SingleRelationTestCase
         $group = UserSingleRelation::getOrCreateGroup(null, $this->user);
         $this->assertInstanceOf(UserRelationGroup::class, $group);
         
+        $this->assertNull(UserSingleRelation::getOrCreateGroup(false, $this->user));
+        
         // Create a group and get it.
         $group = UserSingleRelation::createGroup($this->user, ['content' => \Yii::$app->security->generateRandomString()]);
         $this->assertTrue($group->save());
@@ -190,6 +230,29 @@ class SingleRelationGroupTest extends SingleRelationTestCase
      * @group relation-single
      * @group relation-group
      */
+    public function testAddOrCreateGroupAddExist()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        
+        $group = UserSingleRelation::createGroup($this->user, ['content' => \Yii::$app->security->generateRandomString()]);
+        $this->assertTrue($group->save());
+        $guids = $this->relation->addOrCreateGroup($group);
+        $this->assertCount(1, $guids);
+        $this->assertTrue($this->relation->save());
+        $this->assertTrue(in_array($group->getGUID(), $guids));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     * @group relation-group
+     */
     public function testGetGroupMembers()
     {
         $this->assertTrue($this->user->register());
@@ -209,6 +272,25 @@ class SingleRelationGroupTest extends SingleRelationTestCase
         $members = UserSingleRelation::getGroupMembers($group);
         $this->assertCount(1, $members);
         $this->assertTrue($this->relation->equals($members[0]));
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     * @group relation-group
+     */
+    public function testGetEmptyGroupMembers()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        
+        $members = UserSingleRelation::getGroupMembers('1');
+        $this->assertEquals([], $members);
         
         $this->assertTrue($this->user->deregister());
         $this->assertTrue($this->other->deregister());
@@ -325,7 +407,7 @@ class SingleRelationGroupTest extends SingleRelationTestCase
      * @group relation-single
      * @group relation-group
      */
-    public function testEmptyBlames()
+    public function testEmptyGroups()
     {
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other->register());

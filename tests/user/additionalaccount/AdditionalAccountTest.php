@@ -64,12 +64,11 @@ class AdditionalAccountTest extends UserTestCase
      * @group user
      * @group additionalaccount
      */
-    public function testIndependentPassword()
+    public function testSeperatePassword()
     {
         $this->user = new User(['password' => '123456']);
-        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0, 'password' => $this->faker->randomLetter, 'seperateLogin' => true]);
         /* @var $aa AdditionalAccount */
-        $aa->password = $this->faker->randomLetter;
         $this->assertTrue($this->user->register([$aa]));
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
         $aa = $this->user->additionalAccounts[0];
@@ -81,7 +80,7 @@ class AdditionalAccountTest extends UserTestCase
      * @group user
      * @group additionalaccount
      */
-    public function testNotIndependentPassword()
+    public function testNotSeperatePassword()
     {
         $this->user = new User(['password' => '123456']);
         $aa = $this->user->create(AdditionalAccount::class, ['content' => 0]);
@@ -91,6 +90,45 @@ class AdditionalAccountTest extends UserTestCase
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
         $aa = $this->user->additionalAccounts[0];
         $this->assertTrue($aa->getIsEmptyPassword());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group additionalaccount
+     */
+    public function testSeperateLogin()
+    {
+        $this->user = new User(['password' => '123456']);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0, 'seperateLogin' => true]);
+        /* @var $aa AdditionalAccount */
+        $aa->setEmptyPassword();
+        $this->assertTrue($this->user->register([$aa]));
+        
+        $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
+        $aa = $this->user->additionalAccounts[0];
+        $this->assertTrue($aa->seperateLogin);
+        
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group additionalaccount
+     */
+    public function testNotSeperateLogin()
+    {
+        $password = '123456';
+        $this->user = new User(['password' => $password]);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0, 'seperateLogin' => false]);
+        /* @var $aa AdditionalAccount */
+        $aa->setEmptyPassword();
+        $this->assertTrue($this->user->register([$aa]));
+        
+        $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
+        $aa = $this->user->additionalAccounts[0];
+        $this->assertFalse($aa->seperateLogin);
+        
         $this->assertTrue($this->user->deregister());
     }
 }
