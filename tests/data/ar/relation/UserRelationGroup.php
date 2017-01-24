@@ -19,5 +19,10 @@ use rhosocial\base\models\models\BaseUserRelationGroupModel;
  */
 class UserRelationGroup extends BaseUserRelationGroupModel
 {
+    public function __construct($config = array())
+    {
+        $this->hostClass = User::class;
+        parent::__construct($config);
+    }
     
 }

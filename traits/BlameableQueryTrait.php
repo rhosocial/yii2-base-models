@@ -85,7 +85,7 @@ trait BlameableQueryTrait
     public function createdBy($guid)
     {
         $model = $this->noInitModel;
-        if (!is_string($model->createdByAttribute)) {
+        if (!is_string($model->createdByAttribute) || empty($model->createdByAttribute)) {
             return $this;
         }
         if ($guid instanceof BaseUserModel) {

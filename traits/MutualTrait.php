@@ -44,7 +44,7 @@ trait MutualTrait
      */
     public function getRecipient()
     {
-        if (!is_string($this->otherGuidAttribute)) {
+        if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
             return null;
         }
         $hostClass = $this->hostClass;
@@ -59,11 +59,14 @@ trait MutualTrait
      */
     public function setRecipient($user)
     {
-        if (!is_string($this->otherGuidAttribute)) {
+        if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
             return null;
         }
+        if ($user instanceof BaseUserModel) {
+            $user = $user->getGUID();
+        }
         $otherGuidAttribute = $this->otherGuidAttribute;
-        return $this->$otherGuidAttribute = $user->getGUID();
+        return $this->$otherGuidAttribute = $user;
     }
 
     /**

@@ -49,8 +49,8 @@ use yii\db\IntegrityException;
  *
  * @method {$this->multiBlamesClass} createGroup(BaseUserModel $user, array $config = [])
  * @method array|false addGroup({$this->multiBlamesClass} $blame)
- * @method array|false addOrCreateGroup(){$this->multiBlamesClass} &$blame = null, BaseUserModel $user = null)
- * @method array|false removeGroup({$this->multiBlamesClass} $blame)
+ * @method array|false addOrCreateGroup(){$this->multiBlamesClass}|array &$blame = null, BaseUserModel $user = null)
+ * @method array|false removeGroup({$this->multiBlamesClass}|string $blame)
  * @method array|false removeAllGroups()
  * @method {$this->multiBlamesClass} getGroup(string $blameGuid)
  * @method {$this->multiBlamesClass} getOrCreateGroup(string $blameGuid, BaseUserModel $user = null))
@@ -58,9 +58,12 @@ use yii\db\IntegrityException;
  * @method array getGroupGuids(bool $checkValid = false)
  * @method array|false setGroupGuids(array $guids = [], bool $checkValid = false)
  * @method array getOwnGroups() Get all groups that owned this relation.
+ * @method array setOwnGroups(array $blames)
+ * @method array isGroupContained({$this->multiBlamesClass} $blame)
  * @method array getAllGroups() Get all groups created by whom created this relation.
  * @method array getNonGroupMembers(BaseUserModel $user) Get members that do not belong to any group.
  * @method integer getGroupsCount() Get the count of groups of this relation.
+ * @method array getEmptyGroups() Get the groups which does not contain any relations.
  * @method array getGroupsRules() Get rules associated with group attribute.
  *
  * @version 1.0
@@ -81,9 +84,12 @@ trait UserRelationTrait
         mb::getBlameGuids as getGroupGuids;
         mb::setBlameGuids as setGroupGuids;
         mb::getOwnBlames as getOwnGroups;
+        mb::setOwnBlames as setOwnGroups;
+        mb::isBlameOwned as isGroupContained;
         mb::getAllBlames as getAllGroups;
         mb::getNonBlameds as getNonGroupMembers;
         mb::getBlamesCount as getGroupsCount;
+        mb::getEmptyBlames as getEmptyGroups;
         mb::getMultipleBlameableAttributeRules as getGroupsRules;
     }
 
@@ -398,8 +404,6 @@ trait UserRelationTrait
         $noInit = $relationQuery->noInitModel;
         $relation = $relationQuery->one();
         if (!$relation) {
-            $createdByAttribute = $noInit->createdByAttribute;
-            $otherGuidAttribute = $noInit->otherGuidAttribute;
             $hostClass = $noInit->hostClass;
             if ($user instanceof BaseUserModel) {
                 $hostClass = $hostClass ? : $user->className();
@@ -411,7 +415,7 @@ trait UserRelationTrait
             if (!$noInit->relationSelf && $user == $other) {
                 return null;
             }
-            $relation = new static([$createdByAttribute => $user, $otherGuidAttribute => $other, 'hostClass' => $hostClass]);
+            $relation = new static(['host' => $user, 'recipient' => $other]);
         }
         return $relation;
     }
@@ -427,9 +431,7 @@ trait UserRelationTrait
         if (!$relation) {
             return null;
         }
-        $createdByAttribute = $relation->createdByAttribute;
-        $otherGuidAttribute = $relation->otherGuidAttribute;
-        $opposite = static::buildRelation($relation->$otherGuidAttribute, $relation->$createdByAttribute);
+        $opposite = static::buildRelation($relation->recipient, $relation->initiator);
         if ($relation->relationType == static::$relationSingle) {
             $opposite->relationType = static::$relationSingle;
         } elseif ($relation->relationType == static::$relationMutual) {

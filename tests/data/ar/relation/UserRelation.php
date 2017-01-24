@@ -23,12 +23,17 @@ class UserRelation extends BaseUserRelationModel
     public $multiBlamesAttribute = 'groups';
     public $descriptionAttribute = 'description';
     
+    public function __construct($config = array())
+    {
+        $this->hostClass = User::class;
+        parent::__construct($config);
+    }
+    
     /**
      * @inheritdoc
      */
     public function init()
     {
-        $this->hostClass = User::class;
         $this->multiBlamesClass = UserRelationGroup::class;
         parent::init();
     }

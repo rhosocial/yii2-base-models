@@ -172,7 +172,7 @@ trait MultipleBlameableTrait
         if (!is_string($this->multiBlamesClass)) {
             throw new InvalidConfigException('$multiBlamesClass must be specified if you want to use multiple blameable features.');
         }
-        if (is_array($blame)) {
+        if (is_array($blame) || $blame === null) {
             if ($user == null) {
                 $user = $this->host;
             }
@@ -197,7 +197,7 @@ trait MultipleBlameableTrait
 
     /**
      * Remove specified blame.
-     * @param {$this->multiBlamesClass} $blame
+     * @param {$this->multiBlamesClass}|string $blame
      * @return false|array all guids in json format.
      */
     public function removeBlame($blame)
@@ -210,7 +210,7 @@ trait MultipleBlameableTrait
             $blameGuid = $blame;
         }
         if ($blame instanceof $this->multiBlamesClass) {
-            $blameGuid = $blame->guid;
+            $blameGuid = $blame->getGUID();
         }
         $blameGuids = $this->getBlameGuids(true);
         if (($key = array_search($blameGuid, $blameGuids)) !== false) {
@@ -347,7 +347,7 @@ trait MultipleBlameableTrait
      * @param {$this->multiBlamesClass} $blame
      * @return boolean
      */
-    public function BlameOwned($blame)
+    public function IsBlameOwned($blame)
     {
         if (!($blame instanceof $this->multiBlamesClass) || $blame->getIsNewRecord() || !static::getBlame($blame->getGUID())) {
             return false;
@@ -357,7 +357,7 @@ trait MultipleBlameableTrait
 
     /**
      * Get or create blame.
-     * @param string|array $blameGuid
+     * @param string|array|null $blameGuid
      * @param BaseUserModel $user
      * @return {$this->multiBlamesClass}|null
      */
@@ -366,7 +366,7 @@ trait MultipleBlameableTrait
         if (is_string($blameGuid)) {
             return static::getBlame($blameGuid);
         }
-        if (is_array($blameGuid)) {
+        if (is_array($blameGuid) || $blameGuid === null) {
             return static::createBlame($user, $blameGuid);
         }
         return null;
@@ -379,15 +379,15 @@ trait MultipleBlameableTrait
      */
     public static function getBlameds($blame)
     {
-        $blameds = static::getBlame($blame->getGUID());
-        if (empty($blameds)) {
-            return null;
+        if (is_string($blame)) {
+            $blame = static::getBlame($blame);
+        }
+        if (empty($blame)) {
+            return [];
         }
         $noInit = static::buildNoInitModel();
         /* @var $noInit static */
-        $createdByAttribute = $noInit->createdByAttribute;
-        return static::find()->where([$createdByAttribute => $noInit->$createdByAttribute])
-                ->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
+        return static::find()->createdBy($blame->host)->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
     }
 
     /**
@@ -438,5 +438,24 @@ trait MultipleBlameableTrait
         if (!is_int($sender->blamesLimit) || $sender->blamesLimit < 1 || $sender->blamesLimit > 64) {
             $sender->blamesLimit = 10;
         }
+    }
+    
+    /**
+     * Get blames which do not own any model.
+     * @param BaseUserModel $user
+     */
+    public static function getEmptyBlames($user)
+    {
+        $blames = static::getAllBlames($user);
+        $emptyGroups = [];
+        $noInit = static::buildNoInitModel();
+        foreach ($blames as $blame)
+        {
+            if (static::find()->createdBy($user)->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->exists()) {
+                continue;
+            }
+            $emptyGroups[] = $blame;
+        }
+        return $emptyGroups;
     }
 }

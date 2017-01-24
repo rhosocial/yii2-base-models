@@ -40,6 +40,7 @@ use yii\data\Pagination;
  * @property-read mixed $content Content.
  * @property-read boolean $contentCanBeEdited Whether this content could be edited.
  * @property-read array $contentRules Get content rules.
+ * @property BserUserModel $host
  * @property BaseUserModel $user
  * @property BaseUserModel $updater
  * @version 1.0
@@ -495,7 +496,7 @@ trait BlameableTrait
     
     /**
      * 
-     * @return 
+     * @return BaseUserQuery
      */
     public function getHost()
     {

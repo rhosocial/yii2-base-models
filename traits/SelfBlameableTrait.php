@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\traits;
 
+use Yii;
 use yii\base\ModelEvent;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
@@ -35,15 +36,15 @@ use yii\db\IntegrityException;
  * The default reference ID attribute is `guid`. You can specify another attribute
  * in [[__construct()]] method.
  *
- * We strongly recommend you to set ancestor limit and children limit, and should
- * not be too large.
+ * We strongly recommend you to set ancestor limit and children limit, and they
+ * should not be too large.
  * The ancestor limit is preferably no more than 256, and children limit is no
  * more than 1024.
  * Too large number may seriously slow down the database response speed, especially
  * in updating operation.
  * 
- * The the data consistency between reference ID attribute and parent attribute
- * can only be ensured by my own. And update and delete operations should be placed
+ * The data consistency between reference ID attribute and parent attribute can
+ * only be ensured by my own. And update and delete operations should be placed
  * in the transaction to avoid data inconsistencies.
  * Even so, we cannot fully guarantee data consistency. Therefore, we provide a
  * method [[clearInvalidParent()]] for clearing non-existing parent node.

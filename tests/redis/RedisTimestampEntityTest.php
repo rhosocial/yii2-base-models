@@ -82,7 +82,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
     public function testFindByCreatedAt()
     {
         $this->assertTrue($this->entity->save());
-        $entities = TimestampEntity::find()->createdAt(time(), time())->all();
+        $entities = TimestampEntity::find()->createdAt(time() - 1, time())->all();
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
@@ -96,7 +96,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
     public function testFindByUpdatedAt()
     {
         $this->assertTrue($this->entity->save());
-        $entities = TimestampEntity::find()->updatedAt(time(), time())->all();
+        $entities = TimestampEntity::find()->updatedAt(time() - 1, time())->all();
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }

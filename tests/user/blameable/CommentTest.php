@@ -647,4 +647,18 @@ class CommentTest extends BlameableTestCase
         $this->assertTrue($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testDeleteChildren()
+    {
+        $content = $this->comments[5]->getContent();
+        $comment = UserComment::commit($this->comments[4], \Yii::$app->security->generateRandomString(), $this->user);
+        $this->assertCount(2, $this->comments[4]->children);
+        UserComment::getDb()->createCommand()->delete('user_comment', ['content' => $content])->execute();
+        $this->assertInstanceOf(\yii\db\IntegrityException::class, $this->comments[4]->deleteChildren());
+    }
 }
