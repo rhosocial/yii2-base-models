@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-23 12:28:26
+-- Generation Time: 2017-01-25 00:08:32
 -- 服务器版本： 8.0.0-dmr
 -- PHP Version: 7.1.1
 
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 -- 表的结构 `user_additional_account`
 --
--- 创建时间： 2017-01-07 07:39:45
+-- 创建时间： 2017-01-24 14:07:01
 --
 
 DROP TABLE IF EXISTS `user_additional_account`;
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
   `user_guid` varbinary(16) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `pass_hash` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `enable_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
+  `seperate_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `content` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'User source',
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
