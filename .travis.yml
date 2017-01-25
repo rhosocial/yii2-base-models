@@ -35,8 +35,7 @@ cache:
 
 install:
     - echo $TRAVIS_PHP_VERSION
-    - composer config -g preferred-install dist
-    - composer config -g github-protocols https
+    - cp tests/data/config.json /root/.composer/
     - travis_retry composer self-update && composer --version
     - travis_retry composer global require "fxp/composer-asset-plugin:*"
     - |
