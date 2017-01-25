@@ -97,11 +97,11 @@ script:
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             php phpunit.phar --verbose
         elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS
+            php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
         elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS
+            php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
         elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS
+            php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
         elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
             php phpunit.phar --verbose $PHPUNIT_FLAGS
         elif [ $TRAVIS_PHP_VERSION = '7.0' ]; then
