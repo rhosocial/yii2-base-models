@@ -31,7 +31,7 @@ cache:
 
 install:
     - echo $TRAVIS_PHP_VERSION
-    - sudo cp tests/data/config.json /root/.composer/
+    - sudo cp -f tests/data/config.json /home/travis/.composer/
     - travis_retry composer self-update && composer --version
     - travis_retry composer global require "fxp/composer-asset-plugin:*"
     - |
