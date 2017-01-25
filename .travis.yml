@@ -7,7 +7,6 @@ php:
     - 7.0
     - 7.1
     - nightly
-    - hhvm-3.3
     - hhvm-3.6
     - hhvm-3.9
     - hhvm-3.12
@@ -63,8 +62,16 @@ before_script:
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             travis_retry wget https://phar.phpunit.de/phpunit.phar
             chmod +x phpunit.phar
-        elif [ $TRAVIS_PHP_VERSION = 'hhv*' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit-4.8.phar
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit.phar
+            chmod +x phpunit.phar
+            EXCLUDE_FLAGS="--exclude-group mongo"
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit.phar
+            chmod +x phpunit.phar
+            EXCLUDE_FLAGS="--exclude-group mongo"
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit.phar
             chmod +x phpunit.phar
             EXCLUDE_FLAGS="--exclude-group mongo"
         elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
@@ -89,7 +96,11 @@ script:
     - |
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             php phpunit.phar --verbose
-        elif [ $TRAVIS_PHP_VERSION = 'hhv*' ]; then
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]; then
+            php phpunit.phar --verbose $EXCLUDE_FLAGS
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]; then
+            php phpunit.phar --verbose $EXCLUDE_FLAGS
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
             php phpunit.phar --verbose $EXCLUDE_FLAGS
         elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
             php phpunit.phar --verbose $PHPUNIT_FLAGS
