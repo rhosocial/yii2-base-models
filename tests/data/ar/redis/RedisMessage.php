@@ -10,14 +10,15 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\base\models\tests\data\ar\blameable;
+namespace rhosocial\base\models\tests\data\ar\redis;
 
 use rhosocial\base\models\tests\data\ar\User;
+use rhosocial\base\models\models\BaseRedisMessageModel;
 
 /**
  * @author vistart <i@vistart.me>
  */
-class Meta extends \rhosocial\base\models\models\BaseMetaModel
+class RedisMessage extends BaseRedisMessageModel
 {
     public function __construct($config = array())
     {
@@ -25,7 +26,12 @@ class Meta extends \rhosocial\base\models\models\BaseMetaModel
         parent::__construct($config);
     }
     
-    public static function tableName() {
-        return '{{%user_meta}}';
+    /**
+     * Friendly to IDE.
+     * @return \rhosocial\base\models\queries\BaseRedisMessageQuery
+     */
+    public static function find()
+    {
+        return parent::find();
     }
 }

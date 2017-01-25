@@ -24,7 +24,8 @@ class UserComment extends BaseBlameableModel
     
     public $parentAttribute = 'parent_guid';
     
-    public function __construct($config = array()) {
+    public function __construct($config = array())
+    {
         $this->hostClass = User::class;
         parent::__construct($config);
     }

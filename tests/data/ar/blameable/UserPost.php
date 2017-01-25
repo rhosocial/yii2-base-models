@@ -24,6 +24,11 @@ class UserPost extends BaseBlameableModel
     
     public $idCreatorCombinatedUnique = false;
     
+    public function __construct($config = array()) {
+        $this->hostClass = User::class;
+        parent::__construct($config);
+    }
+    
     public function init()
     {
         $this->hostClass = User::class;
