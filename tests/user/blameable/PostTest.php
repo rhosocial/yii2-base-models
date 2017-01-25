@@ -99,6 +99,8 @@ class PostTest extends BlameableTestCase
         $this->assertCount(1, $result);
         $result = UserPost::findAllByIdentityInBatch(1);
         $this->assertCount(1, $result);
+        $result = UserPost::findAllByIdentityInBatch(null, null);
+        $this->assertCount(1, $result);
         $this->assertTrue($this->user->deregister());
         $result = UserPost::findAllByIdentityInBatch();
         $this->assertCount(0, $result);

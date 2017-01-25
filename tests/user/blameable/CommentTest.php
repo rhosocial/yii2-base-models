@@ -685,4 +685,49 @@ class CommentTest extends BlameableTestCase
         $this->assertEquals($comment->{$comment->parentAttribute}, UserComment::$nullParent);
         $this->assertEquals($comment->getReadableGUID(), $this->comments[0]->getReadableGUID());
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testBearConfigClass()
+    {
+        $this->assertInstanceOf(UserComment::class, $this->comments[5]->bear(['class' => User::class, 'content' => \Yii::$app->security->generateRandomString()]));
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testBearAncestorLimit()
+    {
+        $this->comments[5]->ancestorLimit = 6;
+        $this->assertInstanceOf(UserComment::class, $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]));
+        
+        $this->comments[5]->ancestorLimit = 5;
+        try {
+            $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]);
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
+        }
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testBearChildrenLimit()
+    {
+        $this->comments[5]->childrenLimit = 1;
+        try {
+            $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]);
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
+        }
+    }
 }

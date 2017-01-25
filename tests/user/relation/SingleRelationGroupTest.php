@@ -440,4 +440,37 @@ class SingleRelationGroupTest extends SingleRelationTestCase
         $this->assertTrue($this->user->deregister());
         $this->assertTrue($this->other->deregister());
     }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     * @group relation-group
+     */
+    public function testFindByGroup()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        
+        $group = ['content' => \Yii::$app->security->generateRandomString()];
+        $guids = $this->relation->addOrCreateGroup($group);
+        $this->assertCount(1, $guids);
+        $this->assertTrue(in_array($group->getGUID(), $guids));
+        
+        $relation = UserSingleRelation::find()->groups()->one();
+        $this->assertInstanceOf(UserSingleRelation::class, $relation);
+        $relation = UserSingleRelation::find()->groups([$group->getGUID()])->one();
+        $this->assertNull($relation);
+        
+        $this->assertTrue($this->relation->save());
+        
+        $relation = UserSingleRelation::find()->groups()->one();
+        $this->assertNull($relation);
+        $relation = UserSingleRelation::find()->groups([$group->getGUID()])->one();
+        $this->assertInstanceOf(UserSingleRelation::class, $relation);
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+    }
 }

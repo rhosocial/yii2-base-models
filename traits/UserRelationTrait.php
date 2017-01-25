@@ -591,10 +591,8 @@ trait UserRelationTrait
     public static function removeAllRelations($user, $other)
     {
         $rni = static::buildNoInitModel();
-        $createdByAttribute = $rni->createdByAttribute;
-        $otherGuidAttribute = $rni->otherGuidAttribute;
-        return static::deleteAll([$createdByAttribute => BaseUserModel::compositeGUIDs($user),
-            $otherGuidAttribute => BaseUserModel::compositeGUIDs($other)]);
+        return static::deleteAll([$rni->createdByAttribute => BaseUserModel::compositeGUIDs($user),
+            $rni->otherGuidAttribute => BaseUserModel::compositeGUIDs($other)]);
     }
 
     /**
@@ -638,6 +636,7 @@ trait UserRelationTrait
     public function onInitGroups($event)
     {
         $sender = $event->sender;
+        /* @var $sender static */
         $sender->removeAllGroups();
     }
 
@@ -648,8 +647,8 @@ trait UserRelationTrait
     public function onInitRemark($event)
     {
         $sender = $event->sender;
-        $remarkAttribute = $sender->remarkAttribute;
-        (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $sender->$remarkAttribute = '' : null;
+        /* @var $sender static */
+        $sender->setRemark('');
     }
 
     /**
@@ -662,6 +661,7 @@ trait UserRelationTrait
     public function onInsertRelation($event)
     {
         $sender = $event->sender;
+        /* @var $sender static */
         if ($sender->relationType == static::$relationMutual) {
             $opposite = static::buildOppositeRelation($sender);
             $opposite->off(static::EVENT_AFTER_INSERT, [$opposite, 'onInsertRelation']);
@@ -683,6 +683,7 @@ trait UserRelationTrait
     public function onUpdateRelation($event)
     {
         $sender = $event->sender;
+        /* @var $sender static */
         if ($sender->relationType == static::$relationMutual) {
             $opposite = static::buildOppositeRelation($sender);
             $opposite->off(static::EVENT_AFTER_UPDATE, [$opposite, 'onUpdateRelation']);
@@ -703,11 +704,10 @@ trait UserRelationTrait
     public function onDeleteRelation($event)
     {
         $sender = $event->sender;
+        /* @var $sender static */
         if ($sender->relationType == static::$relationMutual) {
-            $createdByAttribute = $sender->createdByAttribute;
-            $otherGuidAttribute = $sender->otherGuidAttribute;
             $sender->off(static::EVENT_AFTER_DELETE, [$sender, 'onDeleteRelation']);
-            static::removeAllRelations($sender->$otherGuidAttribute, $sender->$createdByAttribute);
+            static::removeAllRelations($sender->recipient, $sender->initiator);
             $sender->on(static::EVENT_AFTER_DELETE, [$sender, 'onDeleteRelation']);
         }
     }
