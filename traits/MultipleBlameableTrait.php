@@ -170,7 +170,8 @@ trait MultipleBlameableTrait
     public function addOrCreateBlame(&$blame = null, $user = null)
     {
         if (!is_string($this->multiBlamesClass)) {
-            throw new InvalidConfigException('$multiBlamesClass must be specified if you want to use multiple blameable features.');
+            throw new InvalidConfigException
+            ('$multiBlamesClass must be specified if you want to use multiple blameable features.');
         }
         if (is_array($blame) || $blame === null) {
             if ($user == null) {
@@ -314,7 +315,8 @@ trait MultipleBlameableTrait
     public static function getBlame($blameGuid)
     {
         $self = static::buildNoInitModel();
-        if (empty($blameGuid) || empty($self->multiBlamesClass) || !is_string($self->multiBlamesClass) || $self->multiBlamesAttribute === false) {
+        if (empty($blameGuid) || empty($self->multiBlamesClass) ||
+            !is_string($self->multiBlamesClass) || $self->multiBlamesAttribute === false) {
             return null;
         }
         $mbClass = $self->multiBlamesClass;
@@ -347,9 +349,10 @@ trait MultipleBlameableTrait
      * @param {$this->multiBlamesClass} $blame
      * @return boolean
      */
-    public function IsBlameOwned($blame)
+    public function isBlameOwned($blame)
     {
-        if (!($blame instanceof $this->multiBlamesClass) || $blame->getIsNewRecord() || !static::getBlame($blame->getGUID())) {
+        if (!($blame instanceof $this->multiBlamesClass) ||
+            $blame->getIsNewRecord() || !static::getBlame($blame->getGUID())) {
             return false;
         }
         return array_search($blame->getGUID(), $this->getBlameGuids(true));
@@ -387,7 +390,8 @@ trait MultipleBlameableTrait
         }
         $noInit = static::buildNoInitModel();
         /* @var $noInit static */
-        return static::find()->createdBy($blame->host)->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
+        return static::find()->createdBy($blame->host)->
+                andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
     }
 
     /**
@@ -449,9 +453,9 @@ trait MultipleBlameableTrait
         $blames = static::getAllBlames($user);
         $emptyGroups = [];
         $noInit = static::buildNoInitModel();
-        foreach ($blames as $blame)
-        {
-            if (static::find()->createdBy($user)->andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->exists()) {
+        foreach ($blames as $blame) {
+            if (static::find()->createdBy($user)->
+                    andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->exists()) {
                 continue;
             }
             $emptyGroups[] = $blame;

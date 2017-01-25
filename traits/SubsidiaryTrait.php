@@ -18,7 +18,7 @@ use yii\base\InvalidConfigException;
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-Trait SubsidiaryTrait
+trait SubsidiaryTrait
 {
     /**
      * @var string[] Subsidiary map.
@@ -74,7 +74,7 @@ Trait SubsidiaryTrait
     }
     
     /**
-     * 
+     * Remove subsidiary.
      * @param string $name
      * @return boolean
      */
@@ -89,15 +89,14 @@ Trait SubsidiaryTrait
     }
     
     /**
-     * 
+     * Get subsidiary class.
      * @param string $name
      * @return string
      */
     public function getSubsidiaryClass($name)
     {
         $name = strtolower($name);
-        if (array_key_exists($name, $this->subsidiaryMap) && array_key_exists('class', $this->subsidiaryMap[$name]))
-        {
+        if (array_key_exists($name, $this->subsidiaryMap) && array_key_exists('class', $this->subsidiaryMap[$name])) {
             return class_exists($this->subsidiaryMap[$name]['class']) ? $this->subsidiaryMap[$name]['class'] : null;
         }
         return null;

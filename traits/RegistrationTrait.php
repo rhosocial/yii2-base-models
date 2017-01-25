@@ -129,7 +129,8 @@ trait RegistrationTrait
             if (!empty($associatedModels) && is_array($associatedModels)) {
                 foreach ($associatedModels as $model) {
                     if (!$model->save()) {
-                        throw new IntegrityException('Registration Error(s) Occured: Associated Models Save Failed.', $model->getErrors());
+                        throw new IntegrityException
+                        ('Registration Error(s) Occured: Associated Models Save Failed.', $model->getErrors());
                     }
                 }
             }

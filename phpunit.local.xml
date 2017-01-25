@@ -10,6 +10,7 @@
     <testsuites>
         <testsuite name="Common">
             <directory>./tests/entity</directory>
+            <directory>./tests/meta</directory>
             <directory>./tests/mongodb</directory>
             <directory>./tests/redis</directory>
             <directory>./tests/user</directory>

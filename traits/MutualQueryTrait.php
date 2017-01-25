@@ -28,14 +28,14 @@ trait MutualQueryTrait
      * @param BaseUserModel|string $user initiator
      * @param BaseUserModel|string $other recipient.
      * @param Connection $database
-     * @return 
+     * @return {$model->class}
      */
     public function opposite($user, $other, $database = null)
     {
         $model = $this->noInitModel;
         return $this->andWhere(
-                [$model->createdByAttribute => BaseUserModel::compositeGUIDs($other),
-                 $model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)])->one($database);
+            [$model->createdByAttribute => BaseUserModel::compositeGUIDs($other),
+        $model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)])->one($database);
     }
 
     /**
@@ -60,7 +60,7 @@ trait MutualQueryTrait
      * Specify initiators.
      * @param string|array $users the guid of initiator if string, or guid array
      * of initiators if array.
-     * @return \static $this
+     * @return static $this
      */
     public function initiators($users = [])
     {
@@ -75,7 +75,7 @@ trait MutualQueryTrait
      * Specify recipients.
      * @param string|array $users the guid of recipient if string, or guid array
      * of recipients if array.
-     * @return \static $this
+     * @return static $this
      */
     public function recipients($users = [])
     {

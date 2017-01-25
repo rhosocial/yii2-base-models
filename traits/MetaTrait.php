@@ -122,7 +122,7 @@ trait MetaTrait
         }
         if (!$model) {
             if (empty($createdBy) && !Yii::$app->user->isGuest) {
-                $createdBy = Yii::$app->user->identity->guid;
+                $createdBy = Yii::$app->user->identity->getGUID();
             }
             $model = new static([$noInitModel->idAttribute => $key, $noInitModel->createdByAttribute => $createdBy]);
         }

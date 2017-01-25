@@ -140,7 +140,7 @@ trait BlameableTrait
     //public $userClass;
     
     /**
-     * @var boolean|string 
+     * @var boolean|string Host class.
      */
     public $hostClass;
     public static $cacheKeyBlameableRules = 'blameable_rules';

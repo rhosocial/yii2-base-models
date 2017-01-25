@@ -175,9 +175,9 @@ trait UserRelationTrait
             ];
         }
         return array_merge($rules, $this->getRemarkRules(),
-                $this->getFavoriteRules(),
-                $this->getGroupsRules(),
-                $this->getOtherGuidRules());
+            $this->getFavoriteRules(),
+            $this->getGroupsRules(),
+        $this->getOtherGuidRules());
     }
 
     /**
