@@ -68,7 +68,7 @@ trait EntityQueryTrait
     public function createdAt($start = null, $end = null)
     {
         $model = $this->noInitModel;
-        /* @var $model static */
+        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
             return $this;
         }
@@ -77,13 +77,13 @@ trait EntityQueryTrait
     
     /**
      * Specify order by creation time.
-     * @param string $sort only 'ASC' and 'DESC' are acceptable.
+     * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
      * @return $this
      */
-    public function orderByCreatedAt($sort = 'ASC')
+    public function orderByCreatedAt($sort = SORT_ASC)
     {
         $model = $this->noInitModel;
-        /* @var $model static */
+        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
             return $this;
         }
@@ -99,7 +99,7 @@ trait EntityQueryTrait
     public function updatedAt($start = null, $end = null)
     {
         $model = $this->noInitModel;
-        /* @var $model static */
+        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
             return $this;
         }
@@ -108,13 +108,13 @@ trait EntityQueryTrait
     
     /**
      * Specify order by update time.
-     * @param string $sort only 'ASC' and 'DESC' are acceptable.
+     * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
      * @return $this
      */
-    public function orderByUpdatedAt($sort = 'ASC')
+    public function orderByUpdatedAt($sort = SORT_ASC)
     {
         $model = $this->noInitModel;
-        /* @var $model static */
+        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
             return $this;
         }

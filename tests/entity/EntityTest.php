@@ -79,4 +79,96 @@ class EntityTest extends EntityTestCase
         
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testOrderByCreatedAtASC()
+    {
+        $entities = [];
+        for ($i = 0; $i < 10; $i++)
+        {
+            $entity = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+            sleep(1);
+            $this->assertTrue($entity->save());
+            $entities[] = $entity;
+        }
+        $models = Entity::find()->orderByCreatedAt()->all();
+        $this->assertCount(10, $models);
+        
+        for ($i = 0; $i < 10; $i++)
+        {
+            $this->assertTrue($models[$i]->equals($entities[$i]));
+        }
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testOrderByCreatedAtDESC()
+    {
+        $entities = [];
+        for ($i = 0; $i < 10; $i++)
+        {
+            $entity = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+            sleep(1);
+            $this->assertTrue($entity->save());
+            $entities[] = $entity;
+        }
+        $models = Entity::find()->orderByCreatedAt(SORT_DESC)->all();
+        $this->assertCount(10, $models);
+    
+        for ($i = 0; $i < 10; $i++)
+        {
+            $this->assertTrue($models[9 - $i]->equals($entities[$i]), "models[9-$i]:" . $models[9-$i]->getGUID() . '|' . "entities[$i]:" . $entities[$i]->getGUID());
+        }
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testOrderByUpdatedAtASC()
+    {
+        $entities = [];
+        for ($i = 0; $i < 10; $i++)
+        {
+            $entity = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+            sleep(1);
+            $this->assertTrue($entity->save());
+            $entities[] = $entity;
+        }
+        $models = Entity::find()->orderByUpdatedAt()->all();
+        $this->assertCount(10, $models);
+        
+        for ($i = 0; $i < 10; $i++)
+        {
+            $this->assertTrue($models[$i]->equals($entities[$i]));
+        }
+    }
+    
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testOrderByUpdatedAtDESC()
+    {
+        $entities = [];
+        for ($i = 0; $i < 10; $i++)
+        {
+            $entity = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+            sleep(1);
+            $this->assertTrue($entity->save());
+            $entities[] = $entity;
+        }
+        $models = Entity::find()->orderByUpdatedAt(SORT_DESC)->all();
+        $this->assertCount(10, $models);
+        
+        for ($i = 0; $i < 10; $i++)
+        {
+            $this->assertTrue($models[9 - $i]->equals($entities[$i]));
+        }
+    }
 }
