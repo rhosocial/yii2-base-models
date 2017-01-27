@@ -124,6 +124,7 @@ class RedisMessageTest extends UserTestCase
      */
     public function testRead()
     {
+        sleep(1);
         $this->assertTrue($this->user->register());
         $this->assertTrue($this->other->register());
         

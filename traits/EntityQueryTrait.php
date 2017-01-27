@@ -76,6 +76,21 @@ trait EntityQueryTrait
     }
     
     /**
+     * Specify order by creation time.
+     * @param string $sort only 'ASC' and 'DESC' are acceptable.
+     * @return $this
+     */
+    public function orderByCreatedAt($sort = 'ASC')
+    {
+        $model = $this->noInitModel;
+        /* @var $model static */
+        if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
+            return $this;
+        }
+        return $this->addOrderBy([$model->createdAtAttribute => $sort]);
+    }
+    
+    /**
      * Specify update time range.
      * @param string $start 
      * @param string $end
@@ -90,6 +105,22 @@ trait EntityQueryTrait
         }
         return static::range($this, $model->updatedAtAttribute, $start, $end);
     }
+    
+    /**
+     * Specify order by update time.
+     * @param string $sort only 'ASC' and 'DESC' are acceptable.
+     * @return $this
+     */
+    public function orderByUpdatedAt($sort = 'ASC')
+    {
+        $model = $this->noInitModel;
+        /* @var $model static */
+        if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
+            return $this;
+        }
+        return $this->addOrderBy([$model->updatedAtAttribute => $sort]);
+    }
+    
     public static $pageAll = 'all';
     public static $defaultPageSize = 10;
     

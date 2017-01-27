@@ -46,12 +46,8 @@ use rhosocial\base\models\traits\BlameableTrait;
  *         ];
  *     }
  *     
- *     // You should specify the `userClass` property before constructing itself.
- *     public function __construct($config = [])
- *     {
- *         $this->userClass = User::class;
- *         parent::__construct($config);
- *     }
+ *     // You should specify the `userClass` property.
+ *     public $hostClass = User::class;
  * }
  * ~~~
  * Well, when you're signed-in, you can create and save a new `Comment` instance:

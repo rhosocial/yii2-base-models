@@ -12,6 +12,9 @@
 
 namespace rhosocial\base\models\traits;
 
+use Yii;
+use yii\base\InvalidParamException;
+
 /**
  * Assemble PasswordTrait, RegistrationTrait and IdentityTrait into UserTrait.
  * This trait can only be used in the class extended from [[BaseEntityModel]],
@@ -88,5 +91,25 @@ trait UserTrait
             $this->getAuthKeyRules(),
             $this->getAccessTokenRules()
         );
+    }
+    
+    /**
+     * Check whether the user is valid.
+     * @param static $user User instance. The current logged-in user is automatically
+     * used if a user is logged in and this parameter is null.
+     * @return static|false if current user is valid, it return as is, otherwise
+     * false returned.
+     * @throws InvalidParamException if the current user is not logged in and
+     * the user is not a valid instance.
+     */
+    public static function isValid($user)
+    {
+        if (Yii::$app->user->isGuest && (empty($user) || !($user instanceof static))) {
+            throw new InvalidParamException('User Not Specified.');
+        }
+        if ((empty($user) || !($user instanceof static)) && !Yii::$app->user->isGuest) {
+            $user = Yii::$app->user->identity;
+        }
+        return $user->find()->guid($user)->exists() ? $user : false;
     }
 }
