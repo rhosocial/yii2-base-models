@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\models;
 
+use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
@@ -82,7 +83,13 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $hostClass = $this->hostClass;
         $user = $hostClass::buildNoInitModel();
         /* @var BaseUserModel $user */
-        return $this->hasOne($hostClass::className(), [$user->guidAttribute => $this->createdByAttribute]);
+        return $this->hasOne($hostClass::className(), ['refGUID' => 'createdByAttribute']);
+    }
+    
+    public function getCreatedByAttribute()
+    {
+        $createdByAttribute = $this->createdByAttribute;
+        return (!is_string($createdByAttribute) || empty($createdByAttribute)) ? null : $this->$createdByAttribute->getData();
     }
     
     /**
@@ -93,13 +100,13 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function setHost($host)
     {
         if ($host instanceof $this->hostClass || $host instanceof IdentityInterface) {
-            return $this->{$this->createdByAttribute} = $host->getReadableGUID();
+            return $this->{$this->createdByAttribute} = new Binary($host->getGUID(), Binary::TYPE_UUID);
         }
         if (is_string($host) && preg_match(Number::GUID_REGEX, $host)) {
-            return $this->{$this->createdByAttribute} = $host;
+            return $this->{$this->createdByAttribute} = new Binary(Number::guid_bin($host), Binary::TYPE_UUID);
         }
         if (strlen($host) == 16) {
-            return $this->{$this->createdByAttribute} = Number::guid(false, false, $host);
+            return $this->{$this->createdByAttribute} = new Binary($host, Binary::TYPE_UUID);
         }
         return false;
     }
@@ -118,7 +125,13 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $hostClass = $this->hostClass;
         $host = $hostClass::buildNoInitModel();
         /* @var $user BaseUserModel */
-        return $this->hasOne($hostClass::className(), [$host->guidAttribute => $this->updatedByAttribute]);
+        return $this->hasOne($hostClass::className(), ['refGUID' => 'updatedByAttribute']);
+    }
+    
+    public function getUpdatedByAttribute()
+    {
+        $updatedByAttribute = $this->updatedByAttribute;
+        return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
     }
     
     /**
@@ -132,13 +145,13 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
             return false;
         }
         if ($updater instanceof $this->hostClass || $updater instanceof IdentityInterface) {
-            return $this->{$this->updatedByAttribute} = $updater->getReadableGUID();
+            return $this->{$this->updatedByAttribute} = new Binary($updater->getGUID(), Binary::TYPE_UUID);
         }
         if (is_string($updater) && preg_match(Number::GUID_REGEX, $updater)) {
-            return $this->{$this->updatedByAttribute} = $updater;
+            return $this->{$this->updatedByAttribute} = new Binary(Number::guid_bin($updater), Binary::TYPE_UUID);
         }
         if (strlen($updater) == 16) {
-            return $this->{$this->updatedByAttribute} = Number::guid(false, false, $updater);
+            return $this->{$this->updatedByAttribute} = new Binary($updater, Binary::TYPE_UUID);
         }
         return false;
     }
