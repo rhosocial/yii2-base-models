@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\queries;
 
+use MongoDB\BSON\Binary;
 use rhosocial\base\models\traits\BlameableQueryTrait;
 
 /**
@@ -36,9 +37,9 @@ class BaseMongoBlameableQuery extends BaseMongoEntityQuery
             return $this;
         }
         if ($guid instanceof BaseUserModel) {
-            $guid = $guid->getReadableGUID();
+            $guid = $guid->getGUID();
         }
-        return $this->andWhere([$model->createdByAttribute => $guid]);
+        return $this->andWhere([$model->createdByAttribute => new Binary($guid, Binary::TYPE_UUID)]);
     }
 
     /**
@@ -53,9 +54,9 @@ class BaseMongoBlameableQuery extends BaseMongoEntityQuery
             return $this;
         }
         if ($guid instanceof BaseUserModel) {
-            $guid = $guid->getReadableGUID();
+            $guid = $guid->getGUID();
         }
-        return $this->andWhere([$model->updatedByAttribute => $guid]);
+        return $this->andWhere([$model->updatedByAttribute => new Binary($guid, Binary::TYPE_UUID)]);
     }
 
     /**
@@ -68,9 +69,9 @@ class BaseMongoBlameableQuery extends BaseMongoEntityQuery
         if (!$identity) {
             $identity = Yii::$app->user->identity;
         }
-        if (!$identity || !$identity->canGetProperty('guid')) {
+        if (method_exists($identity, 'canGetProperty') && !$identity->canGetProperty('guid')) {
             return $this;
         }
-        return $this->createdBy($identity->getReadableGUID());
+        return $this->createdBy($identity->getGUID());
     }
 }

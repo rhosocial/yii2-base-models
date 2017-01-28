@@ -83,22 +83,29 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $hostClass = $this->hostClass;
         $user = $hostClass::buildNoInitModel();
         /* @var BaseUserModel $user */
-        return $this->hasOne($hostClass::className(), ['refGUID' => 'createdByAttribute']);
+        return $this->hasOne($hostClass::className(), [$user->guidAttribute => 'createdBy']);
     }
     
-    public function getCreatedByAttribute()
+    /**
+     * Get created_by attribute.
+     * @return string|null
+     */
+    public function getCreatedBy()
     {
         $createdByAttribute = $this->createdByAttribute;
         return (!is_string($createdByAttribute) || empty($createdByAttribute)) ? null : $this->$createdByAttribute->getData();
     }
     
     /**
-     * 
-     * @param IdentityInterface $host
-     * @return boolean
+     * Set host.
+     * @param Binary|IdentityInterface|string $host
+     * @return Binary|false
      */
     public function setHost($host)
     {
+        if ($host instanceof Binary && $host->getType() == Binary::TYPE_UUID) {
+            return $this->{$this->createdByAttribute} = $host;
+        }
         if ($host instanceof $this->hostClass || $host instanceof IdentityInterface) {
             return $this->{$this->createdByAttribute} = new Binary($host->getGUID(), Binary::TYPE_UUID);
         }
@@ -125,24 +132,31 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $hostClass = $this->hostClass;
         $host = $hostClass::buildNoInitModel();
         /* @var $user BaseUserModel */
-        return $this->hasOne($hostClass::className(), ['refGUID' => 'updatedByAttribute']);
+        return $this->hasOne($hostClass::className(), [$host->guidAttribute => 'updatedBy']);
     }
     
-    public function getUpdatedByAttribute()
+    /**
+     * Get updated_by attribute.
+     * @return string|null
+     */
+    public function getUpdatedBy()
     {
         $updatedByAttribute = $this->updatedByAttribute;
         return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
     }
     
     /**
-     * 
-     * @param IdentityInterface $user
-     * @return boolean
+     * Set updater.
+     * @param Binary|IdentityInterface|string $updater
+     * @return Binary|false
      */
     public function setUpdater($updater)
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
+        }
+        if ($updater instanceof Binary && $updater->getType() == Binary::TYPE_UUID) {
+            return $this->{$this->updatedByAttribute} = $updater;
         }
         if ($updater instanceof $this->hostClass || $updater instanceof IdentityInterface) {
             return $this->{$this->updatedByAttribute} = new Binary($updater->getGUID(), Binary::TYPE_UUID);

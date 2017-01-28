@@ -41,8 +41,8 @@ class MongoBlameableTest extends MongoBlameableTestCase
     public function testCreator($severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
-        //$user = $this->blameable->getUser()->one();
-        //$this->assertEquals($this->user->getReadableGUID(), $user->getGUID());
+        $user = $this->blameable->getUser()->one();
+        $this->assertEquals($this->user->getGUID(), $user->getGUID());
         $this->assertTrue($this->user->deregister());
     }
     
@@ -55,8 +55,8 @@ class MongoBlameableTest extends MongoBlameableTestCase
     public function testUpdater($severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
-        //$updater = $this->blameable->getUpdater()->one();
-        //$this->assertEquals($this->user->getReadableGUID(), $updater->getGUID());
+        $updater = $this->blameable->getUpdater()->one();
+        $this->assertEquals($this->user->getGUID(), $updater->getGUID());
         $this->assertTrue($this->user->deregister());
     }
     
@@ -71,6 +71,20 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertNull(MongoBlameable::findByIdentity($this->user)->one());
         $this->assertTrue($this->user->register([$this->blameable]));
         $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::findByIdentity($this->user)->one());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group mongo
+     * @group blameable
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testFindByUpdater($severalTimes)
+    {
+        $this->assertNull(MongoBlameable::find()->updatedBy($this->user)->one());
+        $this->assertTrue($this->user->register([$this->blameable]));
+        $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::find()->updatedBy($this->user)->one());
         $this->assertTrue($this->user->deregister());
     }
     

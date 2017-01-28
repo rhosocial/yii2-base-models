@@ -3,7 +3,7 @@
     "description": "The Base Models for Yii 2 Applications.",
     "type": "yii2-extension",
     "keywords": [
-        "yii2", "extension", "rhosocial", "model"
+        "yii2", "extension", "rhosocial", "model", "mongodb", "redis"
     ],
     "license": "AGPLv3",
     "authors": [
@@ -18,8 +18,8 @@
         "rhosocial/helpers": "~1.0.0"
     },
     "suggest": {
-        "yiisoft/yii2-mongodb": "Required if you want to use mongo ActiveRecord and ActiveQuery",
-        "yiisoft/yii2-redis": "Required if you want to use redis ActiveRecord and ActiveQuery"
+        "yiisoft/yii2-mongodb": "Required if you want to use mongo ActiveRecord and ActiveQuery. (php-mongodb extension required)",
+        "yiisoft/yii2-redis": "Required if you want to use redis ActiveRecord and ActiveQuery."
     },
     "autoload": {
         "psr-4": {

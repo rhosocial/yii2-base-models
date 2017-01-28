@@ -43,15 +43,6 @@ abstract class BaseMongoEntityModel extends ActiveRecord
         return $rules;
     }
     
-    /**
-     * Get GUID only for referencing, avoiding conflict with 'guid' field.
-     * @return 
-     */
-    public function getRefGUID()
-    {
-        return $this->getGUID();
-    }
-    
     public function getGUID()
     {
         $guidAttribute = $this->guidAttribute;
