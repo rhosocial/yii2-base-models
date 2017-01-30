@@ -53,6 +53,10 @@ class QueryTest extends UserTestCase
     {
         $this->assertTrue($this->user->register());
         $this->assertEquals('0', $this->user->source);
+        
+        $users = User::find()->source('0')->all();
+        $this->assertTrue($this->user->equals($users[0]));
+        
         $this->assertTrue($this->user->deregister());
     }
 }

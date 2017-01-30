@@ -10,7 +10,7 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\base\models\tests\redis\message;
+namespace rhosocial\base\models\tests\user\message;
 
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\redis\RedisMessage;
@@ -49,6 +49,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->register());
         
         $message = $this->user->create(RedisMessage::class, ['content' => 'message', 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         $this->assertEquals(1, $message->delete());
         
@@ -67,6 +68,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->register());
         
         $message = $this->user->create(RedisMessage::class, ['content' => 'message', 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         if ($message->isExpired) {
             echo "time format: ";
@@ -129,6 +131,7 @@ class RedisMessageTest extends UserTestCase
         
         $content = \Yii::$app->security->generateRandomString();
         $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         $message_id = $message->getGUID();
         
@@ -211,6 +214,7 @@ class RedisMessageTest extends UserTestCase
         
         $content = \Yii::$app->security->generateRandomString();
         $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         $message_id = $message->getGUID();
         
@@ -253,6 +257,72 @@ class RedisMessageTest extends UserTestCase
             $this->fail();
         }
         $this->assertEquals(1, $message->delete());
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group redis
+     * @group message
+     */
+    public function testGetUpdater()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        
+        $content = \Yii::$app->security->generateRandomString();
+        $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
+        $this->assertTrue($message->save());
+        
+        $this->assertNull($message->getUpdater());
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group redis
+     * @group message
+     */
+    public function testSetUpdater()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        
+        $content = \Yii::$app->security->generateRandomString();
+        $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
+        $this->assertTrue($message->save());
+        
+        $this->assertFalse($message->setUpdater($this->other));
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group redis
+     * @group message
+     */
+    public function testPagination()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        
+        $content = \Yii::$app->security->generateRandomString();
+        $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
+        /* @var $message RedisMessage */
+        $this->assertTrue($message->save());
+        
+        $pagination = RedisMessage::getPagination();
+        /* @var $pagination \yii\data\Pagination */
+        $this->assertEquals(1, $pagination->limit);
+        $this->assertEquals(1, $pagination->totalCount);
         
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());

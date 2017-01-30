@@ -35,10 +35,11 @@ If you want to use Redis or MongoDB ActiveRecord, please add
 ```
 or
 ```
-"yiisoft/yii2-mongodb": "*"
+"yiisoft/yii2-mongodb": "~2.1.0"
 ```
 to the require section of your `composer.json` file by yourself.
 
+Note: The MongoDB models need PHP 5.6 or above.
 
 Usage
 -----

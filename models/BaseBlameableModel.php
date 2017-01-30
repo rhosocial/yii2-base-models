@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\models;
 
 use rhosocial\base\models\queries\BaseBlameableQuery;
+use rhosocial\base\models\queries\BaseEntityQuery;
 use rhosocial\base\models\traits\BlameableTrait;
 
 /**
@@ -46,7 +47,7 @@ use rhosocial\base\models\traits\BlameableTrait;
  *         ];
  *     }
  *     
- *     // You should specify the `userClass` property.
+ *     // You should specify the `hostClass` property.
  *     public $hostClass = User::class;
  * }
  * ~~~
@@ -92,6 +93,16 @@ abstract class BaseBlameableModel extends BaseEntityModel
         }
         $this->initBlameableEvents();
         parent::init();
+    }
+    
+    /**
+     * Return the query instance.
+     * This method is provided for friendly to IDE.
+     * @return BaseBlameableQuery|BaseEntityQuery
+     */
+    public static function find()
+    {
+        return parent::find();
     }
 
     /**

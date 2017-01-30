@@ -74,7 +74,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
 
     /**
      * Get blame who owned this blameable model.
-     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
@@ -120,7 +120,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
 
     /**
      * Get updater who updated this blameable model recently.
-     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
@@ -176,7 +176,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * This method is ONLY used for being triggered by event. DO NOT call,
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
-     * @return string the GUID of current user or the owner.
+     * @return Binary the GUID of current user or the owner.
      */
     public function onGetCurrentUserGuid($event)
     {

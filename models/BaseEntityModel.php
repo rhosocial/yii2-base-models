@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\models;
 
+use MongoDB\BSON\Binary;
+use rhosocial\base\helpers\Number;
 use rhosocial\base\models\queries\BaseEntityQuery;
 use rhosocial\base\models\traits\EntityTrait;
 use yii\db\ActiveRecord;
@@ -78,5 +80,25 @@ abstract class BaseEntityModel extends ActiveRecord
         }
         $queryClass = $self->queryClass;
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);
+    }
+    
+    /**
+     * 
+     * @param array $models
+     */
+    public static function compositeGUIDs($models) {
+        $guids = [];
+        foreach ($models as $model) {
+            if ($model instanceof static) {
+                $guids[] = $model->getGUID();
+            } elseif ($model instanceof BaseEntityModel) {
+                $guids[] = new Binary($model->getGUID(), Binary::TYPE_UUID);
+            } elseif (is_string($model) && preg_match(Number::GUID_REGEX, $model)) {
+                $guids[] = new Binary(Number::guid_bin($model), Binary::TYPE_UUID);
+            } elseif (is_string($model) && strlen($model) == 16) {
+                $guids[] = new Binary($model, Binary::TYPE_UUID);
+            }
+        }
+        return $guids;
     }
 }

@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\user\blameable;
 
+use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 
@@ -49,7 +50,7 @@ class PostTest extends BlameableTestCase
      * @group blameable
      * @group post
      */
-    public function testUpdater()
+    public function testGetUpdater()
     {
         $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
         $this->assertEquals((string)$this->user, (string)$this->post->updater);
@@ -57,6 +58,81 @@ class PostTest extends BlameableTestCase
             /* @var $c UserComment */
             $this->assertEquals((string)$this->user, (string)$this->post->updater);
         }
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testSetUpdaterInstance()
+    {
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $this->assertTrue($this->other->register());
+        
+        $this->post->setUpdater($this->other);
+        $this->assertInstanceOf(User::class, $this->post->updater);
+        $this->assertTrue($this->post->save());
+        unset($this->post->updater);
+        $this->assertTrue($this->post->updater->equals($this->other));
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testSetUpdaterGuid()
+    {
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $this->assertTrue($this->other->register());
+        
+        $this->post->setUpdater($this->other->getReadableGUID());
+        $this->assertInstanceOf(User::class, $this->post->updater);
+        $this->assertTrue($this->post->save());
+        unset($this->post->updater);
+        $this->assertTrue($this->post->updater->equals($this->other));
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testSetUpdaterGuidBinary()
+    {
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $this->assertTrue($this->other->register());
+        
+        $this->post->setUpdater($this->other->getGUID());
+        $this->assertInstanceOf(User::class, $this->post->updater);
+        $this->assertTrue($this->post->save());
+        unset($this->post->updater);
+        $this->assertTrue($this->post->updater->equals($this->other));
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testSetUpdaterInvalid()
+    {
+        $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
+        $this->assertTrue($this->other->register());
+        
+        $this->assertFalse($this->post->setUpdater(null));
+        $this->assertTrue($this->post->save());
+        unset($this->post->updater);
+        $this->assertTrue($this->post->updater->equals($this->user));
+        
+        $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
     

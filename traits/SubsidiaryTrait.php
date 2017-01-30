@@ -159,7 +159,7 @@ trait SubsidiaryTrait
      * Create new entity model associated with current user. The model to be created
      * must be extended from [[BaseBlameableModel]], [[BaseMongoBlameableModel]],
      * [[BaseRedisBlameableModel]], or any other classes used [[BlameableTrait]].
-     * if $config does not specify `userClass` property, self will be assigned to.
+     * if $config does not specify `hostClass` property, self will be assigned to.
      * @param string $className Full qualified class name.
      * @param array $config name-value pairs that will be used to initialize
      * the object properties.

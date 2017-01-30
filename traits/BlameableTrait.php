@@ -485,7 +485,7 @@ trait BlameableTrait
 
     /**
      * Get blame who owned this blameable model.
-     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
@@ -493,6 +493,39 @@ trait BlameableTrait
     {
         return $this->getHost();
     }
+
+    /**
+     * Declares a `has-one` relation.
+     * The declaration is returned in terms of a relational [[\yii\db\ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     *
+     * A `has-one` relation means that there is at most one related record matching
+     * the criteria set by this relation, e.g., a customer has one country.
+     *
+     * For example, to declare the `country` relation for `Customer` class, we can write
+     * the following code in the `Customer` class:
+     *
+     * ```php
+     * public function getCountry()
+     * {
+     *     return $this->hasOne(Country::className(), ['id' => 'country_id']);
+     * }
+     * ```
+     *
+     * Note that in the above, the 'id' key in the `$link` parameter refers to an attribute name
+     * in the related class `Country`, while the 'country_id' value refers to an attribute name
+     * in the current AR class.
+     *
+     * Call methods declared in [[\yii\db\ActiveQuery]] to further customize the relation.
+     *
+     * This method is provided by [[\yii\db\BaseActiveRecord]].
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return \yii\dbActiveQueryInterface the relational query object.
+     */
+    public abstract function hasOne($class, $link);
     
     /**
      * Get host of this model.
@@ -536,7 +569,7 @@ trait BlameableTrait
 
     /**
      * Get updater who updated this blameable model recently.
-     * NOTICE! This method will not check whether `$userClass` exists. You should
+     * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
@@ -646,6 +679,51 @@ trait BlameableTrait
     }
 
     /**
+     * Attaches an event handler to an event.
+     *
+     * The event handler must be a valid PHP callback. The following are
+     * some examples:
+     *
+     * ```
+     * function ($event) { ... }         // anonymous function
+     * [$object, 'handleClick']          // $object->handleClick()
+     * ['Page', 'handleClick']           // Page::handleClick()
+     * 'handleClick'                     // global function handleClick()
+     * ```
+     *
+     * The event handler must be defined with the following signature,
+     *
+     * ```
+     * function ($event)
+     * ```
+     *
+     * where `$event` is an [[Event]] object which includes parameters associated with the event.
+     *
+     * This method is provided by [[\yii\base\Component]].
+     * @param string $name the event name
+     * @param callable $handler the event handler
+     * @param mixed $data the data to be passed to the event handler when the event is triggered.
+     * When the event handler is invoked, this data can be accessed via [[Event::data]].
+     * @param boolean $append whether to append new event handler to the end of the existing
+     * handler list. If false, the new handler will be inserted at the beginning of the existing
+     * handler list.
+     * @see off()
+     */
+    public abstract function on($name, $handler, $data = null, $append = true);
+
+    /**
+     * Detaches an existing event handler from this component.
+     * This method is the opposite of [[on()]].
+     * This method is provided by [[\yii\base\Component]]
+     * @param string $name event name
+     * @param callable $handler the event handler to be removed.
+     * If it is null, all handlers attached to the named event will be removed.
+     * @return boolean if a handler is found and detached
+     * @see on()
+     */
+    public abstract function off($name, $handler = null);
+
+    /**
      * Attach events associated with blameable model.
      */
     public function initBlameableEvents()
@@ -702,7 +780,7 @@ trait BlameableTrait
      * the `$currentPage` parameter will be skipped. If it is integer, it will be
      * regarded as sum of models in one page.
      * @param integer $currentPage The current page number, begun with 0.
-     * @param {$this->userClass} $identity
+     * @param {$this->hostClass} $identity
      * @return static[] If no follows, null will be given, or return follow array.
      */
     public static function findAllByIdentityInBatch($pageSize = 'all', $currentPage = 0, $identity = null)
@@ -719,7 +797,7 @@ trait BlameableTrait
      * be given.
      * @param integer $id user id.
      * @param boolean $throwException
-     * @param {$this->userClass} $identity
+     * @param {$this->hostClass} $identity
      * @return static
      * @throws InvalidParamException
      */
@@ -738,7 +816,7 @@ trait BlameableTrait
 
     /**
      * Get total of follows of specified identity.
-     * @param {$this->userClass} $identity
+     * @param {$this->hostClass} $identity
      * @return integer total.
      */
     public static function countByIdentity($identity = null)
@@ -749,7 +827,7 @@ trait BlameableTrait
     /**
      * Get pagination, used for building contents page by page.
      * @param integer $limit
-     * @param {$this->userClass} $identity
+     * @param {$this->hostClass} $identity
      * @return Pagination
      */
     public static function getPagination($limit = 10, $identity = null)

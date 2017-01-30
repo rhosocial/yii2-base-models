@@ -90,7 +90,7 @@ trait TimestampTrait
     {
         if ($this->getIsExpired() && !$this->getIsNewRecord()) {
             if (($this->expiredRemovingCallback instanceof Closure || is_array($this->expiredRemovingCallback)) && is_callable($this->expiredRemovingCallback)) {
-                $result = call_user_func($this->expiredRemovingCallback, $this);
+                call_user_func($this->expiredRemovingCallback, $this);
             }
             $result = $this->removeSelf();
             $this->trigger(static::$eventExpiredRemoved, new ModelEvent(['data' => ['result' => $result]]));

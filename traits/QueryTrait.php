@@ -22,7 +22,6 @@ use yii\db\ActiveQuery;
  */
 trait QueryTrait
 {
-
     /**
      * Attach like condition.
      * @param mixed $value
@@ -35,7 +34,7 @@ trait QueryTrait
         if (!is_string($attribute) || empty($attribute)) {
             return $this;
         }
-        if ($like) {
+        if ($like !== false) {
             return $this->andWhere([$like, $attribute, $value]);
         }
         return $this->andWhere([$attribute => $value]);

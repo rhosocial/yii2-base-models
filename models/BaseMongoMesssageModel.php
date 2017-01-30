@@ -12,7 +12,9 @@
 
 namespace rhosocial\base\models\models;
 
+use MongoDB\BSON\Binary;
 use rhosocial\base\models\queries\BaseMongoMessageQuery;
+use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\traits\MessageTrait;
 
 /**
@@ -36,5 +38,61 @@ abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
         }
         $this->initMessageEvents();
         parent::init();
+    }
+
+    /**
+     * Get recipient.
+     * @return BaseUserQuery
+     */
+    public function getRecipient()
+    {
+        if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
+            return null;
+        }
+        $hostClass = $this->hostClass;
+        $model = $hostClass::buildNoInitModel();
+        return $this->hasOne($hostClass::className(), [$model->guidAttribute => 'otherAttribute']);
+    }
+    
+    /**
+     * Get updated_by attribute.
+     * @return string|null
+     */
+    public function getOtherAttribute()
+    {
+        $updatedByAttribute = $this->updatedByAttribute;
+        return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
+    }
+
+    /**
+     * Set recipient.
+     * @param BaseUserModel $user
+     * @return string
+     */
+    public function setRecipient($user)
+    {
+        if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
+            return null;
+        }
+        if ($user instanceof BaseUserModel) {
+            $user = $user->getGUID();
+        }
+        $otherGuidAttribute = $this->otherGuidAttribute;
+        return $this->$otherGuidAttribute = new Binary($user, Binary::TYPE_UUID);
+    }
+
+    /**
+     * Get mutual attributes rules.
+     * @return array
+     */
+    public function getMutualRules()
+    {
+        $rules = [];
+        if (is_string($this->otherGuidAttribute)) {
+            $rules = [
+                [$this->otherGuidAttribute, 'required'],
+            ];
+        }
+        return $rules;
     }
 }

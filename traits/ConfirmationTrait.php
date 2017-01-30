@@ -274,7 +274,7 @@ trait ConfirmationTrait
      */
     protected function resetOthersConfirmation()
     {
-        if (!$this->confirmationAttribute || empty($this->userClass)) {
+        if (!$this->confirmationAttribute || empty($this->hostClass)) {
             return;
         }
         $contents = static::find()
