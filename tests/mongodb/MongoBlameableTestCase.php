@@ -27,6 +27,11 @@ class MongoBlameableTestCase extends MongoTestCase
     protected $user = null;
     
     /**
+     * @var User
+     */
+    protected $other = null;
+    
+    /**
      * @var MongoBlameable;
      */
     protected $blameable = null;
@@ -35,6 +40,7 @@ class MongoBlameableTestCase extends MongoTestCase
     {
         parent::setUp();
         $this->user = new User(['password' => '123456']);
+        $this->other = new User(['password' => '123456']);
         $this->blameable = $this->user->create(MongoBlameable::class, ['content' => \Yii::$app->security->generateRandomString()]);
     }
     

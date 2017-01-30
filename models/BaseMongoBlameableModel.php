@@ -188,7 +188,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $identity = \Yii::$app->user->identity;
         /* @var BaseUserModel $identity */
         if ($identity) {
-            return $identity->getReadableGUID();
+            return new Binary($identity->getGUID(), Binary::TYPE_UUID);
         }
     }
 }
