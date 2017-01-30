@@ -25,10 +25,10 @@ trait MutualQueryTrait
 
     /**
      * Get the opposite relation.
-     * @param BaseUserModel|string $user initiator
-     * @param BaseUserModel|string $other recipient.
+     * @param array|BaseUserModel|string $user initiator
+     * @param array|BaseUserModel|string $other recipient.
      * @param Connection $database
-     * @return {$model->class}
+     * @return mixed It's type depends on {$model->class}.
      */
     public function opposite($user, $other, $database = null)
     {
@@ -40,7 +40,7 @@ trait MutualQueryTrait
 
     /**
      * Get all the opposites.
-     * @param string $user initator.
+     * @param array|string $user initator.
      * @param array $others all recipients.
      * @param Connection $database
      * @return array instances.

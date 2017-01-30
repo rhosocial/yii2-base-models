@@ -46,7 +46,7 @@ trait MutualTrait
     public function getRecipient()
     {
         if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
-            return null;
+            throw new \yii\base\InvalidConfigException('Recipient GUID Attribute Not Specified.');
         }
         $hostClass = $this->hostClass;
         $model = $hostClass::buildNoInitModel();
@@ -61,7 +61,7 @@ trait MutualTrait
     public function setRecipient($user)
     {
         if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
-            return null;
+            throw new \yii\base\InvalidConfigException('Recipient GUID Attribute Not Specified.');
         }
         if ($user instanceof BaseUserModel) {
             $user = $user->getGUID();

@@ -780,7 +780,7 @@ trait BlameableTrait
      * the `$currentPage` parameter will be skipped. If it is integer, it will be
      * regarded as sum of models in one page.
      * @param integer $currentPage The current page number, begun with 0.
-     * @param {$this->hostClass} $identity
+     * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return static[] If no follows, null will be given, or return follow array.
      */
     public static function findAllByIdentityInBatch($pageSize = 'all', $currentPage = 0, $identity = null)
@@ -797,7 +797,7 @@ trait BlameableTrait
      * be given.
      * @param integer $id user id.
      * @param boolean $throwException
-     * @param {$this->hostClass} $identity
+     * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return static
      * @throws InvalidParamException
      */
@@ -816,7 +816,7 @@ trait BlameableTrait
 
     /**
      * Get total of follows of specified identity.
-     * @param {$this->hostClass} $identity
+     * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return integer total.
      */
     public static function countByIdentity($identity = null)
@@ -827,7 +827,7 @@ trait BlameableTrait
     /**
      * Get pagination, used for building contents page by page.
      * @param integer $limit
-     * @param {$this->hostClass} $identity
+     * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return Pagination
      */
     public static function getPagination($limit = 10, $identity = null)

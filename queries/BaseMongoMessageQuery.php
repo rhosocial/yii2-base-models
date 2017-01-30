@@ -28,7 +28,7 @@ class BaseMongoMessageQuery extends BaseMongoBlameableQuery
      * @param BaseUserModel|string $user initiator
      * @param BaseUserModel|string $other recipient.
      * @param Connection $database
-     * @return {$model->class}
+     * @return mixed It's type depends on {$model->class}.
      */
     public function opposite($user, $other, $database = null)
     {

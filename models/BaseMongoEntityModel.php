@@ -179,4 +179,33 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     {
         return $this->enabledFields();
     }
+    
+    /**
+     * 
+     * @param array $models
+     */
+    public static function compositeGUIDs($models) {
+        if (empty($models)) {
+            return null;
+        }
+        if (!is_array($models) && $models instanceof static) {
+            return new Binary($models->getGUID(), Binary::TYPE_UUID);
+        }
+        if (is_string($models) && strlen($models) == 16) {
+            return new Binary($models, Binary::TYPE_UUID);
+        }
+        $guids = [];
+        foreach ($models as $model) {
+            if ($model instanceof static) {
+                $guids[] = $model->getGUID();
+            } elseif ($model instanceof BaseEntityModel) {
+                $guids[] = new Binary($model->getGUID(), Binary::TYPE_UUID);
+            } elseif (is_string($model) && preg_match(Number::GUID_REGEX, $model)) {
+                $guids[] = new Binary(Number::guid_bin($model), Binary::TYPE_UUID);
+            } elseif (is_string($model) && strlen($model) == 16) {
+                $guids[] = new Binary($model, Binary::TYPE_UUID);
+            }
+        }
+        return $guids;
+    }
 }
