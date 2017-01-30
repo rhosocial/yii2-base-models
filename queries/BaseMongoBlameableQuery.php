@@ -15,6 +15,7 @@ namespace rhosocial\base\models\queries;
 use MongoDB\BSON\Binary;
 use rhosocial\base\models\models\BaseUserModel;
 use rhosocial\base\models\traits\BlameableQueryTrait;
+use Yii;
 
 /**
  * Description of BaseMongoBlameableQuery

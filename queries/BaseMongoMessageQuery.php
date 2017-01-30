@@ -35,7 +35,8 @@ class BaseMongoMessageQuery extends BaseMongoBlameableQuery
         $model = $this->noInitModel;
         return $this->andWhere(
             [$model->createdByAttribute => BaseMongoEntityModel::compositeGUIDs($other),
-        $model->otherGuidAttribute => BaseMongoEntityModel::compositeGUIDs($user)])->one($database);
+        $model->otherGuidAttribute => BaseMongoEntityModel::compositeGUIDs($user)])->orderByCreatedAt(SORT_DESC)
+                ->one($database);
     }
 
     /**
