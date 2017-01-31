@@ -196,9 +196,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
         }
         $guids = [];
         foreach ($models as $model) {
-            if ($model instanceof static) {
-                $guids[] = $model->getGUID();
-            } elseif ($model instanceof BaseEntityModel) {
+            if ($model instanceof static || $model instanceof BaseEntityModel) {
                 $guids[] = new Binary($model->getGUID(), Binary::TYPE_UUID);
             } elseif (is_string($model) && preg_match(Number::GUID_REGEX, $model)) {
                 $guids[] = new Binary(Number::guid_bin($model), Binary::TYPE_UUID);

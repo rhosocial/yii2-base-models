@@ -366,14 +366,14 @@ class SingleRelationBasicTest extends SingleRelationTestCase
             $this->relation->getRecipient();
             $this->fail();
         } catch (\Exception $ex) {
-            echo $ex->getMessage();
+            $this->assertInstanceOf(\yii\base\InvalidConfigException::class, $ex);
         }
         
         try {
             $this->relation->setRecipient($this->user);
             $this->fail();
         } catch (\Exception $ex) {
-            echo $ex->getMessage();
+            $this->assertInstanceOf(\yii\base\InvalidConfigException::class, $ex);
         }
         
         $this->assertTrue($this->user->deregister());

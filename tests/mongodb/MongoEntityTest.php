@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\mongodb;
 use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\MongoEntity;
+use rhosocial\base\models\tests\data\ar\Entity;
 
 /**
  * @author vistart <i@vistart.me>
@@ -103,6 +104,27 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertTrue($this->entity->save());
         $this->assertEquals($ipv6, $this->entity->getIPAddress());
         $this->assertEquals(1, $this->entity->delete());
+    }
+    
+    /**
+     * @group mongo
+     * @group entity
+     */
+    public function testCompositeGUID()
+    {
+        $this->assertNull(MongoEntity::compositeGuids(null));
+        
+        $this->assertEquals($this->entity->getGUID(), MongoEntity::compositeGUIDs($this->entity)->getData());
+        
+        $models = [];
+        $models[] = $this->entity;
+        $models[] = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+        $models[] = Number::guid();
+        
+        $guids = MongoEntity::compositeGUIDs($models);
+        $this->assertEquals($guids[0]->getData(), $models[0]->getGUID());
+        $this->assertEquals($guids[1]->getData(), $models[1]->getGUID());
+        $this->assertEquals($guids[2]->getData(), Number::guid_bin($models[2]));
     }
     
     public function severalTimes()

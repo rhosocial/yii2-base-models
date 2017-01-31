@@ -468,6 +468,9 @@ class MongoMessageTest extends MongoTestCase
         $this->assertEquals($content1, $m->content);
         $this->assertEquals($content2, $p->content);
         
+        $this->assertTrue($m->recipient->equals($this->other));
+        $this->assertTrue($p->recipient->equals($this->user));
+        
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
@@ -489,6 +492,40 @@ class MongoMessageTest extends MongoTestCase
         
         $query = MongoMessage::find()->updatedBy($this->user);
         $this->assertEquals($query, MongoMessage::find());
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group mongo
+     * @group message
+     */
+    public function testInvalid()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        
+        $content1 = \Yii::$app->security->generateRandomString();
+        $message = $this->user->create(MongoMessage::class, ['content' => $content1, 'recipient' => $this->other]);
+        /* @var $message MongoMessage */
+        $this->assertTrue($message->save());
+        
+        $message->otherGuidAttribute = false;
+        try {
+            $message->setRecipient($this->user);
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(\yii\base\InvalidConfigException::class, $ex);
+        }
+        
+        try {
+            $message->getRecipient();
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(\yii\base\InvalidConfigException::class, $ex);
+        }
         
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());

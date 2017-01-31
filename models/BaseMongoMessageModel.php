@@ -61,8 +61,8 @@ abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
      */
     public function getOtherAttribute()
     {
-        $updatedByAttribute = $this->updatedByAttribute;
-        return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
+        $otherGuidAttribute = $this->otherGuidAttribute;
+        return (!is_string($otherGuidAttribute) || empty($otherGuidAttribute)) ? null : $this->$otherGuidAttribute->getData();
     }
 
     /**

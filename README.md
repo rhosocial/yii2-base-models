@@ -39,7 +39,7 @@ or
 ```
 to the require section of your `composer.json` file by yourself.
 
-Note: The MongoDB models need PHP 5.6 or above.
+Note: The MongoDB models need [PHP MongoDB extension](https://pecl.php.net/package/mongodb) 1.2.0 or above.
 
 Usage
 -----
