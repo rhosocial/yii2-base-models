@@ -35,7 +35,7 @@ install:
     - travis_retry composer self-update && composer --version
     - travis_retry composer global require "fxp/composer-asset-plugin:*"
     - wget https://pecl.php.net/get/mongodb-1.2.4.tgz
-    - pear install mongodb-1.2.4.tgz
+    - pear install -f mongodb-1.2.4.tgz
     - |
         if [ $TRAVIS_PHP_VERSION = '7.0' ]; then
             phpenv config-add tests/data/php7.0.ini
@@ -112,9 +112,9 @@ script:
         elif [ $TRAVIS_PHP_VERSION = '7.0' ]; then
             php phpunit.phar --verbose
         elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS
+            php phpunit.phar --verbose
         elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
-            phpunit --verbose $EXCLUDE_FLAGS
+            phpunit --verbose
         else
             phpunit --verbose
         fi
