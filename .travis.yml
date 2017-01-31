@@ -34,6 +34,8 @@ install:
     - sudo cp -f tests/data/config.json /home/travis/.composer/
     - travis_retry composer self-update && composer --version
     - travis_retry composer global require "fxp/composer-asset-plugin:*"
+    - wget https://pecl.php.net/get/mongodb-1.2.4.tgz
+    - pear install mongodb-1.2.4.tgz
     - |
         if [ $TRAVIS_PHP_VERSION = '7.0' ]; then
             phpenv config-add tests/data/php7.0.ini
@@ -43,6 +45,12 @@ install:
             travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
         elif [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             phpenv config-add tests/data/php7.0.ini
+            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
+        elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
+            phpenv config-add tests/data/php5.5.ini
+            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
+        elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
+            phpenv config-add tests/data/php5.6.ini
             travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
         fi
     - php -r "echo INTL_ICU_VERSION . \"\n\";"
