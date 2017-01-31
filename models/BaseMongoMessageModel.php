@@ -25,6 +25,7 @@ abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
 {
     use MessageTrait;
     
+    public $updatedAtAttribute = false;
     public $updatedByAttribute = false;
     public $expiredAt = 604800; // 7 days.
     

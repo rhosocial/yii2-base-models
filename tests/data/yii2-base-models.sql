@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-25 00:08:32
+-- Generation Time: 2017-01-31 09:46:46
 -- 服务器版本： 8.0.0-dmr
 -- PHP Version: 7.1.1
 
@@ -254,18 +254,20 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
 --
 -- 表的结构 `user_relation_group`
 --
--- 创建时间： 2017-01-07 07:39:45
+-- 创建时间： 2017-01-31 01:05:16
 --
 
 DROP TABLE IF EXISTS `user_relation_group`;
 CREATE TABLE IF NOT EXISTS `user_relation_group` (
   `guid` varbinary(16) NOT NULL,
+  `id` varchar(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`guid`),
+  UNIQUE KEY `user_relation_group_id_unique` (`id`,`user_guid`) USING BTREE,
   KEY `user_guid` (`user_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

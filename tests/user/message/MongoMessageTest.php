@@ -471,4 +471,26 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group user
+     * @group mongo
+     * @group message
+     */
+    public function testFindByUpdater()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        
+        $content1 = \Yii::$app->security->generateRandomString();
+        $message = $this->user->create(MongoMessage::class, ['content' => $content1, 'recipient' => $this->other]);
+        /* @var $message MongoMessage */
+        $this->assertTrue($message->save());
+        
+        $query = MongoMessage::find()->updatedBy($this->user);
+        $this->assertEquals($query, MongoMessage::find());
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
 }

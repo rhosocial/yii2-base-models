@@ -329,6 +329,16 @@ trait BlameableTrait
         }
         return $rules;
     }
+    
+    public function getIdRules()
+    {
+        if ($this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
+            return [
+                [[$this->idAttribute], 'required'],
+            ];
+        }
+        return parent::getIdRules();
+    }
 
     /**
      * Get the rules associated with `description` attribute.

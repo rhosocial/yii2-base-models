@@ -61,6 +61,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      */
     public $guidAttribute = false;
     public $idAttribute = '_id';
+    public $idAttributeType = 2;
 
     /**
      * @inheritdoc

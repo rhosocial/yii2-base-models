@@ -179,4 +179,38 @@ class EmailTest extends BlameableTestCase
         
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group user
+     * @group blameable
+     * @group email
+     */
+    public function testUniqueId()
+    {
+        $this->assertTrue($this->user->register([$this->email]));
+        
+        $email = $this->user->create(UserEmail::class, ['email' => $this->faker->email]);
+        $this->assertNotEquals($email->getGUID(), $this->email->getGUID());
+        $email->setID($this->email->getID());
+        $this->assertEquals($email->getID(), $this->email->getID());
+        try {
+            $email->save();
+            $this->fail();
+        } catch (\Exception $ex) {
+        }
+        
+        $this->assertTrue($this->other->register());
+        $email->host = $this->other;
+        $this->assertTrue($email->save());
+        
+        $email->host = $this->user;
+        try {
+            $email->save();
+            $this->fail();
+        } catch (\Exception $ex) {
+        }
+        
+        $this->assertTrue($this->other->deregister());
+        $this->assertTrue($this->user->deregister());
+    }
 }

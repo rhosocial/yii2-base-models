@@ -13,7 +13,6 @@
 namespace rhosocial\base\models\tests\mongodb;
 
 use MongoDB\BSON\Binary;
-use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\MongoBlameable;
 
 /**
@@ -72,6 +71,20 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertNull(MongoBlameable::findByIdentity($this->user)->one());
         $this->assertTrue($this->user->register([$this->blameable]));
         $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::findByIdentity($this->user)->one());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group mongo
+     * @group blameable
+     * @param integer $severalTimes
+     * @dataProvider severalTimes
+     */
+    public function testFindByCreator($severalTimes)
+    {
+        $this->assertNull(MongoBlameable::find()->createdBy($this->user)->one());
+        $this->assertTrue($this->user->register([$this->blameable]));
+        $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::find()->createdBy($this->user)->one());
         $this->assertTrue($this->user->deregister());
     }
     

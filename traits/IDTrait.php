@@ -164,7 +164,7 @@ trait IDTrait
         if ($this->idAttribute == false) {
             return [];
         }
-        if ($this->idAttributeSafe) {
+        if ($this->idAttributeSafe || $this->idAttributeType === static::$idTypeAutoIncrement) {
             return [
                 [[$this->idAttribute], 'safe'],
             ];
@@ -184,11 +184,6 @@ trait IDTrait
             if ($this->idAttributeType === static::$idTypeString) {
                 $rules[] = [[$this->idAttribute], 'string',
                     'max' => $this->idAttributeLength,];
-            }
-            if ($this->idAttributeType === static::$idTypeAutoIncrement) {
-                $rules[] = [
-                    [$this->idAttribute], 'safe',
-                ];
             }
             return $rules;
         }
