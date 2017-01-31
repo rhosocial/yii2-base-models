@@ -131,4 +131,24 @@ class AdditionalAccountTest extends UserTestCase
         
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group user
+     * @group additionalaccount
+     */
+    public function testSeperateLoginAttribute()
+    {
+        $password = '123456';
+        $this->user = new User(['password' => $password]);
+        $aa = $this->user->create(AdditionalAccount::class, ['content' => 0, 'seperateLoginAttribute' => false]);
+        /* @var $aa AdditionalAccount */
+        $this->assertFalse($aa->seperateLoginAttribute);
+        $this->assertTrue($this->user->register([$aa]));
+        $this->assertFalse($aa->getSeperateLogin());
+        $aa->setSeperateLogin(true);
+        $this->assertFalse($aa->getSeperateLogin());
+        $aa->setSeperateLogin(false);
+        $this->assertFalse($aa->getSeperateLogin());
+        $this->assertTrue($this->user->deregister());
+    }
 }

@@ -37,20 +37,8 @@ install:
     - wget https://pecl.php.net/get/mongodb-1.2.4.tgz
     - pear install -f mongodb-1.2.4.tgz
     - |
-        if [ $TRAVIS_PHP_VERSION = '7.0' ]; then
-            phpenv config-add tests/data/php7.0.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
-        elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
-            phpenv config-add tests/data/php7.0.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
-        elif [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
-            phpenv config-add tests/data/php7.0.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
-        elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
-            phpenv config-add tests/data/php5.5.ini
-            travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
-        elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
-            phpenv config-add tests/data/php5.6.ini
+        if [ $TRAVIS_PHP_VERSION = '7.1' || $TRAVIS_PHP_VERSION = '7.0' || $TRAVIS_PHP_VERSION = '5.6' || $TRAVIS_PHP_VERSION = '5.5' || $TRAVIS_PHP_VERSION = 'nightly' ]; then
+            phpenv config-add tests/data/php.ini
             travis_retry composer require "yiisoft/yii2-mongodb:~2.1.0"
         fi
     - php -r "echo INTL_ICU_VERSION . \"\n\";"
@@ -63,35 +51,15 @@ install:
 before_script:
     - mysql --version
     - mysql -uroot < tests/data/yii2-base-models.sql
+    - travis_retry wget https://phar.phpunit.de/phpunit.phar
+    - chmod +x phpunit.phar
     - |
-        if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
+        if [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' || $TRAVIS_PHP_VERSION = 'hhvm-3.9' || $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
             EXCLUDE_FLAGS="--exclude-group mongo"
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
-            EXCLUDE_FLAGS="--exclude-group mongo"
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
-            EXCLUDE_FLAGS="--exclude-group mongo"
-        elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
+        fi
+    - |
+        if [ $TRAVIS_PHP_VERSION = '7.1' ]; then
             PHPUNIT_FLAGS="--coverage-clover=coverage.clover"
-        elif [ $TRAVIS_PHP_VERSION = '7.0' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
-        elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
-            travis_retry wget https://phar.phpunit.de/phpunit.phar
-            chmod +x phpunit.phar
-            EXCLUDE_FLAGS="--exclude-group mongo"
-        elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
-            EXCLUDE_FLAGS="--exclude-group mongo"
         fi
     - redis-cli flushall
     - mongo yii2-base-models --eval "db.createUser({user:\"user\",pwd:\"123456\",roles:[{role:\"readWrite\", db:\"yii2-base-models\"}]})"
@@ -99,20 +67,12 @@ before_script:
         
 script: 
     - |
-        if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
+        if [ $TRAVIS_PHP_VERSION = 'nightly' || $TRAVIS_PHP_VERSION = '7.0' || $TRAVIS_PHP_VERSION = '5.6' ]; then
             php phpunit.phar --verbose
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]; then
-            php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
-        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
+        elif [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' || $TRAVIS_PHP_VERSION = 'hhvm-3.9' || $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
             php phpunit.phar --verbose $EXCLUDE_FLAGS --process-isolation
         elif [ $TRAVIS_PHP_VERSION = '7.1' ]; then
             php phpunit.phar --verbose $PHPUNIT_FLAGS
-        elif [ $TRAVIS_PHP_VERSION = '7.0' ]; then
-            php phpunit.phar --verbose
-        elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
-            php phpunit.phar --verbose
         elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
             phpunit --verbose
         else
