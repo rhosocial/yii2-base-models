@@ -730,4 +730,14 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
         }
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     * @group comment
+     */
+    public function testEnabledFields()
+    {
+        $this->assertNotEmpty($this->comments[0]->enabledFields());
+    }
 }

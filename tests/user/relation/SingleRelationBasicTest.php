@@ -350,4 +350,34 @@ class SingleRelationBasicTest extends SingleRelationTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertEquals(0, $this->relation->delete());
     }
+    
+    /**
+     * @group user
+     * @group relation
+     * @group relation-single
+     */
+    public function testInvalidRelationModel()
+    {
+        $this->assertTrue($this->user->register());
+        $this->assertTrue($this->other->register());
+        $this->assertTrue($this->relation->save());
+        $this->relation->otherGuidAttribute = false;
+        try {
+            $this->relation->getRecipient();
+            $this->fail();
+        } catch (\Exception $ex) {
+            echo $ex->getMessage();
+        }
+        
+        try {
+            $this->relation->setRecipient($this->user);
+            $this->fail();
+        } catch (\Exception $ex) {
+            echo $ex->getMessage();
+        }
+        
+        $this->assertTrue($this->user->deregister());
+        $this->assertTrue($this->other->deregister());
+        $this->assertEquals(0, $this->relation->delete());
+    }
 }

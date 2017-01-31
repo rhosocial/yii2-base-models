@@ -325,4 +325,25 @@ class PostTest extends BlameableTestCase
         $this->assertInstanceOf(UserPost::class, $post);
         $this->assertTrue($this->user->deregister());
     }
+    
+    /**
+     * @group blameable
+     * @group post
+     */
+    public function testSetHost()
+    {
+        $this->assertTrue($this->user->register([$this->post]));
+        $this->assertTrue($this->other->register());
+        $post = UserPost::find()->createdBy($this->user)->one();
+        $this->assertInstanceOf(UserPost::class, $post);
+        $this->assertNull(UserPost::find()->createdBy($this->other)->one());
+        
+        $this->post->setHost($this->other->getReadableGUID());
+        $this->assertTrue($this->post->save());
+        $this->assertInstanceOf(UserPost::class, UserPost::find()->createdBy($this->other)->one());
+        $this->assertNull(UserPost::find()->createdBy($this->user)->one());
+        
+        $this->assertFalse($this->post->setHost(null));
+        $this->assertTrue($this->user->deregister());
+    }
 }
