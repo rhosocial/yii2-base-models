@@ -101,6 +101,23 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     */
+    public function testConfirmation()
+    {
+        $this->assertFalse($this->email->getIsConfirmed());
+        $this->assertTrue($this->user->register([$this->email]));
+        $this->assertEquals(UserEmail::$confirmFalse, $this->email->getConfirmation());
+        
+        $this->assertTrue($this->email->applyConfirmation());
+        $this->assertTrue($this->email->confirm($this->email->getConfirmCode()));
+        $this->assertTrue($this->email->getIsConfirmed());
+        $this->assertEquals(UserEmail::$confirmTrue, $this->email->getConfirmation());
+        $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group blameable
+     * @group email
      * @depends testConfirm
      */
     public function testResetConfirmation()
@@ -212,5 +229,20 @@ class EmailTest extends BlameableTestCase
         
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
+    }
+    
+    /**
+     * @group user
+     * @group blameable
+     * @group email
+     */
+    public function testCanBeEdited()
+    {
+        try {
+            $this->email->getContentCanBeEdited();
+            $this->fail();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(\yii\base\NotSupportedException::class, $ex);
+        }
     }
 }
