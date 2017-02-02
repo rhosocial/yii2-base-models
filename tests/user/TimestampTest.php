@@ -158,10 +158,12 @@ class TimestampTest extends UserTestCase
         $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertTrue($this->user->hasEverEdited());
         
-        $this->user->setExpiredAfter(1);
+        $this->assertEquals(1, $this->user->setExpiredAfter(1));
         $this->assertTrue($this->user->save());
         sleep(2);
-        $this->assertFalse($this->user->refresh());
+        ($this->user->refresh());
+        $this->assertTrue($this->user->getIsNewRecord());
+        $this->assertNull(User::find()->guid($this->user->getGUID())->one());
     }
     
     
