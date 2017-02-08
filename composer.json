@@ -17,6 +17,9 @@
         "yiisoft/yii2": ">=2.0.11",
         "rhosocial/helpers": "~1.0.0"
     },
+    "require-dev": {
+        "yiisoft/yii2-faker": "*"
+    },
     "suggest": {
         "yiisoft/yii2-mongodb": "Required if you want to use mongo ActiveRecord and ActiveQuery. (php-mongodb extension required)",
         "yiisoft/yii2-redis": "Required if you want to use redis ActiveRecord and ActiveQuery."

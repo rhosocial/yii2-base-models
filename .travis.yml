@@ -51,7 +51,17 @@ install:
 before_script:
     - mysql --version
     - mysql -uroot < tests/data/yii2-base-models.sql
-    - travis_retry wget https://phar.phpunit.de/phpunit.phar
+    - |
+        if [ $TRAVIS_PHP_VERSION = '7.1' ]||[ $TRAVIS_PHP_VERSION = '7.0' ]||[ $TRAVIS_PHP_VERSION = 'nightly' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit-5.7.phar
+            mv phpunit-5.7.phar phpunit.phar
+        elif [ $TRAVIS_PHP_VERSION = '5.6' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit-5.7.phar
+            mv phpunit-5.7.phar phpunit.phar
+        elif [ $TRAVIS_PHP_VERSION = '5.5' ]; then
+            travis_retry wget https://phar.phpunit.de/phpunit-4.8.phar
+            mv phpunit-4.8.phar phpunit.phar
+        fi
     - chmod +x phpunit.phar
     - |
         if [ $TRAVIS_PHP_VERSION = 'hhvm-3.6' ]||[ $TRAVIS_PHP_VERSION = 'hhvm-3.9' ]||[ $TRAVIS_PHP_VERSION = 'hhvm-3.12' ]; then
