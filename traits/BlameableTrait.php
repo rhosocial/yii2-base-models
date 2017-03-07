@@ -306,12 +306,14 @@ trait BlameableTrait
         if (!is_string($this->createdByAttribute) || empty($this->createdByAttribute)) {
             throw new NotSupportedException('You must assign the creator.');
         }
-        $rules[] = [
-            [$this->createdByAttribute],
-            'safe',
-        ];
+        if ($this->guidAttribute != $this->createdByAttribute) {
+            $rules[] = [
+                [$this->createdByAttribute],
+                'safe',
+            ];
+        }
 
-        if (is_string($this->updatedByAttribute) && !empty($this->updatedByAttribute)) {
+        if (is_string($this->updatedByAttribute) && $this->guidAttribute != $this->updatedByAttribute && !empty($this->updatedByAttribute)) {
             $rules[] = [
                 [$this->updatedByAttribute],
                 'safe',
