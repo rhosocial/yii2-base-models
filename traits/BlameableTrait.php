@@ -334,7 +334,7 @@ trait BlameableTrait
     
     public function getIdRules()
     {
-        if ($this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
+        if (is_string($this->idAttribute) && !empty($this->idAttribute) && $this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
             return [
                 [[$this->idAttribute], 'required'],
             ];
