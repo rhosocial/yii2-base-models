@@ -84,6 +84,8 @@ trait PasswordTrait
     {
         return 'Rrvl-7}cXt_<iAx[5s';
     }
+    
+    protected $_password;
 
     /**
      * Get rules of password hash.
@@ -198,6 +200,7 @@ trait PasswordTrait
         }
         $phAttribute = $this->passwordHashAttribute;
         $this->$phAttribute = $this->generatePasswordHash($password);
+        $this->_password = $password;
         $this->trigger(static::$eventAfterSetPassword);
     }
     
