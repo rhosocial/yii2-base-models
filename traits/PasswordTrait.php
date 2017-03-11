@@ -191,6 +191,8 @@ trait PasswordTrait
 
     /**
      * Set new password.
+     * If $password is empty, the specilty which represents the empty will be taken.
+     * Finally, it will trigger `static::$eventAfterSetPassword` event.
      * @param string $password the new password to be set.
      */
     public function setPassword($password = null)

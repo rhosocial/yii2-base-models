@@ -113,7 +113,7 @@ trait RegistrationTrait
             if (!$this->save()) {
                 throw new IntegrityException('Registration Error(s) Occured: User Save Failed.', $this->getErrors());
             }
-            if ($authManager = $this->getAuthManager() && !empty($authRoles)) {
+            if (($authManager = $this->getAuthManager()) && !empty($authRoles)) {
                 if (is_string($authRoles) || $authRoles instanceof Role || !is_array($authRoles)) {
                     $authRoles = [$authRoles];
                 }
