@@ -16,7 +16,7 @@ use Yii;
 use yii\base\ModelEvent;
 use yii\db\IntegrityException;
 use yii\rbac\ManagerInterface;
-use yii\rbac\Role;
+use yii\rbac\Item;
 
 /**
  * User features concerning registration.
@@ -98,7 +98,7 @@ trait RegistrationTrait
      * If registration finished, the $eventAfterRegister will be triggered. or
      * $eventRegisterFailed will be triggered when any errors occured.
      * @param array $associatedModels The models associated with user to be stored synchronously.
-     * @param string|array $authRoles auth name, auth instance, auth name array or auth instance array.
+     * @param string|Item[] $authRoles auth name, auth instance, auth name array or auth instance array.
      * @return boolean Whether the registration succeeds or not.
      * @throws IntegrityException when inserting user and associated models failed.
      */
@@ -114,14 +114,14 @@ trait RegistrationTrait
                 throw new IntegrityException('Registration Error(s) Occured: User Save Failed.', $this->getErrors());
             }
             if (($authManager = $this->getAuthManager()) && !empty($authRoles)) {
-                if (is_string($authRoles) || $authRoles instanceof Role || !is_array($authRoles)) {
+                if (is_string($authRoles) || $authRoles instanceof Item || !is_array($authRoles)) {
                     $authRoles = [$authRoles];
                 }
                 foreach ($authRoles as $role) {
                     if (is_string($role)) {
                         $role = $authManager->getRole($role);
                     }
-                    if ($role instanceof Role) {
+                    if ($role instanceof Item) {
                         $authManager->assign($role, $this->getGUID());
                     }
                 }
