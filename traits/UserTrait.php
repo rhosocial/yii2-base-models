@@ -104,11 +104,12 @@ trait UserTrait
      */
     public static function isValid($user)
     {
-        if (Yii::$app->user->isGuest && (empty($user) || !($user instanceof static))) {
-            throw new InvalidParamException('User Not Specified.');
+        if (Yii::$app instanceof \yii\web\Application && !Yii::$app->user->isGuest)
+        {
+            return Yii::$app->user->identity;
         }
-        if ((empty($user) || !($user instanceof static)) && !Yii::$app->user->isGuest) {
-            $user = Yii::$app->user->identity;
+        if (!($user instanceof static)) {
+            return false;
         }
         return $user->find()->guid($user)->exists() ? $user : false;
     }

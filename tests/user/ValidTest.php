@@ -19,6 +19,7 @@ class ValidTest extends UserTestCase
 {
     /**
      * @group user
+     * @group user-valid
      */
     public function testValid()
     {
@@ -32,22 +33,12 @@ class ValidTest extends UserTestCase
     
     /**
      * @group user
+     * @group user-valid
      */
     public function testInvalid()
     {
         \Yii::$app->user->setIdentity(null);
-        try {
-            $this->user->isValid(null);
-            $this->fail();
-        } catch (\Exception $ex) {
-            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
-        }
-        
-        try {
-            $this->user->isValid(new static);
-            $this->fail();
-        } catch (\Exception $ex) {
-            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
-        }
+        $this->assertFalse($this->user->isValid(null));
+        $this->assertFalse($this->user->isValid(new static));
     }
 }
