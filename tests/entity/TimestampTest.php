@@ -187,6 +187,16 @@ class TimestampTest extends EntityTestCase
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
     
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testUtcDatetime()
+    {
+        $this->entity = new \rhosocial\base\models\tests\data\ar\EntityUtc();
+        $this->assertTrue($this->entity->save());
+    }
+    
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++)

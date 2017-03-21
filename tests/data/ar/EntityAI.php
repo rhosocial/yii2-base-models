@@ -12,6 +12,10 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class EntityAI extends Entity
 {
     public $idAttributeType = 2; // Auto Increment.

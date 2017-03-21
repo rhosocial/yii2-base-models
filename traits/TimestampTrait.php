@@ -35,13 +35,13 @@ trait TimestampTrait
      * Set this property to false if you do not want to record the creation time.
      */
     public $createdAtAttribute = 'created_at';
-    
+
     /**
      * @var string|false the attribute that receive datetime value.
      * Set this property to false if you do not want to record the update time.
      */
     public $updatedAtAttribute = 'updated_at';
-    
+
     /**
      * @var string|false the attribute that determine when this entity expire.
      * If this entity does not expire, set to false.
@@ -56,12 +56,20 @@ trait TimestampTrait
     public static $timeFormatTimestamp = 1;
     public static $initDatetime = '1970-01-01 00:00:00';
     public static $initTimestamp = 0;
+    public $timeType = 1;
+    public static $timeTypeUtc = 0;
+    public static $timeTypeLocal = 1;
+    public static $timeTypes = [
+        0 => 'GMT',
+        1 => 'local',
+    ];
+
     /**
      * @var Closure
      */
     public $expiredRemovingCallback;
     public static $eventExpiredRemoved = 'expiredRemoved';
-    
+
     /**
      * Check this entity whether expired.
      * This feature require creation time. If creation time didn't record, false
@@ -76,9 +84,14 @@ trait TimestampTrait
         if ($this->getExpiredAfter() === false || $createdAt === null) {
             return false;
         }
-        return $this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()) > $createdAt;
+        if ($this->timeType == static::$timeTypeLocal) {
+            return $this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()) > $createdAt;
+        } elseif ($this->timeType == static::$timeTypeUtc) {
+            return $this->offsetUtcDatetime($this->currentUtcDatetime(), -$this->getExpiredAfter()) > $createdAt;
+        }
+        return false;
     }
-    
+
     /**
      * Remove myself if expired.
      * The `expiredRemovingCallback` will be called before removing itself,
@@ -98,7 +111,7 @@ trait TimestampTrait
         }
         return false;
     }
-    
+
     /**
      * Remove self.
      * You can override this method for implementing more complex features.
@@ -109,7 +122,7 @@ trait TimestampTrait
     {
         return $this->delete();
     }
-    
+
     /**
      * We recommened you attach this event when after finding this active record.
      * @param ModelEvent $event
@@ -119,7 +132,7 @@ trait TimestampTrait
     {
         return $event->sender->removeIfExpired();
     }
-    
+
     /**
      * Get the current date & time in format of "Y-m-d H:i:s" or timestamp.
      * You can override this method to customize the return value.
@@ -129,9 +142,15 @@ trait TimestampTrait
     public static function getCurrentDatetime($event)
     {
         $sender = $event->sender;
-        return $sender->currentDatetime();
+        /* @var $sender static */
+        if ($sender->timeType == static::$timeTypeUtc) {
+            return $sender->currentUtcDatetime();
+        } elseif ($sender->timeType == static::$timeTypeLocal) {
+            return $sender->currentDatetime();
+        }
+        return null;
     }
-    
+
     /**
      * Get current date & time, by current time format.
      * @return string|int Date & time string if format is datetime, or timestamp.
@@ -146,7 +165,22 @@ trait TimestampTrait
         }
         return null;
     }
-    
+
+    /**
+     * Get current Greenwich date & time (UTC), by current time format.
+     * @return string|int Date & time string if format is datetime, or timestamp.
+     */
+    public function currentUtcDatetime()
+    {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
+            return gmdate('Y-m-d H:i:s');
+        }
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
+            return gmmktime();
+        }
+        return null;
+    }
+
     /**
      * Get offset date & time, by current time format.
      * @param string|int $time Date &time string or timestamp.
@@ -163,7 +197,24 @@ trait TimestampTrait
         }
         return null;
     }
-    
+
+    /**
+     * Get offset date & time relative to Greenwich time(UTC), by current time format.
+     * @param string|int $time Date &time string or timestamp.
+     * @param int $offset Offset in seconds.
+     * @return string|int Date & time string if format is datetime, or timestamp.
+     */
+    public function offsetUtcDatetime($time = null, $offset = 0)
+    {
+        if ($this->timeFormat === static::$timeFormatDatetime) {
+            return gmdate('Y-m-d H:i:s', strtotime(($offset >= 0 ? "+$offset" : $offset) . " seconds", is_string($time) ? strtotime($time) : (is_int($time) ? $time : gmmktime())));
+        }
+        if ($this->timeFormat === static::$timeFormatTimestamp) {
+            return (is_int($time) ? $time : gmmktime()) + $offset;
+        }
+        return null;
+    }
+
     /**
      * Get init date & time in format of "Y-m-d H:i:s" or timestamp.
      * @param ModelEvent $event
@@ -174,7 +225,7 @@ trait TimestampTrait
         $sender = $event->sender;
         return $sender->initDatetime();
     }
-    
+
     /**
      * Get init date & time, by current time format.
      * @return string|int Date & time string if format is datetime, or timestamp.
@@ -189,7 +240,7 @@ trait TimestampTrait
         }
         return null;
     }
-    
+
     /**
      * Check whether the attribute is init datetime.
      * @param mixed $attribute
@@ -205,7 +256,7 @@ trait TimestampTrait
         }
         return false;
     }
-    
+
     /**
      * Get the current date & time in format of "Y-m-d H:i:s".
      * This method is ONLY used for being triggered by event. DO NOT call,
@@ -217,7 +268,7 @@ trait TimestampTrait
     {
         return static::getCurrentDatetime($event);
     }
-    
+
     /**
      * Behaviors associated with timestamp.
      * @return array behaviors
@@ -233,7 +284,7 @@ trait TimestampTrait
             ]
         ];
     }
-    
+
     /**
      * Get creation time.
      * @return string timestamp
@@ -246,7 +297,7 @@ trait TimestampTrait
         }
         return $this->$createdAtAttribute;
     }
-    
+
     /**
      * Get rules associated with createdAtAttribute.
      * The default rule is safe. Because the [[TimestampBehavior]] will attach
@@ -264,7 +315,7 @@ trait TimestampTrait
             [[$this->createdAtAttribute], 'safe'],
         ];
     }
-    
+
     /**
      * Get update time.
      * @return string timestamp
@@ -277,7 +328,7 @@ trait TimestampTrait
         }
         return $this->$updatedAtAttribute;
     }
-    
+
     /**
      * Get rules associated with `updatedAtAttribute`.
      * The default rule is safe. Because the [[TimestampBehavior]] will attach
@@ -295,7 +346,7 @@ trait TimestampTrait
             [[$this->updatedAtAttribute], 'safe'],
         ];
     }
-    
+
     /**
      * Get expiration duration.
      * If `expiredAfterAttribute` is not specified, false will be given.
@@ -308,7 +359,7 @@ trait TimestampTrait
         }
         return (int)($this->{$this->expiredAfterAttribute});
     }
-    
+
     /**
      * Set expiration duration (in seconds).
      * If `expiredAfterAttribute` is not specified, this feature will be skipped,
@@ -323,7 +374,7 @@ trait TimestampTrait
         }
         return (int)($this->{$this->expiredAfterAttribute} = (int)$expiredAfter);
     }
-    
+
     /**
      * Get rules associated with `expiredAfterAttribute`.
      * The default rule is unsigned integer.
@@ -340,7 +391,7 @@ trait TimestampTrait
             [[$this->expiredAfterAttribute], 'integer', 'min' => 0],
         ];
     }
-    
+
     /**
      * Get enabled fields associated with timestamp, including `createdAtAttribute`,
      * `updatedAtAttribute` and `expiredAfterAttribute`.
