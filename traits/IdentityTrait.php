@@ -109,6 +109,9 @@ trait IdentityTrait
      */
     public function getAuthKeyRules()
     {
+        if (!is_string($this->authKeyAttribute) || empty($this->authKeyAttribute)) {
+            return [];
+        }
         if (empty($this->authKeyRules)) {
             $this->authKeyRules = [
                 [[$this->authKeyAttribute], 'required'],
