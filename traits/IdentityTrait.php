@@ -169,6 +169,9 @@ trait IdentityTrait
      */
     public function getAccessTokenRules()
     {
+        if (!is_string($this->accessTokenAttribute) || empty($this->accessTokenAttribute)) {
+            return [];
+        }
         if (empty($this->accessTokenRules)) {
             $this->accessTokenRules = [
                 [[$this->accessTokenAttribute], 'required'],
@@ -229,6 +232,9 @@ trait IdentityTrait
      */
     public function getStatusRules()
     {
+        if (!is_string($this->statusAttribute) || empty($this->statusAttribute)) {
+            return [];
+        }
         if (empty($this->statusRules)) {
             $this->statusRules = [
                 [[$this->statusAttribute], 'required'],

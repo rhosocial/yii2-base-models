@@ -218,6 +218,9 @@ trait RegistrationTrait
      */
     public function getSourceRules()
     {
+        if (!is_string($this->sourceAttribute) || empty($this->sourceAttribute)) {
+            return [];
+        }
         if (empty($this->_sourceRules)) {
             $this->_sourceRules = [
                 [[$this->sourceAttribute], 'required'],

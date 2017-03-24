@@ -93,6 +93,9 @@ trait PasswordTrait
      */
     public function getPasswordHashRules()
     {
+        if (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) {
+            return [];
+        }
         if (empty($this->passwordHashRules) || !is_array($this->passwordHashRules)) {
             $this->passwordHashRules = [
                 [[$this->passwordHashAttribute], 'string', 'max' => $this->passwordHashAttributeLength],
@@ -119,7 +122,7 @@ trait PasswordTrait
      */
     public function getPasswordResetTokenRules()
     {
-        if (!is_string($this->passwordResetTokenAttribute)) {
+        if (!is_string($this->passwordResetTokenAttribute) || empty($this->passwordResetTokenAttribute)) {
             return [];
         }
         if (empty($this->passwordResetTokenRules) || !is_array($this->passwordResetTokenRules)) {
