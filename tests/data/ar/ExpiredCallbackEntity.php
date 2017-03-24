@@ -14,6 +14,10 @@ namespace rhosocial\base\models\tests\data\ar;
 
 use yii\base\ModelEvent;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class ExpiredCallbackEntity extends ExpiredEntity
 {
     public function init()
@@ -22,14 +26,14 @@ class ExpiredCallbackEntity extends ExpiredEntity
         $this->on(static::$eventExpiredRemoved, [$this, 'checkInitDatetime']);
         parent::init();
     }
-    
+
     public function checkInitDatetime($event)
     {
         $sender = $event->sender;
         /* @var $sender static */
         return $sender->isInitDatetime($sender->getCreatedAt());
     }
-    
+
     public function removingCallback($model)
     {
         /* @var $sender ExpiredEntity */

@@ -16,7 +16,7 @@ namespace rhosocial\base\models\tests\data\ar;
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class EntityUtc extends Entity
+class EntityLocal extends Entity
 {
-    public $timeType = 0;
+    public $timeType = 1;
 }

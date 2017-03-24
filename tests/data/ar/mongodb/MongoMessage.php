@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseMongoMessageModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoMessage extends BaseMongoMessageModel
@@ -25,7 +26,7 @@ class MongoMessage extends BaseMongoMessageModel
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseMongoMessageQuery

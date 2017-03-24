@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\mongodb\MongoMessage;
 use rhosocial\base\models\tests\MongoTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoMessageTest extends MongoTestCase
@@ -26,12 +27,12 @@ class MongoMessageTest extends MongoTestCase
      * @var User
      */
     protected $user;
-    
+ 
     /**
      * @var User
      */
     protected $other;
-    
+
     protected function setUp()
     {
         parent::setUp();
@@ -39,7 +40,7 @@ class MongoMessageTest extends MongoTestCase
         \Yii::$app->user->identity = $this->user;
         $this->other = new User(['password' => '123456']);
     }
-    
+
     protected function tearDown()
     {
         $this->other->deregister();
@@ -55,7 +56,7 @@ class MongoMessageTest extends MongoTestCase
         User::deleteAll();
         parent::tearDown();
     }
-    
+
     /**
      * @group user
      * @group message
@@ -74,7 +75,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -103,7 +104,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * 
      * @param \yii\base\ModelEvent $event
@@ -113,7 +114,7 @@ class MongoMessageTest extends MongoTestCase
         //echo "Received Event Triggered\n";
         return $this->isReceived = true;
     }
-    
+
     /**
      * 
      * @param \yii\base\ModelEvent $event
@@ -123,7 +124,7 @@ class MongoMessageTest extends MongoTestCase
         //echo "Read Event Triggered\n";
         return $this->isRead = true;
     }
-    
+
     public function onShouldNotBeExpiredRemoved($event)
     {
         $sender = $event->sender;
@@ -133,10 +134,10 @@ class MongoMessageTest extends MongoTestCase
         $this->fail("The message model has been removed if you meet this message.\n"
             . "This event should not be triggered.");
     }
-    
+
     protected $isRead = false;
     protected $isReceived = false;
-    
+
     /**
      * @group user
      * @group mongo
@@ -219,7 +220,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -279,7 +280,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -300,7 +301,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -321,7 +322,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -345,7 +346,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -376,7 +377,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -409,7 +410,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -440,7 +441,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -474,7 +475,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo
@@ -496,7 +497,7 @@ class MongoMessageTest extends MongoTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group mongo

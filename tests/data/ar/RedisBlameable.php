@@ -13,23 +13,24 @@
 namespace rhosocial\base\models\tests\data\ar;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisBlameable extends \rhosocial\base\models\models\BaseRedisBlameableModel
 {
     public $guidAttribute = false;
     public $idAttribute = 'alpha2';
-    
+
     public function init() {
         $this->hostClass = User::class;
         parent::init();
     }
-    
+
     public static function primaryKey()
     {
         return ['alpha2'];
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseRedisBlameableQuery

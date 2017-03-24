@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\relation\UserSingleRelation;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class SingleRelationTestCase extends UserTestCase

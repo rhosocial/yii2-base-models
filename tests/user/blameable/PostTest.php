@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class PostTest extends BlameableTestCase
@@ -30,7 +31,7 @@ class PostTest extends BlameableTestCase
         $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -45,7 +46,7 @@ class PostTest extends BlameableTestCase
         }
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -60,7 +61,7 @@ class PostTest extends BlameableTestCase
         }
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -79,7 +80,7 @@ class PostTest extends BlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -98,7 +99,7 @@ class PostTest extends BlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -117,7 +118,7 @@ class PostTest extends BlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -135,7 +136,7 @@ class PostTest extends BlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -161,7 +162,7 @@ class PostTest extends BlameableTestCase
         $this->assertNotEmpty($this->post->enabledFields());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -181,7 +182,7 @@ class PostTest extends BlameableTestCase
         $result = UserPost::findAllByIdentityInBatch();
         $this->assertCount(0, $result);
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -215,7 +216,7 @@ class PostTest extends BlameableTestCase
         
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -231,7 +232,7 @@ class PostTest extends BlameableTestCase
         $result = UserPost::findByIdentity($this->user)->all();
         $this->assertCount(0, $result);
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -242,7 +243,7 @@ class PostTest extends BlameableTestCase
         $this->assertEquals(1, UserPost::countByIdentity($this->user));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -258,7 +259,7 @@ class PostTest extends BlameableTestCase
         $results = UserPost::find()->createdBy($this->user)->all();
         $this->assertCount(0, $results);
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -296,7 +297,7 @@ class PostTest extends BlameableTestCase
         $results = UserPost::find()->updatedBy($this->user)->content($this->post->getContent())->all();
         $this->assertCount(0, $results);
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -313,7 +314,7 @@ class PostTest extends BlameableTestCase
         $this->assertEmpty($this->post->getAncestorChain());
         $this->assertEmpty($this->post->getCommonAncestor($this));
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -325,7 +326,7 @@ class PostTest extends BlameableTestCase
         $this->assertInstanceOf(UserPost::class, $post);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group post

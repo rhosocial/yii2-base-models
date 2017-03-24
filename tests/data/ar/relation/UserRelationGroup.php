@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\data\ar\relation;
 use rhosocial\base\models\models\BaseUserRelationGroupModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserRelationGroup extends BaseUserRelationGroupModel
@@ -24,5 +25,4 @@ class UserRelationGroup extends BaseUserRelationGroupModel
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
 }

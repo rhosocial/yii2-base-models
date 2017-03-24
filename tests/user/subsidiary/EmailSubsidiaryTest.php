@@ -14,6 +14,10 @@ namespace rhosocial\base\models\tests\user\subsidiary;
 
 use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class EmailSubsidiaryTest extends SubsidiaryTestCase
 {
     /**

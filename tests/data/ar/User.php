@@ -24,19 +24,19 @@ use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
  * @author vistart <i@vistart.me>
  * @since 1.0
  */
-class User extends \rhosocial\base\models\models\BaseUserModel {
-    
+class User extends \rhosocial\base\models\models\BaseUserModel
+{
     public $idAttributePrefix = '4';
     public $idAttributeType = 1;
     public $idAttributeLength = 8;
-    
+
     /**
      * @inheritdoc
      */
     public static function tableName() {
         return '{{%user}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -56,21 +56,21 @@ class User extends \rhosocial\base\models\models\BaseUserModel {
             'source' => Yii::t('app', 'Source'),
         ];
     }
-    
+
     /**
      * @return BaseBlameableQuery
      */
     public function getEmails() {
         return $this->hasMany(UserEmail::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
-    
+
     /**
      * @return BaseBlameableQuery
      */
     public function getAdditionalAccounts() {
         return $this->hasMany(AdditionalAccount::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
-    
+
     /**
      * Friendly to IDE.
      * @return BaseUserQuery

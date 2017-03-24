@@ -15,19 +15,23 @@ namespace rhosocial\base\models\tests\redis;
 use rhosocial\base\models\tests\data\ar\redis\TimestampEntity;
 use rhosocial\base\models\tests\data\ar\redis\ExpiredTimestampEntity;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class RedisTimestampEntityTest extends RedisEntityTestCase
 {
     protected function setUp() {
         parent::setUp();
         $this->entity = new TimestampEntity();
     }
-    
+
     protected function tearDown() {
         TimestampEntity::deleteAll();
         ExpiredTimestampEntity::deleteAll();
         parent::tearDown();
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -48,7 +52,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertTrue($this->entity->hasEverEdited());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -60,7 +64,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertEquals(time(), $this->entity->getCreatedAt());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -72,7 +76,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertEquals(time(), $this->entity->getUpdatedAt());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -86,7 +90,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -100,7 +104,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -122,7 +126,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->assertTrue($this->entity->hasEverEdited());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group redis
      * @group entity
@@ -137,7 +141,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->entity = ExpiredTimestampEntity::findOne((string)($this->entity));
         //$this->assertNull($this->entity);
     }
-    
+
     /**
      * @group redis
      * @group entity

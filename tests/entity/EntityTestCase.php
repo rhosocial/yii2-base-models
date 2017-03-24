@@ -16,8 +16,12 @@ use rhosocial\base\models\tests\TestCase;
 use rhosocial\base\models\tests\data\ar\Entity;
 use rhosocial\base\models\tests\data\ar\EntityAI;
 
-class EntityTestCase extends TestCase {
-
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
+class EntityTestCase extends TestCase
+{
     /**
      *
      * @var Entity 
@@ -28,10 +32,11 @@ class EntityTestCase extends TestCase {
         parent::setUp();
         $this->entity = new Entity();
     }
-    
+
     protected function tearDown() {
         Entity::deleteAll();
         EntityAI::deleteAll();
         parent::tearDown();
     }
 }
+

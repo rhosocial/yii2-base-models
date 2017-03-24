@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseRedisMessageModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisMessage extends BaseRedisMessageModel
@@ -25,7 +26,7 @@ class RedisMessage extends BaseRedisMessageModel
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseRedisMessageQuery

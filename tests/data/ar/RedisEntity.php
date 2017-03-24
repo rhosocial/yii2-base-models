@@ -15,13 +15,14 @@ namespace rhosocial\base\models\tests\data\ar;
 use rhosocial\base\models\models\BaseRedisEntityModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisEntity extends BaseRedisEntityModel
 {
     public $guidAttribute = false;
     public $idAttribute = 'alpha2';
-    
+
     public function attributes()
     {
         return array_merge(parent::attributes(), ['content']);

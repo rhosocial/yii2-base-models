@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\blameable\Meta;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MetaTest extends UserTestCase
@@ -45,7 +46,7 @@ class MetaTest extends UserTestCase
         
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group meta
      */

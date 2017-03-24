@@ -16,6 +16,7 @@ use rhosocial\base\models\models\BaseMongoMessageModel;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoMessage extends BaseMongoMessageModel
@@ -25,17 +26,17 @@ class MongoMessage extends BaseMongoMessageModel
         $this->expiredRemovingCallback = [$this, 'removeExpired'];
         parent::init();
     }
-    
+
     public static function removeExpired($model)
     {
         return $model->delete();
     }
-    
+
     public static function collectionName()
     {
         return ['yii2-base-models', 'message'];
     }
-    
+
     /**
      * Friendly to IDE.
      * @return BaseMongoBlameableQuery

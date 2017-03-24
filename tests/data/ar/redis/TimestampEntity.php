@@ -14,10 +14,14 @@ namespace rhosocial\base\models\tests\data\ar\redis;
 
 use rhosocial\base\models\models\BaseRedisEntityModel;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class TimestampEntity extends BaseRedisEntityModel
 {
     public $timeFormat = 1;
-    
+
     public function attributes()
     {
         return array_merge(parent::attributes(), ['content']);

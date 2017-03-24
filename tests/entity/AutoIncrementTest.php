@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\entity;
 use rhosocial\base\models\tests\data\ar\EntityAI;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class AutoIncrementTest extends EntityTestCase
@@ -23,7 +24,7 @@ class AutoIncrementTest extends EntityTestCase
         parent::setUp();
         $this->entity = new EntityAI();
     }
-    
+
     /**
      * @group entity
      * @group id
@@ -32,7 +33,7 @@ class AutoIncrementTest extends EntityTestCase
     {
         $this->assertTrue($this->entity->save());
     }
-    
+
     /**
      * @group entity
      * @group id
@@ -41,7 +42,7 @@ class AutoIncrementTest extends EntityTestCase
     {
         $this->assertNull($this->entity->generateId());
     }
-    
+
     /**
      * @group entity
      * @group id

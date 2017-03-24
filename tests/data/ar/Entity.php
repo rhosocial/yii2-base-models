@@ -14,6 +14,10 @@ namespace rhosocial\base\models\tests\data\ar;
 
 use rhosocial\base\models\models\BaseEntityModel;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class Entity extends BaseEntityModel
 {
     public static function tableName()

@@ -25,7 +25,7 @@ use Yii;
 class UserComment extends \rhosocial\base\models\models\BaseBlameableModel
 {
     public $parentAttribute = 'parent_guid';
-    
+
     /**
      * @inheritdoc
      */
@@ -33,7 +33,7 @@ class UserComment extends \rhosocial\base\models\models\BaseBlameableModel
     {
         return '{{%user_comment}}';
     }
-    
+
     public function init()
     {
         $this->userClass = User::class;
@@ -60,7 +60,7 @@ class UserComment extends \rhosocial\base\models\models\BaseBlameableModel
             'confirm_code' => Yii::t('app', 'Confirm Code'),
         ];
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseBlameableQuery

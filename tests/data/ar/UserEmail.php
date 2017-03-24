@@ -16,15 +16,15 @@ use Yii;
 
 /**
  * User Email Test Model.
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserEmail extends \rhosocial\base\models\models\BaseBlameableModel
 {
-    
     public $confirmationAttribute = 'confirmed';
     public $confirmCodeAttribute = 'confirm_code';
     public $contentTypeAttribute = 'type';
-    
+
     const TYPE_HOME = 0;
     const TYPE_WORK = 1;
     const TYPE_OTHER = 0xff;
@@ -34,23 +34,23 @@ class UserEmail extends \rhosocial\base\models\models\BaseBlameableModel
         self::TYPE_WORK => 'work',
         self::TYPE_OTHER => 'other',
     ];
-    
+
     public $updatedByAttribute = false;
     public $contentAttribute = 'email';
     public $contentAttributeRule = ['email', 'message' => 'Please input valid email address.', 'allowName' => true];
     public $enableIP = false;
-    
+
     public function init()
     {
         $this->userClass = User::class;
         parent::init();
     }
-    
+
     public static function tableName()
     {
         return '{{%user_email}}';
     }
-    
+
     /**
      * @inheritdoc
      */

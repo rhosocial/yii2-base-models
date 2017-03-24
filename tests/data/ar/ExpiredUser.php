@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\tests\data\ar;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class ExpiredUser extends User

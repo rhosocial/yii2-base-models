@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\entity;
 use rhosocial\base\models\tests\data\ar\Entity;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class IDTest extends EntityTestCase
@@ -32,7 +33,7 @@ class IDTest extends EntityTestCase
         $this->assertTrue($this->entity->save());
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group entity
      * @group id
@@ -48,7 +49,7 @@ class IDTest extends EntityTestCase
         $this->assertFalse($this->entity->checkIdExists(null));
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group entity
      * @group id

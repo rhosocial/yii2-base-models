@@ -15,18 +15,22 @@ namespace rhosocial\base\models\tests\redis;
 use rhosocial\base\models\tests\entity\EntityTestCase;
 use rhosocial\base\models\tests\data\ar\RedisEntity;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class RedisEntityTestCase extends EntityTestCase
 {
     /**
      * @var RedisEntity;
      */
     protected $entity = null;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->entity = new RedisEntity();
     }
-    
+
     protected function tearDown() {
         RedisEntity::deleteAll();
         parent::tearDown();

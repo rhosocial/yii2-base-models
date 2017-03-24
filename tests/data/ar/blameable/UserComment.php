@@ -16,31 +16,32 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseBlameableModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserComment extends BaseBlameableModel
 {
     public $idAttributeLength = 16;
-    
+
     public $parentAttribute = 'parent_guid';
-    
+
     public function __construct($config = array())
     {
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     public function init()
     {
         parent::init();
         $this->setContent(\Yii::$app->security->generateRandomString());
     }
-    
+
     public static function tableName()
     {
         return '{{%user_comment}}';
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseBlameableQuery
@@ -49,7 +50,7 @@ class UserComment extends BaseBlameableModel
     {
         return parent::find();
     }
-    
+
     /**
      * 
      * @return UserPost
@@ -58,7 +59,7 @@ class UserComment extends BaseBlameableModel
     {
         return UserPost::findOne($this->post_guid);
     }
-    
+
     /**
      * 
      * @param UserPost $post
@@ -71,7 +72,7 @@ class UserComment extends BaseBlameableModel
             $this->post_guid = '';
         }
     }
-    
+
     /**
      * Commit a comment.
      * @param static $comment

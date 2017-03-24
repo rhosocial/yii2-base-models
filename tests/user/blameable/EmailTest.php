@@ -14,6 +14,10 @@ namespace rhosocial\base\models\tests\user\blameable;
 
 use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class EmailTest extends BlameableTestCase
 {
     /**
@@ -21,19 +25,19 @@ class EmailTest extends BlameableTestCase
      * @var UserEmail
      */
     public $email = null;
-    
+
     protected function setUp()
     {
         parent::setUp();
         $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email]);
     }
-    
+
     protected function tearDown()
     {
         UserEmail::deleteAll();
         parent::tearDown();
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -44,7 +48,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->user->deregister());
         $this->assertCount(0, UserEmail::findAll([$this->email->createdByAttribute => $this->user->getGUID()]));
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -59,7 +63,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->user->deregister());
         $this->assertCount(0, $this->user->emails);
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -70,7 +74,7 @@ class EmailTest extends BlameableTestCase
         $this->assertNotEmpty($this->email->enabledFields());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -83,7 +87,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->user->deregister());
         $this->assertFalse($this->email->getIsConfirmed());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -97,7 +101,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->email->getIsConfirmed());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -114,7 +118,7 @@ class EmailTest extends BlameableTestCase
         $this->assertEquals(UserEmail::$confirmTrue, $this->email->getConfirmation());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -133,7 +137,7 @@ class EmailTest extends BlameableTestCase
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -151,7 +155,7 @@ class EmailTest extends BlameableTestCase
         $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group blameable
      * @group email
@@ -164,7 +168,7 @@ class EmailTest extends BlameableTestCase
         $this->assertEquals($desc, $this->email->getDescription());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group blameable
@@ -196,7 +200,7 @@ class EmailTest extends BlameableTestCase
         
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group blameable
@@ -230,7 +234,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group blameable

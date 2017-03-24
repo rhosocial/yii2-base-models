@@ -14,23 +14,27 @@ namespace rhosocial\base\models\tests\data\ar;
 
 use rhosocial\base\models\models\BaseUserRelationModel;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class UserSingleRelation extends BaseUserRelationModel
 {
     public $multiBlamesAttribute = 'groups';
     public $descriptionAttribute = 'description';
-    
+
     public function init()
     {
         $this->relationType = static::$relationSingle;
         $this->multiBlamesClass = UserRelationGroup::class;
         parent::init();
     }
-    
+
     public static function tableName()
     {
         return '{{%user_single_relation}}';
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseUserRelationQuery

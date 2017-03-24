@@ -12,6 +12,10 @@
 
 namespace rhosocial\base\models\tests\data\ar\redis;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class ExpiredTimestampEntity extends TimestampEntity
 {
     public $expiredAfterAttribute = 'expired_after';

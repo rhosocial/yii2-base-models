@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\data\ar;
 use rhosocial\base\models\models\BaseMongoBlameableModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoBlameable extends BaseMongoBlameableModel
@@ -22,12 +23,12 @@ class MongoBlameable extends BaseMongoBlameableModel
     public static function collectionName() {
         return ['yii2-base-models', 'blameable'];
     }
-    
+
     public function init() {
         $this->hostClass = User::class;
         parent::init();
     }
-    
+
     /**
      * 
      * @return \rhosocial\base\models\queries\BaseMongoBlameableQuery;

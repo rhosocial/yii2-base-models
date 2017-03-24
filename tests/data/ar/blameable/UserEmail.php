@@ -19,39 +19,39 @@ use rhosocial\base\models\models\BaseBlameableModel;
 
 /**
  * User Email Test Model.
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserEmail extends BaseBlameableModel
 {
-    
     public $confirmationAttribute = 'confirmed';
     public $confirmCodeAttribute = 'confirm_code';
     public $contentTypeAttribute = 'type';
-    
+
     const TYPE_HOME = 0;
     const TYPE_WORK = 1;
     const TYPE_OTHER = 0xff;
-    
+
     public $contentTypes = [
         self::TYPE_HOME => 'home',
         self::TYPE_WORK => 'work',
         self::TYPE_OTHER => 'other',
     ];
-    
+
     public $updatedByAttribute = false;
     public $contentAttribute = 'email';
     public $contentAttributeRule = ['email', 'message' => 'Please input valid email address.', 'allowName' => true];
     public $enableIP = false;
-    
+
     public $descriptionAttribute = 'description';
-    
+
     public function init()
     {
         $this->hostClass = User::class;
         $this->initDescription = Yii::$app->security->generateRandomString();
         parent::init();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -59,7 +59,7 @@ class UserEmail extends BaseBlameableModel
     {
         return '{{%user_email}}';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -78,7 +78,7 @@ class UserEmail extends BaseBlameableModel
             'confirm_code' => Yii::t('app', 'Confirm Code'),
         ];
     }
-    
+
     /**
      * Friendly to IDE.
      * @return BaseBlameableQuery

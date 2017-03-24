@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\tests\entity;
 
 use rhosocial\base\models\tests\data\ar\Entity;
+use rhosocial\base\models\tests\data\ar\EntityLocal;
 use rhosocial\base\models\tests\data\ar\ExpiredEntity;
 use rhosocial\base\models\tests\data\ar\ExpiredCallbackEntity;
 
@@ -100,7 +101,7 @@ class TimestampTest extends EntityTestCase
         $this->entity = new Entity(['timeFormat' => -1]);
         $this->assertNull($this->entity->initDatetime());
     }
-    
+
     /**
      * @group entity
      * @group timestamp
@@ -116,7 +117,26 @@ class TimestampTest extends EntityTestCase
         $this->entity = new Entity(['timeFormat' => -1]);
         $this->assertNull($this->entity->currentDatetime());
     }
-    
+
+    /**
+     * Local timezone is 'Asia/Shanghai', eight hours earlier than GMT.
+     * Therefore, Greenwich time and Beijing time is not the same thing.
+     * However, the timestamp has nothing to do with the time zone, the uniform use of Greenwich time.
+     * @group entity
+     * @group timestamp
+     */
+    public function testCurrentLocalDatetime()
+    {
+        $this->entity = new EntityLocal(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->assertEquals(gmdate('Y-m-d H:i:s'), $this->entity->currentUtcDatetime());
+        
+        $this->entity = new EntityLocal(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->assertEquals(time(), $this->entity->currentUtcDatetime());
+        
+        $this->entity = new EntityLocal(['timeFormat' => -1]);
+        $this->assertNull($this->entity->currentDatetime());
+    }
+
     /**
      * @group entity
      * @group timestamp
@@ -132,7 +152,26 @@ class TimestampTest extends EntityTestCase
         $this->entity = new Entity(['timeFormat' => -1]);
         $this->assertNull($this->entity->offsetDatetime());
     }
-    
+
+    /**
+     * Local timezone is 'Asia/Shanghai', eight hours earlier than GMT.
+     * Therefore, Greenwich time and Beijing time is not the same thing.
+     * However, the timestamp has nothing to do with the time zone, the uniform use of Greenwich time.
+     * @group entity
+     * @group timestamp
+     */
+    public function testOffsetDatetimeLocal()
+    {
+        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::$timeFormatDatetime]);
+        $this->assertEquals(gmdate('Y-m-d H:i:s', strtotime("2 seconds")), $this->entity->offsetDatetime(gmdate('Y-m-d H:i:s'), 2));
+        
+        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::$timeFormatTimestamp]);
+        $this->assertEquals(time() + 2, $this->entity->offsetDatetime(null, 2));
+        
+        $this->entity = new EntityLocal(['timeFormat' => -1]);
+        $this->assertNull($this->entity->offsetDatetime());
+    }
+
     /**
      * @group entity
      * @group timestamp
@@ -169,13 +208,14 @@ class TimestampTest extends EntityTestCase
         $this->assertEmpty($this->entity->getUpdatedAtRules());
         $this->assertTrue($this->entity->save());
     }
-    
+
     /**
      * @group entity
      * @group timestamp
      */
     public function testRange()
     {
+        $this->entity = new EntityLocal();
         $this->assertTrue($this->entity->save());
         $this->assertInstanceOf(Entity::class, Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), -1))->one());
         $this->assertInstanceOf(Entity::class, Entity::find()->createdAt(null, $this->entity->offsetDatetime($this->entity->currentDatetime(), 1))->one());
@@ -186,14 +226,31 @@ class TimestampTest extends EntityTestCase
         $this->assertNull(Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentDatetime(), 1), $this->entity->offsetDatetime($this->entity->currentDatetime(), -1))->one());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
+
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testRangeUtc()
+    {
+        $this->assertTrue($this->entity->save());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentUtcDatetime(), -1))->one());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt(null, $this->entity->offsetDatetime($this->entity->currentUtcDatetime(), 1))->one());
+        $this->assertInstanceOf(Entity::class, Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentUtcDatetime(), -1), $this->entity->offsetDatetime($this->entity->currentUtcDatetime(), 1))->one());
+        
+        $this->assertNull(Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentUtcDatetime(), +1))->one());
+        $this->assertNull(Entity::find()->createdAt(null, $this->entity->offsetDatetime($this->entity->currentUtcDatetime(), -1))->one());
+        $this->assertNull(Entity::find()->createdAt($this->entity->offsetDatetime($this->entity->currentUtcDatetime(), 1), $this->entity->offsetDatetime($this->entity->currentUtcDatetime(), -1))->one());
+        $this->assertGreaterThanOrEqual(1, $this->entity->delete());
+    }
     
     /**
      * @group entity
      * @group timestamp
      */
-    public function testUtcDatetime()
+    public function testLocalDatetime()
     {
-        $this->entity = new \rhosocial\base\models\tests\data\ar\EntityUtc();
+        $this->entity = new EntityLocal();
         $this->assertTrue($this->entity->save());
     }
     

@@ -15,6 +15,10 @@ namespace rhosocial\base\models\tests\mongodb;
 use rhosocial\base\models\tests\data\ar\MongoEntity;
 use rhosocial\base\models\tests\MongoTestCase;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class MongoEntityTestCase extends MongoTestCase
 {
     /**
@@ -22,12 +26,12 @@ class MongoEntityTestCase extends MongoTestCase
      * @var MongoEntity
      */
     protected $entity = null;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->entity = new MongoEntity();
     }
-    
+
     protected function tearDown()
     {
         MongoEntity::deleteAll();

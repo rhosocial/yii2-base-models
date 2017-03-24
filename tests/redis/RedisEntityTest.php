@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\RedisEntity;
 use rhosocial\base\models\tests\data\ar\GUIDRedisEntity;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisEntityTest extends RedisEntityTestCase
@@ -56,7 +57,7 @@ class RedisEntityTest extends RedisEntityTestCase
     public function testCreatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
-        $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->getCreatedAt());
+        $this->assertEquals(gmdate('Y-m-d H:i:s'), $this->entity->getCreatedAt());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
     
@@ -69,7 +70,7 @@ class RedisEntityTest extends RedisEntityTestCase
     public function testUpdatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
-        $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->getUpdatedAt());
+        $this->assertEquals(gmdate('Y-m-d H:i:s'), $this->entity->getUpdatedAt());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
     
@@ -83,7 +84,7 @@ class RedisEntityTest extends RedisEntityTestCase
     public function testFindByCreatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
-        $entities = RedisEntity::find()->createdAt(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'))->all();
+        $entities = RedisEntity::find()->createdAt(gmdate('Y-m-d H:i:s'), gmdate('Y-m-d H:i:s'))->all();
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
@@ -98,7 +99,7 @@ class RedisEntityTest extends RedisEntityTestCase
     public function testFindByUpdatedAt($severalTimes)
     {
         $this->assertTrue($this->entity->save());
-        $entities = RedisEntity::find()->updatedAt(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'))->all();
+        $entities = RedisEntity::find()->updatedAt(gmdate('Y-m-d H:i:s'), gmdate('Y-m-d H:i:s'))->all();
         $this->assertCount(1, $entities);
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
@@ -113,7 +114,7 @@ class RedisEntityTest extends RedisEntityTestCase
     {
         $this->assertTrue($this->entity->save());
         try {
-            $entities = RedisEntity::find()->updatedAt(date('Y-m-d H:i:s'))->all();
+            $entities = RedisEntity::find()->updatedAt(gmdate('Y-m-d H:i:s'))->all();
             $this->fail();
         } catch (\Exception $ex)
         {

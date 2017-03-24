@@ -56,7 +56,7 @@ trait TimestampTrait
     public static $timeFormatTimestamp = 1;
     public static $initDatetime = '1970-01-01 00:00:00';
     public static $initTimestamp = 0;
-    public $timeType = 1;
+    public $timeType = 0;
     public static $timeTypeUtc = 0;
     public static $timeTypeLocal = 1;
     public static $timeTypes = [
@@ -85,9 +85,9 @@ trait TimestampTrait
             return false;
         }
         if ($this->timeType == static::$timeTypeLocal) {
-            return $this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()) > $createdAt;
+            return $this->getDatetimeOffset($this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()), $createdAt) > 0;
         } elseif ($this->timeType == static::$timeTypeUtc) {
-            return $this->offsetUtcDatetime($this->currentUtcDatetime(), -$this->getExpiredAfter()) > $createdAt;
+            return $this->getDatetimeOffset($this->offsetDatetime($this->currentUtcDatetime(), -$this->getExpiredAfter()), $createdAt) > 0;
         }
         return false;
     }
@@ -176,7 +176,7 @@ trait TimestampTrait
             return gmdate('Y-m-d H:i:s');
         }
         if ($this->timeFormat === static::$timeFormatTimestamp) {
-            return gmmktime();
+            return time();
         }
         return null;
     }
@@ -199,20 +199,25 @@ trait TimestampTrait
     }
 
     /**
-     * Get offset date & time relative to Greenwich time(UTC), by current time format.
-     * @param string|int $time Date &time string or timestamp.
-     * @param int $offset Offset in seconds.
-     * @return string|int Date & time string if format is datetime, or timestamp.
+     * Calculate the time difference(in seconds).
+     * @param string|integer $datetime1
+     * @param string|integer $datetime2
+     * @return integer Positive integer if $datetime1 is later than $datetime2, and vise versa.
      */
-    public function offsetUtcDatetime($time = null, $offset = 0)
+    public function getDatetimeOffset($datetime1, $datetime2 = null)
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
-            return gmdate('Y-m-d H:i:s', strtotime(($offset >= 0 ? "+$offset" : $offset) . " seconds", is_string($time) ? strtotime($time) : (is_int($time) ? $time : gmmktime())));
+        if ($datetime2 === null) {
+            if ($this->timeType == static::$timeTypeLocal) {
+                $datetime2 = $this->currentDatetime();
+            } elseif ($this->timeType == static::$timeTypeUtc) {
+                $datetime2 = $this->currentUtcDatetime();
+            }
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
-            return (is_int($time) ? $time : gmmktime()) + $offset;
+        if ($this->timeFormat == static::$timeFormatDatetime) {
+            $datetime1 = strtotime($datetime1);
+            $datetime2 = strtotime($datetime2);
         }
-        return null;
+        return $datetime1 - $datetime2;
     }
 
     /**

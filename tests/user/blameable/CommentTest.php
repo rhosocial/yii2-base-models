@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class CommentTest extends BlameableTestCase
@@ -30,7 +31,7 @@ class CommentTest extends BlameableTestCase
             $this->comments[$i]->refresh();
         }
     }
-    
+
     protected function tearDown()
     {
         foreach ($this->comments as $comment) {
@@ -41,7 +42,7 @@ class CommentTest extends BlameableTestCase
         $this->assertTrue($this->user->deregister());
         parent::tearDown();
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -51,7 +52,7 @@ class CommentTest extends BlameableTestCase
     {
         $this->assertNotEmpty($this->comments[0]->getSelfBlameableRules());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -63,7 +64,7 @@ class CommentTest extends BlameableTestCase
         $this->comments[0]->setSelfBlameableRules($rules);
         $this->assertEquals($rules, $this->comments[0]->getSelfBlameableRules());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -81,7 +82,7 @@ class CommentTest extends BlameableTestCase
         $this->comments[9]->ancestorLimit = 1;
         $this->assertFalse($this->comments[9]->setParent($this->comments[8]));
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -91,7 +92,7 @@ class CommentTest extends BlameableTestCase
     {
         $this->assertFalse($this->comments[9]->hasReachedAncestorLimit());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -111,7 +112,7 @@ class CommentTest extends BlameableTestCase
         $this->assertFalse($this->comments[9]->hasReachedAncestorLimit());
         $this->assertEquals(256, $this->comments[9]->ancestorLimit);
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -126,7 +127,7 @@ class CommentTest extends BlameableTestCase
             $this->assertFalse($this->comments[$i]->hasReachedAncestorLimit());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -155,7 +156,7 @@ class CommentTest extends BlameableTestCase
             $this->assertEquals(1024, $this->comments[$i]->childrenLimit);
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -169,7 +170,7 @@ class CommentTest extends BlameableTestCase
             $this->assertEquals($this->comments[8 - $i]->getGUID(), $ancestors[$i]->getGUID());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -182,7 +183,7 @@ class CommentTest extends BlameableTestCase
             $this->assertEquals($this->comments[8 - $i]->getGUID(), $ancestors[$i]->getGUID());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -201,7 +202,7 @@ class CommentTest extends BlameableTestCase
             $this->assertEquals(1, $sub->delete());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -216,7 +217,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($children[0]->parent->equals($this->comments[$i]));
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -232,7 +233,7 @@ class CommentTest extends BlameableTestCase
             $this->assertEquals(1, $sub->delete());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -273,8 +274,8 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(UserComment::class, $this->comments[$i]->parent);
             $this->assertTrue($this->comments[$i]->parent->equals($this->comments[$i - 1]));
         }
-     }
-    
+    }
+
     /**
      * @group blameable
      * @group post
@@ -290,7 +291,7 @@ class CommentTest extends BlameableTestCase
             }
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -318,7 +319,7 @@ class CommentTest extends BlameableTestCase
             $this->assertNull(UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -363,7 +364,7 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -411,7 +412,7 @@ class CommentTest extends BlameableTestCase
         $this->assertFalse($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -459,7 +460,7 @@ class CommentTest extends BlameableTestCase
         $this->assertTrue($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -495,7 +496,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -546,7 +547,7 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
     }
-    
+
     /**
      * 更新后将所有子节点的父亲属性设为空字符串（UserComment::$nullParent）。
      * 此测试重置第 5 节点（从 0 开始）的 GUID 值。
@@ -602,7 +603,7 @@ class CommentTest extends BlameableTestCase
         $this->assertFalse($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -651,7 +652,7 @@ class CommentTest extends BlameableTestCase
         $this->assertTrue($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -665,7 +666,7 @@ class CommentTest extends BlameableTestCase
         UserComment::getDb()->createCommand()->delete('user_comment', ['content' => $content])->execute();
         $this->assertInstanceOf(\yii\db\IntegrityException::class, $this->comments[4]->deleteChildren());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -685,7 +686,7 @@ class CommentTest extends BlameableTestCase
         $this->assertEquals($comment->{$comment->parentAttribute}, UserComment::$nullParent);
         $this->assertEquals($comment->getReadableGUID(), $this->comments[0]->getReadableGUID());
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -695,7 +696,7 @@ class CommentTest extends BlameableTestCase
     {
         $this->assertInstanceOf(UserComment::class, $this->comments[5]->bear(['class' => User::class, 'content' => \Yii::$app->security->generateRandomString()]));
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -714,7 +715,7 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
         }
     }
-    
+
     /**
      * @group blameable
      * @group post
@@ -730,7 +731,7 @@ class CommentTest extends BlameableTestCase
             $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
         }
     }
-    
+
     /**
      * @group blameable
      * @group post

@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\MongoBlameable;
 use rhosocial\base\models\tests\MongoTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoBlameableTestCase extends MongoTestCase
@@ -25,17 +26,17 @@ class MongoBlameableTestCase extends MongoTestCase
      * @var User
      */
     protected $user = null;
-    
+
     /**
      * @var User
      */
     protected $other = null;
-    
+
     /**
      * @var MongoBlameable;
      */
     protected $blameable = null;
-    
+
     protected function setUp()
     {
         parent::setUp();
@@ -43,7 +44,7 @@ class MongoBlameableTestCase extends MongoTestCase
         $this->other = new User(['password' => '123456']);
         $this->blameable = $this->user->create(MongoBlameable::class, ['content' => \Yii::$app->security->generateRandomString()]);
     }
-    
+
     protected function tearDown()
     {
         MongoBlameable::deleteAll();

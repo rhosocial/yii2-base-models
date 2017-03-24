@@ -18,6 +18,7 @@ use rhosocial\base\models\tests\data\ar\MongoEntity;
 use rhosocial\base\models\tests\data\ar\Entity;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoEntityTest extends MongoEntityTestCase
@@ -33,7 +34,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertTrue($this->entity->save());
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group mongo
      * @group entity
@@ -57,7 +58,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertEquals($readable, Number::guid(false, false, (string)($this->entity)));
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group mongo
      * @group entity
@@ -75,7 +76,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertFalse(MongoEntity::checkGuidExists(null));
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group mongo
      * @group entity
@@ -90,7 +91,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertEquals($ipv4, $this->entity->getIPAddress());
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group mongo
      * @group entity
@@ -105,7 +106,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertEquals($ipv6, $this->entity->getIPAddress());
         $this->assertEquals(1, $this->entity->delete());
     }
-    
+
     /**
      * @group mongo
      * @group entity
@@ -126,7 +127,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertEquals($guids[1]->getData(), $models[1]->getGUID());
         $this->assertEquals($guids[2]->getData(), Number::guid_bin($models[2]));
     }
-    
+
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++)

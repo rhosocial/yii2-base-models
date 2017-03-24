@@ -13,23 +13,24 @@
 namespace rhosocial\base\models\tests\data\ar;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAccountModel
 {
     public $seperateLoginAttribute = 'seperate_login';
-    
+
     public function __construct($config = array())
     {
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     public static function tableName()
     {
         return '{{%user_additional_account}}';
     }
-    
+
     /**
      * 
      * @return \rhosocial\base\models\queries\BaseUserQuery

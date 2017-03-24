@@ -16,33 +16,34 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseBlameableModel;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserPost extends BaseBlameableModel
 {
     public $idAttributeLength = 255;
-    
+
     public $idCreatorCombinatedUnique = false;
-    
+
     public function __construct($config = array()) {
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     public function init()
     {
         $this->hostClass = User::class;
         parent::init();
         $this->setContent(\Yii::$app->security->generateRandomString());
     }
-    
+
     public $contentAttributeRule = ['string'];
 
     public static function tableName()
     {
         return '{{%user_post}}';
     }
-    
+
     /**
      * Friendly to IDE.
      * @return \rhosocial\base\models\queries\BaseBlameableQuery

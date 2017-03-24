@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\entity;
 use rhosocial\base\models\tests\data\ar\Entity;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class EntityTest extends EntityTestCase
@@ -27,7 +28,7 @@ class EntityTest extends EntityTestCase
         $this->assertInstanceOf(Entity::class, $this->entity);
         $this->assertTrue($this->entity->checkAttributes());
     }
-    
+
     /**
      * @group entity
      */
@@ -40,7 +41,7 @@ class EntityTest extends EntityTestCase
             $this->assertTrue(true);
         }
     }
-    
+
     /**
      * @group entity
      */
@@ -54,7 +55,7 @@ class EntityTest extends EntityTestCase
             $this->assertArrayHasKey('expired_after', $unsetArray);
         }
     }
-    
+
     /**
      * @group entity
      * @group timestamp
@@ -79,7 +80,7 @@ class EntityTest extends EntityTestCase
         
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
-    
+
     /**
      * @group entity
      * @group timestamp
@@ -102,7 +103,7 @@ class EntityTest extends EntityTestCase
             $this->assertTrue($models[$i]->equals($entities[$i]));
         }
     }
-    
+
     /**
      * @group entity
      * @group timestamp
@@ -125,7 +126,7 @@ class EntityTest extends EntityTestCase
             $this->assertTrue($models[9 - $i]->equals($entities[$i]), "models[9-$i]:" . $models[9-$i]->getGUID() . '|' . "entities[$i]:" . $entities[$i]->getGUID());
         }
     }
-    
+
     /**
      * @group entity
      * @group timestamp
@@ -148,7 +149,7 @@ class EntityTest extends EntityTestCase
             $this->assertTrue($models[$i]->equals($entities[$i]));
         }
     }
-    
+
     /**
      * @group entity
      * @group timestamp

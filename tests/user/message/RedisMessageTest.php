@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\redis\RedisMessage;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisMessageTest extends UserTestCase
@@ -25,19 +26,19 @@ class RedisMessageTest extends UserTestCase
      * @var User
      */
     protected $other;
-    
+
     protected function setUp()
     {
         parent::setUp();
         $this->other = new User(['password' => '123456']);
     }
-    
+
     protected function tearDown()
     {
         $this->other->deregister();
         parent::tearDown();
     }
-    
+
     /**
      * @group user
      * @group message
@@ -56,7 +57,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group redis
@@ -85,7 +86,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * 
      * @param \yii\base\ModelEvent $event
@@ -95,7 +96,7 @@ class RedisMessageTest extends UserTestCase
         //echo "Received Event Triggered\n";
         return $this->isReceived = true;
     }
-    
+
     /**
      * 
      * @param \yii\base\ModelEvent $event
@@ -105,7 +106,7 @@ class RedisMessageTest extends UserTestCase
         //echo "Read Event Triggered\n";
         return $this->isRead = true;
     }
-    
+
     public function onShouldNotBeExpiredRemoved($event)
     {
         $sender = $event->sender;
@@ -115,10 +116,10 @@ class RedisMessageTest extends UserTestCase
         $this->fail("The message model has been removed if you meet this message.\n"
             . "This event should not be triggered.");
     }
-    
+
     protected $isRead = false;
     protected $isReceived = false;
-    
+
     /**
      * @group user
      * @group redis
@@ -201,7 +202,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group redis
@@ -261,7 +262,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group redis
@@ -282,7 +283,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group redis
@@ -303,7 +304,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group redis

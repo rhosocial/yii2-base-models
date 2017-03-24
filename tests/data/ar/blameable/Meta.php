@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\data\ar\blameable;
 use rhosocial\base\models\tests\data\ar\User;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class Meta extends \rhosocial\base\models\models\BaseMetaModel
@@ -24,7 +25,7 @@ class Meta extends \rhosocial\base\models\models\BaseMetaModel
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     public static function tableName() {
         return '{{%user_meta}}';
     }

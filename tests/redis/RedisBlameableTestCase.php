@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\RedisBlameable;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisBlameableTestCase extends UserTestCase
@@ -25,13 +26,13 @@ class RedisBlameableTestCase extends UserTestCase
      * @var RedisBlameable
      */
     protected $blameable = null;
-    
+
     protected function setUp()
     {
         parent::setUp();
         $this->blameable = $this->user->create(RedisBlameable::class, ['class' => RedisBlameable::class, 'content' => \Yii::$app->security->generateRandomString()]);
     }
-    
+
     protected function tearDown()
     {
         RedisBlameable::deleteAll();

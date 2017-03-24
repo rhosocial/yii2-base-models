@@ -14,6 +14,10 @@ namespace rhosocial\base\models\tests\user\subsidiary;
 
 use rhosocial\base\models\tests\user\UserTestCase;
 
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class SubsidiaryTestCase extends UserTestCase
 {
     

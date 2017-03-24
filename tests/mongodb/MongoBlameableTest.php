@@ -16,6 +16,7 @@ use MongoDB\BSON\Binary;
 use rhosocial\base\models\tests\data\ar\MongoBlameable;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoBlameableTest extends MongoBlameableTestCase
@@ -31,7 +32,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->user->register([$this->blameable]));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -45,7 +46,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertEquals($this->user->getGUID(), $user->getGUID());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -59,7 +60,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertEquals($this->user->getGUID(), $updater->getGUID());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -73,7 +74,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::findByIdentity($this->user)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -87,7 +88,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::find()->createdBy($this->user)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -101,7 +102,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertInstanceOf(MongoBlameable::class, MongoBlameable::find()->updatedBy($this->user)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -125,7 +126,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -150,7 +151,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -175,7 +176,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -200,7 +201,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -227,7 +228,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -254,7 +255,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -281,7 +282,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -308,7 +309,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group mongo
      * @group blameable
@@ -335,7 +336,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++)

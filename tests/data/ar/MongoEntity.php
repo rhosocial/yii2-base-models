@@ -16,7 +16,6 @@ use rhosocial\base\models\models\BaseMongoEntityModel;
 use rhosocial\base\models\queries\BaseMongoEntityQuery;
 
 /**
- * 
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -28,11 +27,11 @@ class MongoEntity extends BaseMongoEntityModel
     public static function collectionName() {
         return ['yii2-base-models', 'entity'];
     }
-    
+
     public static function primaryKey() {
         return [static::buildNoInitModel()->guidAttribute];
     }
-    
+
     /**
      * 
      * @return BaseMongoEntityQuery

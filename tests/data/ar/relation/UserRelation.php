@@ -16,19 +16,20 @@ use rhosocial\base\models\models\BaseUserRelationModel;
 use rhosocial\base\models\tests\data\ar\User;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserRelation extends BaseUserRelationModel
 {
     public $multiBlamesAttribute = 'groups';
     public $descriptionAttribute = 'description';
-    
+
     public function __construct($config = array())
     {
         $this->hostClass = User::class;
         parent::__construct($config);
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -37,7 +38,7 @@ class UserRelation extends BaseUserRelationModel
         $this->multiBlamesClass = UserRelationGroup::class;
         parent::init();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -45,7 +46,7 @@ class UserRelation extends BaseUserRelationModel
     {
         return '{{%user_relation}}';
     }
-    
+
     /**
      * Friendly to IDE.
      * @return BaseUserRelationQuery

@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\tests\data\ar\relation;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class UserSingleRelationSelf extends UserSingleRelation

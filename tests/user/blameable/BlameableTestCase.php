@@ -18,6 +18,7 @@ use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class BlameableTestCase extends UserTestCase
@@ -27,18 +28,18 @@ class BlameableTestCase extends UserTestCase
      * @var UserPost
      */
     public $post = null;
-    
+
     /**
      *
      * @var array
      */
     public $comments = null;
-    
+
     /**
      * @var User 
      */
     public $other = null;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->other = new User(['password' => \Yii::$app->security->generateRandomString()]);
@@ -49,7 +50,7 @@ class BlameableTestCase extends UserTestCase
             $this->comments[] = $this->user->create(UserComment::class, ['post' => $this->post, 'parent' => $this->comments[$i - 1]]);
         }
     }
-    
+
     protected function tearDown() {
         UserComment::deleteAll();
         UserPost::deleteAll();

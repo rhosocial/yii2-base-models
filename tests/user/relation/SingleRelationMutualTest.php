@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\user\relation;
 use rhosocial\base\models\tests\data\ar\relation\UserSingleRelation;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class SingleRelationMutualTest extends SingleRelationTestCase

@@ -17,6 +17,7 @@ use rhosocial\base\models\tests\data\ar\AdditionalAccount;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class AdditionalAccountTest extends UserTestCase
@@ -59,7 +60,7 @@ class AdditionalAccountTest extends UserTestCase
         // 测试完毕，注销账户。
         $this->assertTrue($user->deregister());
     }
-    
+
     /**
      * @group user
      * @group additionalaccount
@@ -75,7 +76,7 @@ class AdditionalAccountTest extends UserTestCase
         $this->assertFalse($aa->getIsEmptyPassword());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group additionalaccount
@@ -92,7 +93,7 @@ class AdditionalAccountTest extends UserTestCase
         $this->assertTrue($aa->getIsEmptyPassword());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group additionalaccount
@@ -111,7 +112,7 @@ class AdditionalAccountTest extends UserTestCase
         
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group additionalaccount
@@ -131,7 +132,7 @@ class AdditionalAccountTest extends UserTestCase
         
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group additionalaccount

@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\redis;
 use rhosocial\base\models\tests\data\ar\RedisBlameable;
 
 /**
+ * @version 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisBlameableTest extends RedisBlameableTestCase
