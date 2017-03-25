@@ -18,7 +18,7 @@ use yii\base\ModelEvent;
 use yii\web\Request;
 
 /**
- *
+ * The IP address features.
  * @property string|null $ipAddress
  * @property integer $ipType
  * @proeperty array $ipRules
@@ -122,17 +122,21 @@ trait IPTrait
         if (!$this->enableIP) {
             return null;
         }
-        if ($this->enableIP == static::$ipv4) {
-            return $this->getIPv4Address();
-        } elseif ($this->enableIP == static::$ipv6) {
-            return $this->getIPv6Address();
-        } elseif ($this->enableIP == static::$ipAll) {
-            if ($this->{$this->ipTypeAttribute} == IP::IPv4) {
+        try {
+            if ($this->enableIP == static::$ipv4) {
                 return $this->getIPv4Address();
-            }
-            if ($this->{$this->ipTypeAttribute} == IP::IPv6) {
+            } elseif ($this->enableIP == static::$ipv6) {
                 return $this->getIPv6Address();
+            } elseif ($this->enableIP == static::$ipAll) {
+                if ($this->{$this->ipTypeAttribute} == IP::IPv4) {
+                    return $this->getIPv4Address();
+                }
+                if ($this->{$this->ipTypeAttribute} == IP::IPv6) {
+                    return $this->getIPv6Address();
+                }
             }
+        } catch (\Exception $ex) {
+            Yii::error($ex->getMessage(), __METHOD__);
         }
         return null;
     }
