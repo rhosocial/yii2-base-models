@@ -96,7 +96,6 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
     /**
      * @group user
      * @group subsidiary
-     * @depends testInvalid
      */
     public function testAddValidClass()
     {
@@ -105,8 +104,8 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
         } catch (\Exception $ex) {
             $this->fail($ex->getMessage());
         }
-        $this->assertArrayHasKey('Email', $this->user->subsidiaryMap);
-        $this->assertEquals(UserEmail::class, $this->user->subsidiaryMap['Email']);
+        $this->assertArrayHasKey('email', $this->user->subsidiaryMap);
+        $this->assertEquals(['class' => UserEmail::class], $this->user->subsidiaryMap['email']);
     }
 
     /**
