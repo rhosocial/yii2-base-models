@@ -26,32 +26,33 @@ trait SubsidiaryTrait
      * array value represents the full qualified class name corresponds to the alias.
      *
      * For example:
-     * ```php
-     * public $subsidiaryMap = [
-     *     'Profile' => 'app\models\user\Profile',
-     * ];
-     * ```
-     * or:
-     * ```php
-     * public $subsidiaryMap = [
-     *     'Profile' => [
-     *         'class' => 'app\models\user\Profile',
-     *         'max' => 1,
-     *     ]
-     * ];
+```php
+public $subsidiaryMap = [
+    'Profile' => 'app\models\user\Profile',
+];
+```
+     * Or
+```php
+public $subsidiaryMap = [
+    'Profile' => [
+        'class' => 'app\models\user\Profile',
+    ],
+];
+```
      *
+     * The other elements will be taken if subsidiary configuration does not specify.
      * If you want to create subsidiary model and the class is not found, the array elements will be taken.
      */
     public $subsidiaryMap = [];
     
     /**
-     * Add subsidiary.
+     * Add subsidiary class to map.
      * @param string $name
      * @param string|array $config
      * @return boolean
      * @throws InvalidConfigException
      */
-    public function addSubsidiary($name, $config)
+    public function addSubsidiaryClass($name, $config)
     {
         if (!is_string($name) || empty($name)) {
             throw new InvalidConfigException('Subsidiary name not specified.');

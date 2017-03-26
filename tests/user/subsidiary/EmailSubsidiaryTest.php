@@ -28,7 +28,7 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->user->addSubsidiary('Email', UserEmail::class);
+        $this->user->addSubsidiaryClass('Email', UserEmail::class);
         $this->email = $this->user->createEmail(['email' => $this->faker->email]);
     }
     
@@ -48,9 +48,16 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
      */
     public function testInvalid()
     {
-        $this->assertNull($this->user->createSubsidiary(null, []));
+        try {
+            $this->user->addSubsidiaryClass(null, []);
+            $this->fail('InvalidConfigException should be thrown.');
+        } catch (\yii\base\InvalidConfigException $ex) {
+            $this->assertEquals('Subsidiary name not specified.', $ex->getMessage());
+        }
         $this->assertNull($this->user->createEmails(['email' => $this->faker->email]));
-        $this->assertInstanceOf(UserEmail::class, $this->user->createSubsidiary(UserEmail::class, ['email' => $this->faker->email]));
+        $faker = $this->faker->email;
+        $email = $this->user->createSubsidiary(UserEmail::class, ['email' => $faker]);
+        $this->assertInstanceOf(UserEmail::class, $email);
     }
     
     /**
@@ -61,21 +68,21 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
     public function testAddInvalidSubsidiary()
     {
         try {
-            $this->user->addSubsidiary(null, []);
-            $this->fail();
-        } catch (\Exception $ex) {
+            $this->user->addSubsidiaryClass(null, []);
+            $this->fail('InvalidConfigException should be thrown.');
+        } catch (\yii\base\InvalidConfigException $ex) {
             $this->assertEquals('Subsidiary name not specified.', $ex->getMessage());
         }
         try {
-            $this->user->addSubsidiary('Email', []);
-            $this->fail();
-        } catch (\Exception $ex) {
+            $this->user->addSubsidiaryClass('Email', []);
+            $this->fail('InvalidConfigException should be thrown.');
+        } catch (\yii\base\InvalidConfigException $ex) {
             $this->assertEquals('Subsidiary class not specified.', $ex->getMessage());
         }
-        $this->user->addSubsidiary('Email', ['class' => UserEmail::class]);
+        $this->user->addSubsidiaryClass('Email', ['class' => UserEmail::class]);
         $this->assertEquals(UserEmail::class, $this->user->getSubsidiaryClass('Email'));
     }
-    
+
     /**
      * @group user
      * @group subsidiary
@@ -85,7 +92,44 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
     {
         $this->assertInstanceOf(UserEmail::class, $this->email);
     }
-    
+
+    /**
+     * @group user
+     * @group subsidiary
+     * @depends testInvalid
+     */
+    public function testAddValidClass()
+    {
+        try {
+            $this->user->addSubsidiaryClass('Email', ['class' => UserEmail::class]);
+        } catch (\Exception $ex) {
+            $this->fail($ex->getMessage());
+        }
+        $this->assertArrayHasKey('Email', $this->user->subsidiaryMap);
+        $this->assertEquals(UserEmail::class, $this->user->subsidiaryMap['Email']);
+    }
+
+    /**
+     * @group user
+     * @group subsidiary
+     * @depends testAddValidClass
+     */
+    public function testCreateValidModel()
+    {
+        try {
+            $this->user->addSubsidiaryClass('Email', ['class' => UserEmail::class]);
+        } catch (\Exception $ex) {
+            $this->fail($ex->getMessage());
+        }
+        try {
+            $faker = $this->faker->email;
+            $model = $this->user->createEmail(['email' => $faker]);
+        } catch (\Exception $ex) {
+            $this->fail($ex->getMessage());
+        }
+        $this->assertInstanceOf(UserEmail::class, $model);
+    }
+
     /**
      * @group user
      * @group subsidiary
@@ -98,7 +142,7 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
         $this->assertEquals($email, $this->email->email);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group subsidiary
@@ -113,7 +157,7 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
         $this->assertEquals($email, $emails[0]->email);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group subsidiary
