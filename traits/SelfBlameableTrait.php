@@ -572,10 +572,10 @@ trait SelfBlameableTrait
         } catch (IntegrityException $ex) {
             $transaction->rollBack();
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::class . '\update');
+                Yii::error($ex->getMessage(), __METHOD__);
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::class . '\update');
+            Yii::warning($ex->getMessage(), __METHOD__);
             return false;
         }
         return true;
@@ -610,10 +610,10 @@ trait SelfBlameableTrait
         } catch (IntegrityException $ex) {
             $transaction->rollBack();
             if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
-                Yii::error($ex->errorInfo, static::class . '\delete');
+                Yii::error($ex->getMessage(), __METHOD__);
                 return $ex;
             }
-            Yii::warning($ex->errorInfo, static::class . '\delete');
+            Yii::warning($ex->getMessage(), __METHOD__);
             return false;
         }
         return true;
