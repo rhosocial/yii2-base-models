@@ -141,8 +141,8 @@ trait IdentityTrait
     public function onInitAuthKey($event)
     {
         $sender = $event->sender;
-        $authKeyAttribute = $sender->authKeyAttribute;
-        $sender->$authKeyAttribute = sha1(Yii::$app->security->generateRandomString());
+        /* @var $sender static */
+        $sender->setAuthKey(sha1(Yii::$app->security->generateRandomString()));
     }
 
     /**
@@ -204,8 +204,8 @@ trait IdentityTrait
     public function onInitAccessToken($event)
     {
         $sender = $event->sender;
-        $accessTokenAttribute = $sender->accessTokenAttribute;
-        $sender->$accessTokenAttribute = sha1(Yii::$app->security->generateRandomString());
+        /* @var $sender static */
+        $sender->setAccessToken(sha1(Yii::$app->security->generateRandomString()));
     }
 
     /**
@@ -267,9 +267,9 @@ trait IdentityTrait
     public function onInitStatusAttribute($event)
     {
         $sender = $event->sender;
-        $statusAttribute = $sender->statusAttribute;
-        if (empty($sender->$statusAttribute)) {
-            $sender->$statusAttribute = self::$statusActive;
+        /* @var $sender static */
+        if (empty($sender->getStatus())) {
+            $sender->setStatus(self::$statusActive);
         }
     }
 }

@@ -204,6 +204,9 @@ trait PasswordTrait
             $password = $this->getEmptyPasswordSpecialty();
         }
         $phAttribute = $this->passwordHashAttribute;
+        if (empty($phAttribute) || !is_string($phAttribute)) {
+            return;
+        }
         $this->$phAttribute = $this->generatePasswordHash($password);
         $this->_password = $password;
         $this->trigger(static::$eventAfterSetPassword);
@@ -247,8 +250,7 @@ trait PasswordTrait
             $this->trigger(static::$eventNewPasswordAppliedFor);
             return true;
         }
-        $prtAttribute = $this->passwordResetTokenAttribute;
-        $this->$prtAttribute = static::generatePasswordResetToken();
+        $this->setPasswordResetToken(static::generatePasswordResetToken());
         if (!$this->save()) {
             $this->trigger(static::$eventResetPasswordFailed);
             return false;
@@ -272,9 +274,7 @@ trait PasswordTrait
         }
         $this->trigger(static::$eventBeforeResetPassword);
         $this->password = $password;
-        if (is_string($this->passwordResetTokenAttribute)) {
-            $this->setPasswordResetToken();
-        }
+        $this->setPasswordResetToken();
         if (!$this->save()) {
             $this->trigger(static::$eventResetPasswordFailed);
             return false;
@@ -311,7 +311,7 @@ trait PasswordTrait
      */
     protected function validatePasswordResetToken($token)
     {
-        if (!is_string($this->passwordResetTokenAttribute)) {
+        if (!is_string($this->passwordResetTokenAttribute) || empty($this->passwordResetTokenAttribute)) {
             return true;
         }
         return $this->getPasswordResetToken() === $token;
@@ -324,10 +324,8 @@ trait PasswordTrait
     public function onInitPasswordResetToken($event)
     {
         $sender = $event->sender;
-        if (!is_string($sender->passwordResetTokenAttribute)) {
-            return;
-        }
-        $this->setPasswordResetToken();
+        /* @var $sender static */
+        return $sender->setPasswordResetToken();
     }
     
     /**
@@ -337,6 +335,9 @@ trait PasswordTrait
      */
     public function setPasswordResetToken($token = '')
     {
+        if (empty($this->passwordResetTokenAttribute) || !is_string($this->passwordResetTokenAttribute)) {
+            return null;
+        }
         return $this->{$this->passwordResetTokenAttribute} = $token;
     }
     
@@ -346,6 +347,9 @@ trait PasswordTrait
      */
     public function getPasswordResetToken()
     {
+        if (empty($this->passwordResetTokenAttribute) || !is_string($this->passwordResetTokenAttribute)) {
+            return null;
+        }
         return $this->{$this->passwordResetTokenAttribute};
     }
 }

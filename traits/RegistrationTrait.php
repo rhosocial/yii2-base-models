@@ -209,7 +209,7 @@ trait RegistrationTrait
     public function setSource($source)
     {
         $sourceAttribute = $this->sourceAttribute;
-        return is_string($sourceAttribute) ? $this->$sourceAttribute = $source : null;
+        return (is_string($sourceAttribute) && !empty($sourceAttribute)) ? $this->$sourceAttribute = $source : null;
     }
 
     /**
@@ -250,7 +250,7 @@ trait RegistrationTrait
     public function onInitSourceAttribute($event)
     {
         $sender = $event->sender;
-        $sourceAttribute = $sender->sourceAttribute;
-        $sender->$sourceAttribute = static::$sourceSelf;
+        /* @var $sender static */
+        return $sender->setSource(static::$sourceSelf);
     }
 }
