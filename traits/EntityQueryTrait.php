@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\traits;
 
+use rhosocial\base\helpers\Number;
+
 /**
  * This trait is used for building entity query class for entity model.
  *
@@ -21,7 +23,7 @@ namespace rhosocial\base\models\traits;
 trait EntityQueryTrait
 {
     use QueryTrait;
-    
+
     public $noInitModel;
 
     /**
@@ -34,7 +36,7 @@ trait EntityQueryTrait
             $this->noInitModel = $modelClass::buildNoInitModel();
         }
     }
-    
+
     /**
      * Specify guid attribute.
      * @param string|array $guid
@@ -46,7 +48,7 @@ trait EntityQueryTrait
         $model = $this->noInitModel;
         return $this->likeCondition((string)$guid, $model->guidAttribute, $like);
     }
-    
+
     /**
      * Specify id attribute.
      * @param string|integer|array $id
@@ -58,7 +60,24 @@ trait EntityQueryTrait
         $model = $this->noInitModel;
         return $this->likeCondition($id, $model->idAttribute, $like);
     }
-    
+
+    /**
+     * Specify GUID or ID attribute.
+     * Scalar parameter is acceptable only.
+     * Please do not pass an array to the first parameter.
+     * @param string|integer $param
+     * @param bool|string $like false, 'like', 'or like', 'not like', 'or not like'.
+     * @return $this
+     */
+    public function guidOrId($param, $like = false)
+    {
+        $model = $this->noInitModel;
+        if (is_string($param) && (preg_match(Number::GUID_REGEX, $param) || strlen($param) == 16)) {
+            return $this->guid($param, $like);
+        }
+        return $this->id($param, $like);
+    }
+
     /**
      * Specify create time range.
      * @param string $start
@@ -74,7 +93,7 @@ trait EntityQueryTrait
         }
         return static::range($this, $model->createdAtAttribute, $start, $end);
     }
-    
+
     /**
      * Specify order by creation time.
      * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
@@ -89,7 +108,7 @@ trait EntityQueryTrait
         }
         return $this->addOrderBy([$model->createdAtAttribute => $sort]);
     }
-    
+
     /**
      * Specify update time range.
      * @param string $start 
@@ -105,7 +124,7 @@ trait EntityQueryTrait
         }
         return static::range($this, $model->updatedAtAttribute, $start, $end);
     }
-    
+
     /**
      * Specify order by update time.
      * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
@@ -120,7 +139,7 @@ trait EntityQueryTrait
         }
         return $this->addOrderBy([$model->updatedAtAttribute => $sort]);
     }
-    
+
     public static $pageAll = 'all';
     public static $defaultPageSize = 10;
     
