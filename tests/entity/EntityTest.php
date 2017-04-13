@@ -172,4 +172,33 @@ class EntityTest extends EntityTestCase
             $this->assertTrue($models[9 - $i]->equals($entities[$i]));
         }
     }
+
+    /**
+     * @group entity
+     * @group query
+     */
+    public function testGuidOrId()
+    {
+        $entities = [];
+        for ($i = 0; $i < 10; $i++) {
+            $entity = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
+            $this->assertTrue($entity->save());
+            $entities[] = $entity;
+        }
+        $model = Entity::find()->guidOrId($entities[0]->getGUID())->one();
+
+        $this->assertEquals($model->getID(), $entities[0]->getID());
+        $this->assertEquals($model->getGUID(), $entities[0]->getGUID());
+
+        $this->assertNotEquals($model->getID(), $entities[1]->getID());
+        $this->assertNotEquals($model->getGUID(), $entities[2]->getGUID());
+
+        $model = Entity::find()->guidOrId($entities[7]->getID())->one();
+
+        $this->assertEquals($model->getGUID(), $entities[7]->getGUID());
+        $this->assertEquals($model->getID(), $entities[7]->getID());
+
+        $this->assertNotEquals($model->getGUID(), $entities[8]->getGUID());
+        $this->assertNotEquals($model->getID(), $entities[8]->getID());
+    }
 }
