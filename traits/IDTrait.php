@@ -11,6 +11,7 @@
  */
 
 namespace rhosocial\base\models\traits;
+
 use rhosocial\base\helpers\Number;
 use Yii;
 use yii\base\ModelEvent;
@@ -32,36 +33,36 @@ trait IDTrait
     public static $idTypeString = 0;
     public static $idTypeInteger = 1;
     public static $idTypeAutoIncrement = 2;
-    
+
     /**
      * @var integer type of id attribute.
      */
     public $idAttributeType = 0;
-    
+
     /**
      * @var boolean Determines whether its ID has been pre-assigned. It will not
      * generate or assign ID if true.
      */
     public $idPreassigned = false;
-    
+
     /**
      * @var string The prefix of ID. When ID type is Auto Increment, this feature
      * is skipped.
      */
     public $idAttributePrefix = '';
-    
+
     /**
      * @var integer OPTIONAL. The length of id attribute value, and max length
      * of this attribute in rules. If you set $idAttribute to false or ID type
      * to Auto Increment, this property will be ignored.
      */
     public $idAttributeLength = 4;
-    
+
     /**
      * @var boolean Determine whether the ID is safe for validation.
      */
     protected $idAttributeSafe = false;
-    
+
     /**
      * Get ID.
      * @return string|integer
@@ -71,7 +72,7 @@ trait IDTrait
         $idAttribute = $this->idAttribute;
         return (is_string($idAttribute) && !empty($idAttribute)) ? $this->$idAttribute : null;
     }
-    
+
     /**
      * Set id.
      * @param string|integer $identity
@@ -82,7 +83,7 @@ trait IDTrait
         $idAttribute = $this->idAttribute;
         return (is_string($idAttribute) && !empty($idAttribute)) ? $this->$idAttribute = $identity : null;
     }
-    
+
     /**
      * Attach `onInitGuidAttribute` event.
      * @param string $eventName
@@ -91,7 +92,7 @@ trait IDTrait
     {
         $this->on($eventName, [$this, 'onInitIDAttribute']);
     }
-    
+
     /**
      * Initialize the ID attribute with new generated ID.
      * If the model's id is pre-assigned, then it will return directly.
@@ -118,7 +119,7 @@ trait IDTrait
             $sender->setID($sender->generateId());
         }
     }
-    
+
     /**
      * Generate the ID. You can override this method to implement your own
      * generation algorithm.
@@ -152,9 +153,9 @@ trait IDTrait
         if ($identity == null) {
             return false;
         }
-        return (static::findOne([$this->idAttribute => $identity]) !== null);
+        return static::find()->where([$this->idAttribute => $identity])->exists();
     }
-    
+
     /**
      * Get the rules associated with id attribute.
      * @return array
@@ -189,7 +190,12 @@ trait IDTrait
         }
         return [];
     }
-    
+
+    /**
+     * Composite IDs from models.
+     * @param $models
+     * @return array|int|string
+     */
     public static function compositeIDs($models)
     {
         if (!is_array($models) && $models instanceof static) {
