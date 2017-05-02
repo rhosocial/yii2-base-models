@@ -28,12 +28,6 @@ trait SubsidiaryTrait
      * For example:
 ```php
 public $subsidiaryMap = [
-    'Profile' => 'app\models\user\Profile',
-];
-```
-     * Or
-```php
-public $subsidiaryMap = [
     'Profile' => [
         'class' => 'app\models\user\Profile',
     ],
@@ -44,13 +38,15 @@ public $subsidiaryMap = [
      * If you want to create subsidiary model and the class is not found, the array elements will be taken.
      */
     public $subsidiaryMap = [];
-    
+
     /**
      * Add subsidiary class to map.
-     * @param string $name
-     * @param string|array $config
-     * @return boolean
-     * @throws InvalidConfigException
+     * @param string $name Subsidiary name, case insensitive.
+     * @param string|array $config If this parameter is string, it will regarded as class name.
+     * If this parameter is array, you should specify `class`, and the class should be existed.
+     * @return boolean True if the class added.
+     * @throws InvalidConfigException throws if subsidiary name is not specified or class is not
+     * specified.
      */
     public function addSubsidiaryClass($name, $config)
     {
@@ -73,7 +69,7 @@ public $subsidiaryMap = [
         }
         return true;
     }
-    
+
     /**
      * Remove subsidiary.
      * @param string $name
@@ -88,7 +84,7 @@ public $subsidiaryMap = [
         }
         return false;
     }
-    
+
     /**
      * Get subsidiary class.
      * @param string $name
@@ -102,7 +98,14 @@ public $subsidiaryMap = [
         }
         return null;
     }
-    
+
+    /**
+     * Get subsidiaries.
+     * @param $name
+     * @param string $limit
+     * @param int $page
+     * @return null
+     */
     public function getSubsidiaries($name, $limit = 'all', $page = 0)
     {
         $class = $this->getSubsidiaryClass($name);
@@ -115,7 +118,12 @@ public $subsidiaryMap = [
         }
         return $class::find()->createdBy($this)->page($limit, $page)->all();
     }
-    
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return type
+     */
     public function __call($name, $arguments)
     {
         if (strpos(strtolower($name), "create") === 0) {
