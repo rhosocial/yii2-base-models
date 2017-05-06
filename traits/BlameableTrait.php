@@ -553,7 +553,7 @@ trait BlameableTrait
     /**
      * Set host of this model.
      * @param string $host
-     * @return type
+     * @return string|boolean
      */
     public function setHost($host)
     {

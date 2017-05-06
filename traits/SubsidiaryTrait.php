@@ -116,13 +116,13 @@ public $subsidiaryMap = [
         if (!method_exists($query, 'createdBy')) {
             return null;
         }
-        return $class::find()->createdBy($this)->page($limit, $page)->all();
+        return $query->createdBy($this)->page($limit, $page)->all();
     }
 
     /**
      * @param $name
      * @param $arguments
-     * @return type
+     * @return mixed
      */
     public function __call($name, $arguments)
     {
@@ -202,7 +202,7 @@ public $subsidiaryMap = [
      *
      * @param string $name
      * @param array $config
-     * @return type
+     * @return mixed
      */
     public function createSubsidiary($name, $config)
     {
