@@ -100,6 +100,23 @@ public $subsidiaryMap = [
     }
 
     /**
+     * @param $name
+     * @return bool
+     */
+    public function hasSubsidiary($name)
+    {
+        $class = $this->getSubsidiaryClass($name);
+        if (empty($class)) {
+            return false;
+        }
+        $query = $class::find();
+        if (!method_exists($query, 'createdBy')) {
+            return false;
+        }
+        return $query->createdBy($this)->exists();
+    }
+
+    /**
      * Get subsidiaries.
      * @param $name
      * @param string $limit
