@@ -21,14 +21,25 @@ use rhosocial\base\models\models\BaseUserModel;
 class User extends \yii\web\User
 {
     private $_access = [];
-    
+
+    /**
+     * Get the GUID of identity.
+     * If no user logged-in, null will be given.
+     * @return null|string
+     */
     public function getGuid()
     {
         $identity = $this->getIdentity();
         /* @var $identity BaseUserModel */
         return $identity !== null ? $identity->getGUID() : null;
     }
-    
+
+    /**
+     * @param string $permissionName
+     * @param array $params
+     * @param bool $allowCaching
+     * @return bool|mixed
+     */
     public function can($permissionName, $params = [], $allowCaching = true)
     {
         if ($allowCaching && empty($params) && isset($this->_access[$permissionName])) {
