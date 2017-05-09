@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.6.6
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: 2017-01-31 09:46:46
+-- Generation Time: 2017-05-09 14:09:13
 -- 服务器版本： 8.0.0-dmr
--- PHP Version: 7.1.1
+-- PHP Version: 7.1.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -27,7 +27,7 @@ USE `yii2-base-models`;
 --
 -- 表的结构 `entity`
 --
--- 创建时间： 2017-01-11 08:44:51
+-- 创建时间： 2017-05-09 06:03:41
 --
 
 DROP TABLE IF EXISTS `entity`;
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `entity` (
 --
 -- 表的结构 `entity_ai`
 --
--- 创建时间： 2017-01-11 10:39:37
+-- 创建时间： 2017-05-09 06:04:43
 --
 
 DROP TABLE IF EXISTS `entity_ai`;
@@ -64,6 +64,29 @@ CREATE TABLE IF NOT EXISTS `entity_ai` (
   PRIMARY KEY (`guid`),
   UNIQUE KEY `entity_ai_id` (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `operator_entity`
+--
+-- 创建时间： 2017-05-09 06:01:30
+--
+
+DROP TABLE IF EXISTS `operator_entity`;
+CREATE TABLE IF NOT EXISTS `operator_entity` (
+  `guid` varbinary(16) NOT NULL,
+  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
+  `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+  `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `operator_guid` varbinary(16) NOT NULL DEFAULT '',
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `operator_entity_id_unique` (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='For Operator.';
 
 -- --------------------------------------------------------
 
@@ -202,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
 --
 -- 表的结构 `user_post`
 --
--- 创建时间： 2017-01-14 08:17:46
+-- 创建时间： 2017-05-09 06:09:04
 --
 
 DROP TABLE IF EXISTS `user_post`;

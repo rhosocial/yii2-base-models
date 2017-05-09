@@ -298,6 +298,7 @@ trait BlameableTrait
      * Get the rules associated with `createdByAttribute`, `updatedByAttribute`
      * and `idAttribute`-`createdByAttribute` combination unique.
      * @return array rules.
+     * @throws NotSupportedException throws if `createdByAttribute` not set.
      */
     public function getBlameableAttributeRules()
     {
@@ -597,8 +598,8 @@ trait BlameableTrait
     }
     
     /**
-     *
-     * @param BaseUserModel|string $user
+     * Set updater.
+     * @param BaseUserModel|string $updater
      * @return boolean
      */
     public function setUpdater($updater)

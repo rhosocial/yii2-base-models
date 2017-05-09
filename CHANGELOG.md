@@ -5,3 +5,4 @@ Yii 2 Base Models Change Log
 -----------------------
 
 - Enh: Added `SubsidiaryTrait::hasSubsidiary()` to check whether the entity has the subsidiary or not.
+- Enh: Added `OperatorTrait` to record operator who operate the entity.
