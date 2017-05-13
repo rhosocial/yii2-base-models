@@ -123,7 +123,7 @@ trait ConfirmationTrait
      * @param string $code
      * @return boolean
      */
-    public function confirm($code)
+    public function confirm($code = '')
     {
         if (!$this->confirmationAttribute || !$this->validateConfirmationCode($code)) {
             return false;
