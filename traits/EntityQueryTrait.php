@@ -13,6 +13,8 @@
 namespace rhosocial\base\models\traits;
 
 use rhosocial\base\helpers\Number;
+use rhosocial\base\models\models\BaseEntityModel;
+use yii\db\ActiveQuery;
 
 /**
  * This trait is used for building entity query class for entity model.
@@ -24,6 +26,9 @@ trait EntityQueryTrait
 {
     use QueryTrait;
 
+    /**
+     * @var BaseEntityModel
+     */
     public $noInitModel;
 
     /**
@@ -45,6 +50,7 @@ trait EntityQueryTrait
      */
     public function guid($guid, $like = false)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
         return $this->likeCondition((string)$guid, $model->guidAttribute, $like);
     }
@@ -57,6 +63,7 @@ trait EntityQueryTrait
      */
     public function id($id, $like = false)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
         return $this->likeCondition($id, $model->idAttribute, $like);
     }
@@ -71,7 +78,6 @@ trait EntityQueryTrait
      */
     public function guidOrId($param, $like = false)
     {
-        $model = $this->noInitModel;
         if (is_string($param) && (preg_match(Number::GUID_REGEX, $param) || strlen($param) == 16)) {
             return $this->guid($param, $like);
         }
@@ -79,19 +85,36 @@ trait EntityQueryTrait
     }
 
     /**
-     * Specify create time range.
+     * Specify creation time range.
      * @param string $start
      * @param string $end
      * @return $this
      */
     public function createdAt($start = null, $end = null)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
             return $this;
         }
         return static::range($this, $model->createdAtAttribute, $start, $end);
+    }
+
+    /**
+     * Specify creation time as today (in locally).
+     * @return $this
+     */
+    public function createdAtToday()
+    {
+        /* @var $this ActiveQuery */
+        $model = $this->noInitModel;
+        $start = strtotime(date('Y-m-d'));
+        $end = $start + 86400;
+        if ($model->timeFormat == BaseEntityModel::$timeFormatDatetime) {
+            $start = gmdate('Y-m-d H:i:s', $start);
+            $end = gmdate('Y-m-d H:i:s', $end);
+        }
+        return $this->createdAt($start, $end);
     }
 
     /**
@@ -101,8 +124,8 @@ trait EntityQueryTrait
      */
     public function orderByCreatedAt($sort = SORT_ASC)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->createdAtAttribute) || empty($model->createdAtAttribute)) {
             return $this;
         }
@@ -110,19 +133,36 @@ trait EntityQueryTrait
     }
 
     /**
-     * Specify update time range.
+     * Specify last updated time range.
      * @param string $start 
      * @param string $end
      * @return $this
      */
     public function updatedAt($start = null, $end = null)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
             return $this;
         }
         return static::range($this, $model->updatedAtAttribute, $start, $end);
+    }
+
+    /**
+     * Specify last updated time as today (in locally).
+     * @return $this
+     */
+    public function updatedAtToday()
+    {
+        /* @var $this ActiveQuery */
+        $model = $this->noInitModel;
+        $start = strtotime(date('Y-m-d'));
+        $end = $start + 86400;
+        if ($model->timeFormat == BaseEntityModel::$timeFormatDatetime) {
+            $start = gmdate('Y-m-d H:i:s', $start);
+            $end = gmdate('Y-m-d H:i:s', $end);
+        }
+        return $this->updatedAt($start, $end);
     }
 
     /**
@@ -132,8 +172,8 @@ trait EntityQueryTrait
      */
     public function orderByUpdatedAt($sort = SORT_ASC)
     {
+        /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        /* @var $this yii\db\ActiveQuery */
         if (!is_string($model->updatedAtAttribute) || empty($model->updatedAtAttribute)) {
             return $this;
         }

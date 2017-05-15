@@ -201,4 +201,30 @@ class EntityTest extends EntityTestCase
         $this->assertNotEquals($model->getGUID(), $entities[8]->getGUID());
         $this->assertNotEquals($model->getID(), $entities[8]->getID());
     }
+
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testCreatedAtToday()
+    {
+        $this->assertEquals(0, (int)Entity::find()->createdAtToday()->count());
+        $this->assertTrue($this->entity->save());
+        $entity = Entity::find()->createdAtToday()->one();
+        $this->assertEquals($this->entity->guid, $entity->guid);
+        $this->assertEquals(1, $this->entity->delete());
+    }
+
+    /**
+     * @group entity
+     * @group timestamp
+     */
+    public function testUpdatedAtToday()
+    {
+        $this->assertEquals(0, (int)Entity::find()->updatedAtToday()->count());
+        $this->assertTrue($this->entity->save());
+        $entity = Entity::find()->updatedAtToday()->one();
+        $this->assertEquals($this->entity->guid, $entity->guid);
+        $this->assertEquals(1, $this->entity->delete());
+    }
 }
