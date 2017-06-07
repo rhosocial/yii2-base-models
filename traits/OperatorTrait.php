@@ -21,8 +21,8 @@ use yii\behaviors\BlameableBehavior;
 /**
  * OperatorTrait
  *
- * Before using model with this trait, you need attach the rules and behaviors associated with 'operatorAttribute' to
- * model if you feel it is necessary, like following:
+ * Before using model with this trait, you need to specify a field to store the operator's GUID, and attach the rules
+ * and behaviors associated with 'operatorAttribute' to model if you feel it is necessary, like following:
  * ```php
  * public function rules()
  * {
@@ -34,6 +34,7 @@ use yii\behaviors\BlameableBehavior;
  *     return array_merge(parent::behaviors(), $this->getOperatorBehaviors());
  * }
  * ```
+ * Then, the current logged-in user will be recorded as operator when saving model.
  *
  * @property-read BaseUserModel $operator
  * @version 1.0
@@ -64,6 +65,8 @@ Trait OperatorTrait
     }
 
     /**
+     * Set the current logged-in user as operator.
+     * Please DO NOT call it directly, unless you know the consequences.
      * @param Event $event
      * @return null|string
      */
@@ -94,6 +97,7 @@ Trait OperatorTrait
     }
 
     /**
+     * Mark the `operatorAttribute` as safe.
      * @return array
      */
     public function getOperatorRules()
