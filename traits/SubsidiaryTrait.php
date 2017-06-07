@@ -109,7 +109,8 @@ public $subsidiaryMap = [
     }
 
     /**
-     * @param $name
+     * Check whether the user has a subsidiary model.
+     * @param $name Subsidiary name, case insensitive.
      * @return bool
      */
     public function hasSubsidiary($name)
