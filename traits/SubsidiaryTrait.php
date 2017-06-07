@@ -15,6 +15,15 @@ namespace rhosocial\base\models\traits;
 use yii\base\InvalidConfigException;
 
 /**
+ * SubsidiaryTrait.
+ * The Trait is used to help the model manage its subsidiary models.
+ *
+ * For example:
+ * ```php
+ * $user->addSubsidiaryClass("email", ["class" => Email::class]);
+ * $email = $user->createEmail(['content' => 'i@vistart.me']);
+ * $email->save();
+ * ```
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -72,7 +81,7 @@ public $subsidiaryMap = [
 
     /**
      * Remove subsidiary.
-     * @param string $name
+     * @param string $name Subsidiary name, case insensitive.
      * @return boolean
      */
     public function removeSubsidiary($name)
@@ -86,8 +95,8 @@ public $subsidiaryMap = [
     }
 
     /**
-     * Get subsidiary class.
-     * @param string $name
+     * Get subsidiary class according name.
+     * @param string $name Subsidiary name, case insensitive.
      * @return string
      */
     public function getSubsidiaryClass($name)
@@ -101,7 +110,7 @@ public $subsidiaryMap = [
 
     /**
      * Get subsidiaries.
-     * @param $name
+     * @param $name Subsidiary name, case insensitive.
      * @param string $limit
      * @param int $page
      * @return null
@@ -199,9 +208,9 @@ public $subsidiaryMap = [
     }
 
     /**
-     *
-     * @param string $name
-     * @param array $config
+     * Create subsidiary model.
+     * @param string $name Subsidiary name, case insensitive.
+     * @param array $config Subsidiary model configuration array.
      * @return mixed
      */
     public function createSubsidiary($name, $config)
