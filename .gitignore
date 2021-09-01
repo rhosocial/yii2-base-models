@@ -49,6 +49,7 @@ Temporary Items
 /tmp
 /tests/runtime
 /vendor
+/.idea
 
 assets/*
 !assets/.gitignore

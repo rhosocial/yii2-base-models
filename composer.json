@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "yiisoft/yii2": ">=2.0.11",
+        "yiisoft/yii2": ">=2.0.43",
         "rhosocial/helpers": "~1.0.0"
     },
     "require-dev": {
@@ -28,5 +28,11 @@
         "psr-4": {
             "rhosocial\\base\\models\\": ""
         }
-    }
+    },
+    "repositories":[
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
 }
