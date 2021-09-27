@@ -28,12 +28,12 @@ class EntityTestCase extends TestCase
      */
     protected $entity = null;
 
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->entity = new Entity();
     }
 
-    protected function tearDown() {
+    protected function tearDown() : void {
         Entity::deleteAll();
         EntityAI::deleteAll();
         parent::tearDown();

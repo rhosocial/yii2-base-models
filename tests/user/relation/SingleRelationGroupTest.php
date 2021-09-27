@@ -21,8 +21,7 @@ use rhosocial\base\models\tests\data\ar\relation\UserRelationGroup;
  */
 class SingleRelationGroupTest extends SingleRelationTestCase
 {
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         UserRelationGroup::deleteAll();
         parent::tearDown();
     }

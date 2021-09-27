@@ -26,8 +26,7 @@ class MongoTestCase extends TestCase
         return $user;
     }
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         $databases = self::getParam('databases');
         $params = isset($databases['mysql']) ? $databases['mysql'] : null;
         if ($params === null) {

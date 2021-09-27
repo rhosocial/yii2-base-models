@@ -26,12 +26,12 @@ class RedisEntityTestCase extends EntityTestCase
      */
     protected $entity = null;
 
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->entity = new RedisEntity();
     }
 
-    protected function tearDown() {
+    protected function tearDown() : void {
         RedisEntity::deleteAll();
         parent::tearDown();
     }

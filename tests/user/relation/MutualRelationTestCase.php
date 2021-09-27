@@ -42,8 +42,7 @@ class MutualRelationTestCase extends UserTestCase
      */
     protected $relationSuspend = null;
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->other1 = new User(['password' => '123456']);
         $this->other2 = new User(['password' => '123456']);
@@ -51,8 +50,7 @@ class MutualRelationTestCase extends UserTestCase
         $this->relationSuspend = $this->prepareMutualRelationSuspend($this->user, $this->other2);
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         if ($this->relationNormal instanceof UserRelation) {
             $this->relationNormal->remove();
         }

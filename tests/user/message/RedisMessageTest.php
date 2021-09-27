@@ -27,14 +27,12 @@ class RedisMessageTest extends UserTestCase
      */
     protected $other;
 
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->other = new User(['password' => '123456']);
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         $this->other->deregister();
         parent::tearDown();
     }

@@ -37,16 +37,14 @@ class MongoBlameableTestCase extends MongoTestCase
      */
     protected $blameable = null;
 
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->user = new User(['password' => '123456']);
         $this->other = new User(['password' => '123456']);
         $this->blameable = $this->user->create(MongoBlameable::class, ['content' => \Yii::$app->security->generateRandomString()]);
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         MongoBlameable::deleteAll();
         User::deleteAll();
         parent::tearDown();

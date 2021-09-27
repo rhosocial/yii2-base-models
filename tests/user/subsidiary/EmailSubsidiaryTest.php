@@ -25,15 +25,13 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
      */
     protected $email = null;
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->user->addSubsidiaryClass('Email', UserEmail::class);
         $this->email = $this->user->createEmail(['email' => $this->faker->email]);
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         if ($this->email instanceof UserEmail) {
             $this->email->delete();
         }

@@ -33,16 +33,14 @@ class MongoMessageTest extends MongoTestCase
      */
     protected $other;
 
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->user = new User();
         \Yii::$app->user->identity = $this->user;
         $this->other = new User(['password' => '123456']);
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         $this->other->deregister();
         if ($this->user instanceof User) {
             try {

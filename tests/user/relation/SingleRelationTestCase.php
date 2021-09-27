@@ -32,8 +32,7 @@ class SingleRelationTestCase extends UserTestCase
      */
     protected $relation = null;
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->other = new User(['password' => '123456']);
         $this->relation = $this->prepareSingleRelation($this->user, $this->other);
@@ -61,8 +60,7 @@ class SingleRelationTestCase extends UserTestCase
         return [$this->prepareSingleRelation($user, $other), $this->prepareSingleRelation($other, $user)];
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         if ($this->relation instanceof UserSingleRelation) {
             $this->relation->remove();
         }

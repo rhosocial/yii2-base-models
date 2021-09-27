@@ -25,14 +25,12 @@ class SingleRelationMutualTest extends SingleRelationTestCase
      */
     protected $opposite = null;
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->opposite = $this->prepareSingleRelation($this->other, $this->user);
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         if ($this->opposite instanceof UserSingleRelation)
         {
             $this->opposite->remove();

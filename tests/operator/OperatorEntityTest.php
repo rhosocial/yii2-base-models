@@ -36,8 +36,7 @@ class OperatorEntityTest extends TestCase
      */
     protected $entity;
 
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();;
         $this->user = new User();
         $this->assertTrue($this->user->register());
@@ -46,8 +45,7 @@ class OperatorEntityTest extends TestCase
         $this->entity = new Entity();
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         Entity::deleteAll();
         parent::tearDown();
     }

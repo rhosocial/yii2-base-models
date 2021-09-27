@@ -21,8 +21,7 @@ use rhosocial\base\models\tests\data\ar\blameable\UserPost;
  */
 class CommentTest extends BlameableTestCase
 {
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
         $this->assertTrue($this->other->register());
@@ -32,8 +31,7 @@ class CommentTest extends BlameableTestCase
         }
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         foreach ($this->comments as $comment) {
             $comment->delete();
         }

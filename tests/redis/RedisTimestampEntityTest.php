@@ -21,12 +21,12 @@ use rhosocial\base\models\tests\data\ar\redis\ExpiredTimestampEntity;
  */
 class RedisTimestampEntityTest extends RedisEntityTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->entity = new TimestampEntity();
     }
 
-    protected function tearDown() {
+    protected function tearDown() : void {
         TimestampEntity::deleteAll();
         ExpiredTimestampEntity::deleteAll();
         parent::tearDown();

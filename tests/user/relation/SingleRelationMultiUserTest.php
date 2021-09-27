@@ -26,16 +26,14 @@ class SingleRelationMultiUserTest extends SingleRelationTestCase
      */
     protected $others = [];
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         for ($i = 0; $i < 10; $i++) {
             $this->others[] = new User(['password' => \Yii::$app->security->generateRandomString(6)]);
         }
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         foreach ($this->others as $key => $other) {
             if ($this->others[$key] instanceof User) {
                 try {

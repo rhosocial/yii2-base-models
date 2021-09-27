@@ -13,6 +13,7 @@ namespace rhosocial\base\models\tests;
 
 use Faker\Factory;
 use Faker\Generator;
+use PHPunit\Framework\TestCase as PHPunitTestCase;
 use yii\di\Container;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -23,7 +24,7 @@ use yii\db\Connection;
  *
  * @author vistart <i@vistart.me>
  */
-abstract class TestCase extends \PHPUnit_Framework_TestCase {
+abstract class TestCase extends PHPunitTestCase {
     
     /**
      *
@@ -57,7 +58,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
      * Clean up after test.
      * By default the application created with [[mockApplication]] will be destroyed.
      */
-    protected function tearDown() {
+    protected function tearDown() : void {
         parent::tearDown();
         $this->destroyApplication();
         $this->faker = null;
@@ -115,7 +116,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
         $this->faker->seed(time() % 1000000);
     }
     
-    protected function setUp() {
+    protected function setUp() : void {
         $databases = self::getParam('databases');
         $params = isset($databases['mysql']) ? $databases['mysql'] : null;
         if ($params === null) {

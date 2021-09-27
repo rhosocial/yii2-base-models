@@ -27,15 +27,13 @@ class UserTestCase extends TestCase
      */
     protected $user = null;
     
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->user = new User();
         \Yii::$app->user->identity = $this->user;
     }
     
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         if ($this->user instanceof User) {
             try {
                 $this->user->deregister();

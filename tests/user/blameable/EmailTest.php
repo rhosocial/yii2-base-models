@@ -26,14 +26,12 @@ class EmailTest extends BlameableTestCase
      */
     public $email = null;
 
-    protected function setUp()
-    {
+    protected function setUp() : void {
         parent::setUp();
         $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email]);
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         UserEmail::deleteAll();
         parent::tearDown();
     }

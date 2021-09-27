@@ -20,7 +20,7 @@ use rhosocial\base\models\tests\data\ar\EntityAI;
  */
 class AutoIncrementTest extends EntityTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->entity = new EntityAI();
     }

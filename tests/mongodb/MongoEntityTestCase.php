@@ -27,13 +27,12 @@ class MongoEntityTestCase extends MongoTestCase
      */
     protected $entity = null;
 
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->entity = new MongoEntity();
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown() : void {
         MongoEntity::deleteAll();
         parent::tearDown();
     }

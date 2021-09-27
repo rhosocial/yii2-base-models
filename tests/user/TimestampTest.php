@@ -21,7 +21,7 @@ use rhosocial\base\models\tests\user\UserTestCase;
  */
 class TimestampTest extends UserTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->user = new ExpiredUser();
     }

@@ -40,7 +40,7 @@ class BlameableTestCase extends UserTestCase
      */
     public $other = null;
 
-    protected function setUp() {
+    protected function setUp() : void {
         parent::setUp();
         $this->other = new User(['password' => \Yii::$app->security->generateRandomString()]);
         $this->post = $this->user->create(UserPost::class);
@@ -51,7 +51,7 @@ class BlameableTestCase extends UserTestCase
         }
     }
 
-    protected function tearDown() {
+    protected function tearDown() : void {
         UserComment::deleteAll();
         UserPost::deleteAll();
         parent::tearDown();
