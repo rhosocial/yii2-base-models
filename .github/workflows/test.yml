@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
       - name: Run tests
-        run: docker exec -it environments_php_1 phpunit
+        run: docker exec environments_php_1 phpunit
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php73_mysql5_mongo4_redis5.yml down
