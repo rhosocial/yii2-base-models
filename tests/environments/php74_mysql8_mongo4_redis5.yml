@@ -21,7 +21,6 @@ services:
   mysql:
     image: mysql:8
     working_dir: /root/yii2-base-models
-    command: --default-authentication-plugin=mysql_native_password
     ports:
       - 8306:3306
     networks:
@@ -32,6 +31,9 @@ services:
       - ../../../yii2-base-models/tests/data/yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: yii2-base-models
   mongo:
     image: mongo:4
     working_dir: /root/yii2-base-models
