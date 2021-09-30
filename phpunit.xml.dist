@@ -6,7 +6,8 @@
          convertWarningsToExceptions="true"
          stopOnFailure="false"
          timeoutForLargeTests="1200"
-         verbose="true">
+         verbose="true"
+         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer">
     <testsuites>
         <testsuite name="Common">
             <directory>./tests/entity</directory>

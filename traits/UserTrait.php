@@ -13,7 +13,7 @@
 namespace rhosocial\base\models\traits;
 
 use Yii;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 
 /**
  * Assemble PasswordTrait, RegistrationTrait and IdentityTrait into UserTrait.
@@ -65,7 +65,7 @@ trait UserTrait
         }
         return $entity;
     }
-    
+
     /**
      * This method is only used for overriding [[removeSelf()]] in [[TimestampTrait]].
      * @see deregister()
@@ -92,14 +92,14 @@ trait UserTrait
             $this->getAccessTokenRules()
         );
     }
-    
+
     /**
      * Check whether the user is valid.
      * @param static $user User instance. The current logged-in user is automatically
      * used if a user is logged in and this parameter is null.
      * @return static|false if current user is valid, it return as is, otherwise
      * false returned.
-     * @throws InvalidParamException if the current user is not logged in and
+     * @throws InvalidArgumentException if the current user is not logged in and
      * the user is not a valid instance.
      */
     public static function isValid($user)

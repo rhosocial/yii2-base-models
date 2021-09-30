@@ -28,7 +28,9 @@ class EmailTest extends BlameableTestCase
 
     protected function setUp() : void {
         parent::setUp();
-        $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email]);
+        $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email, 'type' => 0]);
+        //print_r($this->email->attributes);
+        //print_r($this->email->rules());
     }
 
     protected function tearDown() : void {
@@ -109,7 +111,7 @@ class EmailTest extends BlameableTestCase
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertTrue($this->user->register([$this->email]));
         $this->assertEquals(UserEmail::$confirmFalse, $this->email->getConfirmation());
-        
+
         $this->assertTrue($this->email->applyConfirmation());
         $this->assertTrue($this->email->confirm($this->email->getConfirmCode()));
         $this->assertTrue($this->email->getIsConfirmed());
@@ -128,7 +130,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->email->applyConfirmation());
         $this->assertTrue($this->email->confirm($this->email->getConfirmCode()));
         $this->assertTrue($this->email->getIsConfirmed());
-        
+
         $this->email->setContent($this->faker->email);
         $this->assertTrue($this->email->isAttributeChanged($this->email->contentAttribute));
         $this->assertTrue($this->email->save());
@@ -146,7 +148,7 @@ class EmailTest extends BlameableTestCase
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
         $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
-        
+
         $this->email->confirmation = UserEmail::$confirmTrue;
         $this->assertTrue($this->email->save());
         $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
@@ -181,21 +183,21 @@ class EmailTest extends BlameableTestCase
         $this->assertInstanceOf(UserEmail::class, $email);
         $this->assertFalse($email->getIsNewRecord());
         $this->assertNotEquals($faker, $email->email);
-        
+
         $this->assertGreaterThanOrEqual(1, $email->delete());
         $faker = $this->faker->email;
         $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email], ['email' => $faker]);
         $this->assertInstanceOf(UserEmail::class, $email);
         $this->assertTrue($email->getIsNewRecord());
         $this->assertEquals($faker, $email->email);
-        
+
         $faker = $this->faker->email;
         $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email]);
         $this->assertInstanceOf(UserEmail::class, $email);
         $this->assertTrue($email->getIsNewRecord());
         $this->assertNotEquals($faker, $this->email->email);
         $this->assertNotEquals($faker, $email->email);
-        
+
         $this->assertTrue($this->user->deregister());
     }
 
@@ -207,8 +209,8 @@ class EmailTest extends BlameableTestCase
     public function testUniqueId()
     {
         $this->assertTrue($this->user->register([$this->email]));
-        
-        $email = $this->user->create(UserEmail::class, ['email' => $this->faker->email]);
+
+        $email = $this->user->create(UserEmail::class, ['email' => $this->faker->email, 'type' => 0]);
         $this->assertNotEquals($email->getGUID(), $this->email->getGUID());
         $email->setID($this->email->getID());
         $this->assertEquals($email->getID(), $this->email->getID());
@@ -217,18 +219,18 @@ class EmailTest extends BlameableTestCase
             $this->fail();
         } catch (\Exception $ex) {
         }
-        
+
         $this->assertTrue($this->other->register());
         $email->host = $this->other;
         $this->assertTrue($email->save());
-        
+
         $email->host = $this->user;
         try {
             $email->save();
             $this->fail();
         } catch (\Exception $ex) {
         }
-        
+
         $this->assertTrue($this->other->deregister());
         $this->assertTrue($this->user->deregister());
     }

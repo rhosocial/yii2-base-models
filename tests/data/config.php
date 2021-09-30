@@ -15,28 +15,28 @@
  * For example to change MySQL username and password your `config.local.php` should
  * contain the following:
  *
-  <?php
-  $config['databases']['mysql']['username'] = 'yiitest';
-  $config['databases']['mysql']['password'] = 'changeme';
+<?php
+$config['databases']['mysql']['username'] = 'yiitest';
+$config['databases']['mysql']['password'] = 'changeme';
  */
 $config = [
     'databases' => [
         'mysql' => [
-            'dsn' => 'mysql:host=localhost;dbname=yii2-base-models',
+            'dsn' => 'mysql:host=mysql;dbname=yii2-base-models',
             'username' => 'root',
-            'password' => '',
+            'password' => '123456',
             'charset' => 'utf8',
         ],
     ],
     'redis' => [
         'class' => 'yii\redis\Connection',
-        'hostname' => 'localhost',
+        'hostname' => 'redis',
         'port' => 6379,
         'database' => 10,
     ],
     'mongodb' => [
         'class' => 'yii\mongodb\Connection',
-        'dsn' => "mongodb://user:123456@localhost:27017/yii2-base-models",
+        'dsn' => "mongodb://user:123456@mongo:27017/yii2-base-models",
     ],
     'cache' => [
         'class' => 'yii\redis\Cache',

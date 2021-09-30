@@ -15,7 +15,7 @@ namespace rhosocial\base\models\traits;
 use Yii;
 use yii\base\ModelEvent;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\db\ActiveQuery;
 use yii\db\IntegrityException;
 
@@ -89,7 +89,7 @@ trait SelfBlameableTrait
         0 => 'none',
         1 => 'parent',
     ];
-    
+
     /**
      * @var string The constant determines the null parent.
      */
@@ -119,7 +119,7 @@ trait SelfBlameableTrait
      * @var boolean indicates whether throw exception or not when restriction occured on updating or deleting operation.
      */
     public $throwRestrictException = false;
-    
+
     /**
      * @var array store the attribute validation rules.
      * If this field is a non-empty array, then it will be given.
@@ -216,7 +216,7 @@ trait SelfBlameableTrait
      * @return static|null Null if reached the ancestor limit or children limit.
      * @throws InvalidConfigException Self reference ID attribute or
      * parent attribute not determined.
-     * @throws InvalidParamException ancestor or children limit reached.
+     * @throws InvalidArgumentException ancestor or children limit reached.
      */
     public function bear($config = [])
     {
@@ -227,10 +227,10 @@ trait SelfBlameableTrait
             throw new InvalidConfigException("Self Reference ID Attribute Not Determined.");
         }
         if ($this->hasReachedAncestorLimit()) {
-            throw new InvalidParamException("Reached Ancestor Limit: " . $this->ancestorLimit);
+            throw new InvalidArgumentException("Reached Ancestor Limit: " . $this->ancestorLimit);
         }
         if ($this->hasReachedChildrenLimit()) {
-            throw new InvalidParamException("Reached Children Limit: ". $this->childrenLimit);
+            throw new InvalidArgumentException("Reached Children Limit: ". $this->childrenLimit);
         }
         if (isset($config['class'])) {
             unset($config['class']);
@@ -330,7 +330,7 @@ trait SelfBlameableTrait
     {
         return $this->hasOne(static::class, [$this->refIdAttribute => $this->parentAttribute]);
     }
-    
+
     /**
      * Get parent ID.
      * @return string|null null if parent attribute isn't enabled.
@@ -338,9 +338,9 @@ trait SelfBlameableTrait
     public function getParentId()
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
-        $this->{$this->parentAttribute} : null;
+            $this->{$this->parentAttribute} : null;
     }
-    
+
     /**
      * Set parent ID.
      * @param string $parentId
@@ -349,9 +349,9 @@ trait SelfBlameableTrait
     public function setParentId($parentId)
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
-        $this->{$this->parentAttribute} = $parentId : null;
+            $this->{$this->parentAttribute} = $parentId : null;
     }
-    
+
     /**
      * Get reference ID.
      * @return string
@@ -366,7 +366,7 @@ trait SelfBlameableTrait
         }
         return $this->{$this->refIdAttribute};
     }
-    
+
     /**
      * Set reference ID.
      * @param string $refId
@@ -401,7 +401,7 @@ trait SelfBlameableTrait
         $parent->trigger(static::$eventChildAdded);
         return $this->{$this->parentAttribute} = $parent->getRefId();
     }
-    
+
     /**
      * Set null parent.
      * This method would unset the lazy loading records before setting it.
@@ -642,7 +642,7 @@ trait SelfBlameableTrait
         $this->on(static::EVENT_BEFORE_UPDATE, [$this, 'onParentRefIdChanged']);
         $this->on(static::EVENT_BEFORE_DELETE, [$this, 'onDeleteChildren']);
     }
-    
+
     /**
      * Clear invalid parent.
      * The invalid state depends on which if parent id exists but it's corresponding

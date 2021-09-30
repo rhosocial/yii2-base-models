@@ -18,7 +18,7 @@ use rhosocial\base\models\models\BaseUserModel;
 use yii\base\ModelEvent;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 
 /**
  * 一个模型的某个属性可能对应多个责任者，该 trait 用于处理此种情况。此种情况违反
@@ -95,14 +95,14 @@ trait MultipleBlameableTrait
         return is_string($this->multiBlamesAttribute) ? [
             [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 16],
             [[$this->multiBlamesAttribute], 'default', 'value' => ''],
-            ] : [];
+        ] : [];
     }
 
     /**
      * Add specified blame.
      * @param {$this->multiBlamesClass}|string $blame
      * @return false|array
-     * @throws InvalidParamException if blame existed.
+     * @throws InvalidArgumentException if blame existed.
      * @throws InvalidCallException if blame limit reached.
      */
     public function addBlame($blame)
@@ -119,7 +119,7 @@ trait MultipleBlameableTrait
         }
         $blameGuids = $this->getBlameGuids(true);
         if (array_search($blameGuid, $blameGuids)) {
-            throw new InvalidParamException('the blame has existed.');
+            throw new InvalidArgumentException('the blame has existed.');
         }
         if ($this->getBlamesCount() >= $this->blamesLimit) {
             throw new InvalidCallException("the limit($this->blamesLimit) of blames has been reached.");
@@ -139,7 +139,7 @@ trait MultipleBlameableTrait
     {
         if (!($user instanceof BaseUserModel)) {
             $message = 'the type of user instance must be the extended class of BaseUserModel.';
-            throw new InvalidParamException($message);
+            throw new InvalidArgumentException($message);
         }
         $mbClass = static::buildNoInitModel();
         $mbi = $mbClass->multiBlamesClass;
@@ -164,7 +164,7 @@ trait MultipleBlameableTrait
      * @return false|array false if blame created failed or not enable this feature.
      * blames guid array if created and added successfully.
      * @throws InvalidConfigException
-     * @throws InvalidParamException
+     * @throws InvalidArgumentException
      * @see addBlame()
      */
     public function addOrCreateBlame(&$blame = null, $user = null)
@@ -322,7 +322,7 @@ trait MultipleBlameableTrait
         $mbClass = $self->multiBlamesClass;
         return $mbClass::findOne($blameGuid);
     }
-    
+
     /**
      * Get all blames that owned this relation.
      * @return array
@@ -333,7 +333,7 @@ trait MultipleBlameableTrait
         $class = $this->multiBlamesClass;
         return $class::findAll($guids);
     }
-    
+
     /**
      * Set blames which would own this relation.
      * @param array $blames
@@ -343,7 +343,7 @@ trait MultipleBlameableTrait
         $guids = static::compositeGUIDs($blames);
         return $this->setBlameGuids($guids, true);
     }
-    
+
     /**
      * Check blame owned this.
      * @param {$this->multiBlamesClass} $blame
@@ -391,7 +391,7 @@ trait MultipleBlameableTrait
         $noInit = static::buildNoInitModel();
         /* @var $noInit static */
         return static::find()->createdBy($blame->host)->
-                andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
+        andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->all();
     }
 
     /**
@@ -443,7 +443,7 @@ trait MultipleBlameableTrait
             $sender->blamesLimit = 10;
         }
     }
-    
+
     /**
      * Get blames which do not own any model.
      * @param BaseUserModel $user
@@ -455,7 +455,7 @@ trait MultipleBlameableTrait
         $noInit = static::buildNoInitModel();
         foreach ($blames as $blame) {
             if (static::find()->createdBy($user)->
-                    andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->exists()) {
+            andWhere(['like', $noInit->multiBlamesAttribute, $blame->getGUID()])->exists()) {
                 continue;
             }
             $emptyGroups[] = $blame;

@@ -17,7 +17,7 @@ use rhosocial\base\models\tests\data\ar\User;
 
 class GUIDTest extends UserTestCase
 {
-    
+
     /**
      * @group user
      * @group registration
@@ -29,19 +29,19 @@ class GUIDTest extends UserTestCase
     {
         $this->assertTrue($this->user->register());
         $this->assertTrue(User::checkGuidExists($this->user->getGUID()));
-        
+
         $this->assertEquals(16, strlen($this->user->guid));
         $this->assertEquals(16, strlen($this->user->getGUID()));
         $this->assertEquals($this->user->getGUID(), $this->user->guid);
-        
-        $this->assertRegExp(Number::GUID_REGEX, $this->user->readableGUID);
-        $this->assertRegExp(Number::GUID_REGEX, $this->user->getReadableGUID());
+
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->readableGUID);
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->getReadableGUID());
         $this->assertEquals($this->user->getReadableGUID(), $this->user->readableGUID);
-        
+
         $this->assertTrue($this->user->deregister());
         $this->assertFalse(User::checkGuidExists($this->user->getGUID()));
     }
-    
+
     /**
      * @group user
      * @group registration
@@ -60,7 +60,7 @@ class GUIDTest extends UserTestCase
         $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group guid
@@ -80,7 +80,7 @@ class GUIDTest extends UserTestCase
         $this->assertEquals($this->user->guid, $user->guid);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group guid
@@ -99,11 +99,11 @@ class GUIDTest extends UserTestCase
         $user = User::findOne($this->user->guid);
         $this->assertEquals($this->user->guid, $user->guid);
         $this->assertTrue($this->user->deregister());
-        
-        $this->assertRegExp(Number::GUID_REGEX, $this->user->guid = Number::guid());
-        $this->assertRegExp(Number::GUID_REGEX, $this->user->{$this->user->getReadableGuidAttribute()});
+
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->guid = Number::guid());
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->{$this->user->getReadableGuidAttribute()});
     }
-    
+
     public function severalTimes()
     {
         for ($i = 0; $i < 3; $i++) {

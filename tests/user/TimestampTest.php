@@ -42,7 +42,7 @@ class TimestampTest extends UserTestCase
         $this->assertEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -60,7 +60,7 @@ class TimestampTest extends UserTestCase
         $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -78,7 +78,7 @@ class TimestampTest extends UserTestCase
         $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -120,7 +120,7 @@ class TimestampTest extends UserTestCase
         $this->assertTrue($this->user->getIsNewRecord());
         $this->assertFalse($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -129,7 +129,7 @@ class TimestampTest extends UserTestCase
     {
         $this->assertNotEmpty($this->user->enabledTimestampFields());
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -137,9 +137,9 @@ class TimestampTest extends UserTestCase
     public function testNoExpiration()
     {
         $this->user = new User(['password' => '123456']);
-        $this->user->setExpiredAfter(1);
+        $this->assertFalse($this->user->setExpiredAfter(1));
     }
-    
+
     /**
      * @group user
      * @group timestamp
@@ -157,7 +157,7 @@ class TimestampTest extends UserTestCase
         $this->assertTrue($this->user->save());
         $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertTrue($this->user->hasEverEdited());
-        
+
         $this->assertEquals(1, $this->user->setExpiredAfter(1));
         $this->assertTrue($this->user->save());
         sleep(2);
@@ -165,8 +165,8 @@ class TimestampTest extends UserTestCase
         $this->assertTrue($this->user->getIsNewRecord());
         $this->assertNull(User::find()->guid($this->user->getGUID())->one());
     }
-    
-    
+
+
     public function timestampProvider()
     {
         for ($i = 0; $i < 3; $i++)

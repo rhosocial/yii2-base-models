@@ -14,7 +14,7 @@ namespace rhosocial\base\models\traits;
 
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\queries\BaseUserQuery;
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\base\ModelEvent;
 use yii\base\NotSupportedException;
 use yii\behaviors\BlameableBehavior;
@@ -138,7 +138,7 @@ trait BlameableTrait
      * current user class.
      */
     //public $userClass;
-    
+
     /**
      * @var boolean|string Host class.
      */
@@ -332,7 +332,7 @@ trait BlameableTrait
         }
         return $rules;
     }
-    
+
     public function getIdRules()
     {
         if (is_string($this->idAttribute) && !empty($this->idAttribute) && $this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
@@ -539,7 +539,7 @@ trait BlameableTrait
      * @return \yii\dbActiveQueryInterface the relational query object.
      */
     public abstract function hasOne($class, $link);
-    
+
     /**
      * Get host of this model.
      * @return BaseUserQuery
@@ -550,7 +550,7 @@ trait BlameableTrait
         $model = $hostClass::buildNoInitModel();
         return $this->hasOne($hostClass::className(), [$model->guidAttribute => $this->createdByAttribute]);
     }
-    
+
     /**
      * Set host of this model.
      * @param string $host
@@ -569,7 +569,7 @@ trait BlameableTrait
         }
         return false;
     }
-    
+
     /**
      *
      * @param BaseUserModel|string $user
@@ -596,7 +596,7 @@ trait BlameableTrait
         /* @var $model BaseUserModel */
         return $this->hasOne($hostClass::className(), [$model->guidAttribute => $this->updatedByAttribute]);
     }
-    
+
     /**
      * Set updater.
      * @param BaseUserModel|string $updater
@@ -812,7 +812,7 @@ trait BlameableTrait
      * @param boolean $throwException
      * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return static
-     * @throws InvalidParamException
+     * @throws InvalidArgumentException
      */
     public static function findOneById($id, $throwException = true, $identity = null)
     {
@@ -822,7 +822,7 @@ trait BlameableTrait
         }
         $model = $query->one();
         if (!$model && $throwException) {
-            throw new InvalidParamException('Model Not Found.');
+            throw new InvalidArgumentException('Model Not Found.');
         }
         return $model;
     }

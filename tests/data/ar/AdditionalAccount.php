@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
+use Yii;
+
 /**
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -32,7 +34,7 @@ class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAcco
     }
 
     /**
-     * 
+     *
      * @return \rhosocial\base\models\queries\BaseUserQuery
      */
     /*

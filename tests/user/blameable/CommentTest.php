@@ -101,11 +101,11 @@ class CommentTest extends BlameableTestCase
         $this->comments[9]->ancestorLimit = 0; // Disable ancestor.
         $this->assertTrue($this->comments[9]->hasReachedAncestorLimit());
         $this->assertEquals(0, $this->comments[9]->ancestorLimit);
-        
+
         $this->comments[9]->ancestorLimit = -1;
         $this->assertFalse($this->comments[9]->hasReachedAncestorLimit());
         $this->assertEquals(256, $this->comments[9]->ancestorLimit);
-        
+
         $this->comments[9]->ancestorLimit = null;
         $this->assertFalse($this->comments[9]->hasReachedAncestorLimit());
         $this->assertEquals(256, $this->comments[9]->ancestorLimit);
@@ -135,20 +135,20 @@ class CommentTest extends BlameableTestCase
     {
         for ($i = 0; $i < 9; $i++) {
             $this->assertFalse($this->comments[$i]->hasReachedChildrenLimit());
-            
+
             $this->comments[$i]->childrenLimit = 0;
             $this->assertTrue($this->comments[$i]->hasReachedChildrenLimit());
-            
+
             $this->comments[$i]->childrenLimit = 1;
             $this->assertTrue($this->comments[$i]->hasReachedChildrenLimit());
-            
+
             $this->comments[$i]->childrenLimit = 2;
             $this->assertFalse($this->comments[$i]->hasReachedChildrenLimit());
-            
+
             $this->comments[$i]->childrenLimit = null;
             $this->assertFalse($this->comments[$i]->hasReachedChildrenLimit());
             $this->assertEquals(1024, $this->comments[$i]->childrenLimit);
-            
+
             $this->comments[$i]->childrenLimit = -1;
             $this->assertFalse($this->comments[$i]->hasReachedChildrenLimit());
             $this->assertEquals(1024, $this->comments[$i]->childrenLimit);
@@ -252,7 +252,7 @@ class CommentTest extends BlameableTestCase
      * @group blameable
      * @group post
      * @group comment
-     */   
+     */
     public function testPost()
     {
         foreach ($this->comments as $comment) {
@@ -265,7 +265,7 @@ class CommentTest extends BlameableTestCase
      * @group blameable
      * @group post
      * @group comment
-     */   
+     */
     public function testParent()
     {
         for ($i = 1; $i < 10; $i++) {
@@ -305,7 +305,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->assertEquals(1, $this->comments[5]->delete());
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
@@ -333,7 +333,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onDeleteType = UserComment::$onRestrict;
         $this->comments[5]->throwRestrictException = true;
         try {
@@ -348,7 +348,7 @@ class CommentTest extends BlameableTestCase
         for ($i = 0; $i < 10; $i++) {
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
-        
+
         $this->comments[5]->throwRestrictException = false;
         try {
             $this->assertEquals(0, $this->comments[5]->delete());
@@ -378,10 +378,10 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onDeleteType = UserComment::$onSetNull;
         $this->assertEquals(1, $this->comments[5]->delete());
-        
+
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
         }
@@ -406,7 +406,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->hasParent());
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
         }
-        
+
         $this->assertFalse($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
@@ -426,10 +426,10 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onDeleteType = UserComment::$onNoAction;
         $this->assertEquals(1, $this->comments[5]->delete());
-        
+
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
         }
@@ -454,7 +454,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->hasParent());
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
         }
-        
+
         $this->assertTrue($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
@@ -474,16 +474,16 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
         $this->assertTrue($this->comments[5]->save());
-        
+
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
         }
-        
+
         $this->assertEquals($newGUID, $this->comments[5]->getGUID());
         for ($i = 0; $i < 10; $i++) {
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
@@ -510,10 +510,10 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onUpdateType = UserComment::$onRestrict;
         $this->comments[5]->throwRestrictException = true;
-        
+
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
@@ -523,21 +523,21 @@ class CommentTest extends BlameableTestCase
         } catch (\Exception $ex) {
             $this->assertEquals('Update restricted.', $ex->getMessage());
         }
-        
+
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
         }
         for ($i = 0; $i < 10; $i++) {
             $this->assertInstanceOf(UserComment::class, UserComment::find()->id($this->comments[$i]->getID())->createdBy($this->user)->one());
         }
-        
+
         $this->comments[5]->throwRestrictException = false;
-        
+
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
         $this->assertFalse($this->comments[5]->save());
-        
+
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
         }
@@ -549,7 +549,7 @@ class CommentTest extends BlameableTestCase
     /**
      * 更新后将所有子节点的父亲属性设为空字符串（UserComment::$nullParent）。
      * 此测试重置第 5 节点（从 0 开始）的 GUID 值。
-     * 
+     *
      * 重置 GUID 前，十个节点彼此构成父子链条。
      * 重置 GUID 后，
      * 1. 第 5 节点的 GUID 值应当与重置前不一样;
@@ -570,13 +570,13 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onUpdateType = UserComment::$onSetNull;
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
         $this->assertTrue($this->comments[5]->save());
-        
+
         // Refresh after updating.
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
@@ -597,7 +597,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->hasParent());
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
         }
-        
+
         $this->assertFalse($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
@@ -617,14 +617,14 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
-        
+
         $this->comments[5]->onUpdateType = UserComment::$onNoAction;
         $oldGUID = $this->comments[5]->getRefId();
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
         $this->assertTrue($this->comments[5]->save());
-        
+
         // Refresh after updating.
         for ($i = 0; $i < 10; $i++) {
             $this->comments[$i]->refresh();
@@ -646,7 +646,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->hasParent());
             $this->assertTrue($this->comments[$i]->children[0]->equals($this->comments[$i + 1]));
         }
-        
+
         $this->assertTrue($this->comments[6]->clearInvalidParent());
         $this->assertTrue($this->comments[6]->save());
     }
@@ -677,7 +677,7 @@ class CommentTest extends BlameableTestCase
         $this->assertInstanceOf(UserComment::class, $comment);
         $this->assertEquals($comment->{$comment->parentAttribute}, $this->comments[4]->getGUID());
         $this->assertEquals($comment->getReadableGUID(), $this->comments[5]->getReadableGUID());
-        
+
         $comment = UserComment::find()->parentGuid(UserComment::$nullParent)->one();
         /* @var $comment UserComment */
         $this->assertInstanceOf(UserComment::class, $comment);
@@ -704,13 +704,13 @@ class CommentTest extends BlameableTestCase
     {
         $this->comments[5]->ancestorLimit = 6;
         $this->assertInstanceOf(UserComment::class, $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]));
-        
+
         $this->comments[5]->ancestorLimit = 5;
         try {
             $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]);
             $this->fail();
         } catch (\Exception $ex) {
-            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
+            $this->assertInstanceOf(\yii\base\InvalidArgumentException::class, $ex);
         }
     }
 
@@ -726,7 +726,7 @@ class CommentTest extends BlameableTestCase
             $this->comments[5]->bear(['content' => \Yii::$app->security->generateRandomString()]);
             $this->fail();
         } catch (\Exception $ex) {
-            $this->assertInstanceOf(\yii\base\InvalidParamException::class, $ex);
+            $this->assertInstanceOf(\yii\base\InvalidArgumentException::class, $ex);
         }
     }
 

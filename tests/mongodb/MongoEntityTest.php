@@ -45,14 +45,14 @@ class MongoEntityTest extends MongoEntityTestCase
     {
         $this->assertTrue($this->entity->save());
         $guid = $this->entity->getGUID();
-        $this->assertRegExp(Number::GUID_REGEX, Number::guid(false, false, $guid));
-        
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, Number::guid(false, false, $guid));
+
         $new_guid = MongoEntity::generateGuid();
         $this->entity->setGUID($new_guid);
-        
+
         $this->assertNotEquals($guid, $this->entity->getGUID());
         $this->assertEquals($new_guid, $this->entity->getGUID());
-        
+
         $readable = Number::guid();
         $this->entity->setGUID($readable);
         $this->assertEquals($readable, Number::guid(false, false, (string)($this->entity)));
@@ -72,7 +72,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertTrue(MongoEntity::checkGuidExists(Number::guid(false, false, $this->entity->getGUID())));
         $this->assertFalse(MongoEntity::checkGuidExists($this->entity->getGUID() . $this->faker->randomNumber()));
         $this->assertTrue(MongoEntity::checkGuidExists($this->entity->{$this->entity->guidAttribute}));
-        $this->assertFalse(MongoEntity::checkGuidExists(new Binary(Number::guid(), Binary::TYPE_UUID)));
+        $this->assertFalse(MongoEntity::checkGuidExists(new Binary(Number::guid_bin(), Binary::TYPE_UUID)));
         $this->assertFalse(MongoEntity::checkGuidExists(null));
         $this->assertEquals(1, $this->entity->delete());
     }
@@ -114,14 +114,14 @@ class MongoEntityTest extends MongoEntityTestCase
     public function testCompositeGUID()
     {
         $this->assertNull(MongoEntity::compositeGuids(null));
-        
+
         $this->assertEquals($this->entity->getGUID(), MongoEntity::compositeGUIDs($this->entity)->getData());
-        
+
         $models = [];
         $models[] = $this->entity;
         $models[] = new Entity(['content' => \Yii::$app->security->generateRandomString()]);
         $models[] = Number::guid();
-        
+
         $guids = MongoEntity::compositeGUIDs($models);
         $this->assertEquals($guids[0]->getData(), $models[0]->getGUID());
         $this->assertEquals($guids[1]->getData(), $models[1]->getGUID());
