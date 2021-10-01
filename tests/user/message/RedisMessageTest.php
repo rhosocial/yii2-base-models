@@ -134,7 +134,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($message->save());
         $message_id = $message->getGUID();
         
-        sleep(1);
+        sleep(5);
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->user)->read()->count());
         $this->assertEquals(1, RedisMessage::find()->byIdentity($this->user)->unread()->count());
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->other)->read()->count());
