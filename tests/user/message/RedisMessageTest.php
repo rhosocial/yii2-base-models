@@ -134,7 +134,7 @@ class RedisMessageTest extends UserTestCase
         $this->assertTrue($message->save());
         $message_id = $message->getGUID();
         
-        sleep(10);
+        sleep(20);
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->user)->read()->count());
         $this->assertEquals(1, RedisMessage::find()->byIdentity($this->user)->unread()->count());
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->other)->read()->count());
@@ -216,7 +216,8 @@ class RedisMessageTest extends UserTestCase
         /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         $message_id = $message->getGUID();
-        
+
+        sleep(20);
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->user)->received()->count());
         $this->assertEquals(1, RedisMessage::find()->byIdentity($this->user)->unreceived()->count());
         $this->assertEquals(0, RedisMessage::find()->byIdentity($this->other)->received()->count());
@@ -320,7 +321,7 @@ class RedisMessageTest extends UserTestCase
         
         $pagination = RedisMessage::getPagination();
         /* @var $pagination \yii\data\Pagination */
-        sleep(10);
+        sleep(20);
         $this->assertEquals(1, $pagination->limit);
         $this->assertEquals(1, $pagination->totalCount);
         
