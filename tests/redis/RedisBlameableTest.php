@@ -33,7 +33,7 @@ class RedisBlameableTest extends RedisBlameableTestCase
     }
     
     /**
-     * @group redis1
+     * @group redis
      * @group blameable
      * @param integer $severalTimes
      * @dataProvider severalTimes
