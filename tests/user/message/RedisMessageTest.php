@@ -215,6 +215,7 @@ class RedisMessageTest extends UserTestCase
         $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
         /* @var $message RedisMessage */
         $this->assertTrue($message->save());
+        var_dump($message->attributes);
         $message_id = $message->getGUID();
 
         sleep(20);
@@ -318,7 +319,7 @@ class RedisMessageTest extends UserTestCase
         $message = $this->user->create(RedisMessage::class, ['content' => $content, 'recipient' => $this->other]);
         /* @var $message RedisMessage */
         $this->assertTrue($message->save());
-        
+        var_dump($message->attributes);
         $pagination = RedisMessage::getPagination();
         /* @var $pagination \yii\data\Pagination */
         sleep(20);
