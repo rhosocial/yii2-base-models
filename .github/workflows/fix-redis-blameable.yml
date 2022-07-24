@@ -19,7 +19,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php73_mysql8_mongo4_redis5.yml down
@@ -35,7 +35,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php73_mysql8_mongo4_redis6.yml down
@@ -51,7 +51,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php73_mysql8_mongo5_redis6.yml down
@@ -67,7 +67,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php74_mysql8_mongo4_redis5.yml down
@@ -83,7 +83,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php74_mysql8_mongo4_redis6.yml down
@@ -99,7 +99,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php74_mysql8_mongo5_redis6.yml down
@@ -115,7 +115,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php80_mysql8_mongo4_redis5.yml down
@@ -131,7 +131,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php80_mysql8_mongo4_redis6.yml down
@@ -147,7 +147,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php80_mysql8_mongo5_redis6.yml down
@@ -163,7 +163,7 @@ jobs:
           docker exec environments_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec environments_php_1 phpunit --group redis1
+        run: docker exec environments_php_1 phpunit --group redis
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/php80_mysql8_mongo5_redis7.yml down
