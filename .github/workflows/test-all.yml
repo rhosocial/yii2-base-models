@@ -1,4 +1,4 @@
-name: test-fix-redis-blameable
+name: test-all
 
 on:
   push:
