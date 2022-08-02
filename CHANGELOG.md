@@ -4,7 +4,7 @@ Yii 2 Base Models Change Log
 2.0.0 under development
 -----------------------
 
-- Chg: `PasswordTrait` to set default value null to `PasswordResetToken` attribute.
+- Chg: `PasswordTrait` to set default value `null` to `PasswordResetToken` attribute.
 
 1.1.0 June 07, 2017
 -----------------------
