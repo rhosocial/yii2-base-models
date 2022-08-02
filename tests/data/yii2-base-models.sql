@@ -108,14 +108,14 @@ CREATE TABLE IF NOT EXISTS `user` (
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `auth_key` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `access_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `password_reset_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `password_reset_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_id_unique` (`id`) USING BTREE,
   UNIQUE KEY `user_access_token_unique` (`access_token`) USING BTREE,
   UNIQUE KEY `user_auth_key_unique` (`auth_key`) USING BTREE,
-  KEY `user_password_reset_token_unique` (`password_reset_token`) USING BTREE
+  UNIQUE KEY `user_password_reset_token_unique` (`password_reset_token`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
