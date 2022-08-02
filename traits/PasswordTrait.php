@@ -31,6 +31,7 @@ use yii\base\ModelEvent;
  * @property array $passwordHashRules
  * @property array $passwordResetTokenRules
  * @property array $rules
+ * @property string|null $passwordResetToken Password Reset Token.
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -56,6 +57,7 @@ trait PasswordTrait
 
     /**
      * @var string The name of attribute used for storing password reset token.
+     * Please ensure that this field is unique in the database while allowing null values.
      * If you do not want to provide password reset feature, please set `false`.
      */
     public $passwordResetTokenAttribute = 'password_reset_token';
@@ -285,7 +287,8 @@ trait PasswordTrait
 
     /**
      * Generate password reset token.
-     * @return string
+     * The token is hash value of `sha1()` pass through the random string.
+     * @return string The generated password reset token.
      */
     public static function generatePasswordResetToken()
     {
@@ -304,10 +307,11 @@ trait PasswordTrait
     }
 
     /**
-     * Validate whether the $token is the valid password reset token.
+     * Validate whether the `$token` is the valid password reset token.
      * If password reset feature is not enabled, true will be given.
-     * @param string $token
-     * @return boolean whether the token is correct.
+     * Note: We DO NOT treat the `null` specially.
+     * @param string|null $token the token to be validated.
+     * @return boolean whether the $token is correct.
      */
     protected function validatePasswordResetToken($token)
     {
@@ -319,6 +323,8 @@ trait PasswordTrait
 
     /**
      * Initialize password reset token attribute.
+     * The password reset token attribute would be set `null`.
+     * Please ensure that this field is unique in the database while allowing null values.
      * @param ModelEvent $event
      */
     public function onInitPasswordResetToken($event)
@@ -330,10 +336,10 @@ trait PasswordTrait
     
     /**
      * Set password reset token.
-     * @param string $token
+     * @param string|null $token
      * @return string
      */
-    public function setPasswordResetToken($token = '')
+    public function setPasswordResetToken($token = null)
     {
         if (empty($this->passwordResetTokenAttribute) || !is_string($this->passwordResetTokenAttribute)) {
             return null;
@@ -343,7 +349,7 @@ trait PasswordTrait
     
     /**
      * Get password reset token.
-     * @return string
+     * @return string|null Null if this attribute is not enabled, or the value is `null`.
      */
     public function getPasswordResetToken()
     {
