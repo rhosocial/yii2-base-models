@@ -325,7 +325,7 @@ trait PasswordTrait
     {
         $sender = $event->sender;
         /* @var $sender static */
-        return $sender->setPasswordResetToken();
+        return $sender->setPasswordResetToken(null);
     }
     
     /**
