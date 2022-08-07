@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link http://vistart.me/
- * @copyright Copyright (c) 2016 - 2017 vistart
+ * @copyright Copyright (c) 2016 - 2022 vistart
  * @license http://vistart.me/license/
  */
 
