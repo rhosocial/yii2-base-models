@@ -2,7 +2,7 @@ version: "3"
 services:
   php:
     build:
-      context: .
+      context: ..
       args:
         TAG: 7.3-apache
     image: registry.us-west-1.aliyuncs.com/vistart_public/php:7.3-apache-dev
@@ -18,6 +18,12 @@ services:
       - mysql
       - mongo
       - redis
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
   mysql:
     image: mysql:8
     working_dir: /root/yii2-base-models
@@ -51,7 +57,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 123456
       MONGO_INITDB_DATABASE: yii2-base-models
   redis:
-    image: redis:5
+    image: redis:6
     ports:
       - 8379:6379
     networks:

@@ -48,7 +48,6 @@ Temporary Items
 /nbproject/private
 /tmp
 /tests/runtime
-/vendor
 /.idea
 
 assets/*
@@ -57,4 +56,12 @@ protected/runtime/*
 !protected/runtime/.gitignore
 protected/data/*.db
 themes/classic/views/
+
+# composer
+/vendor
+
+# phpunit
 .phpunit.result.cache
+phpunit.xml.dist.bak
+clover.xml
+.phpunit.cache

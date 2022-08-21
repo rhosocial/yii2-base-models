@@ -50,6 +50,7 @@ class AdditionalAccountTest extends UserTestCase
         if ($result === true) {
             $this->assertTrue($result);
         } else {
+            var_dump($result->getMessage());
             var_dump($aa->errors);
             $this->fail();
         }

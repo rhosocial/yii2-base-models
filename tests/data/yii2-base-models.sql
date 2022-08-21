@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `yii2-base-models`
 --
-CREATE DATABASE IF NOT EXISTS `yii2-base-models` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `yii2-base-models` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `yii2-base-models`;
 
 -- --------------------------------------------------------
@@ -33,8 +33,8 @@ USE `yii2-base-models`;
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE IF NOT EXISTS `entity` (
   `guid` varbinary(16) NOT NULL,
-  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `id` varchar(16) COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `entity` (
   `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `entity_id` (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -56,14 +56,14 @@ DROP TABLE IF EXISTS `entity_ai`;
 CREATE TABLE IF NOT EXISTS `entity_ai` (
   `guid` varbinary(16) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `entity_ai_id` (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS `entity_ai` (
 DROP TABLE IF EXISTS `operator_entity`;
 CREATE TABLE IF NOT EXISTS `operator_entity` (
   `guid` varbinary(16) NOT NULL,
-  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `id` varchar(16) COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `operator_entity` (
   `operator_guid` varbinary(16) NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `operator_entity_id_unique` (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='For Operator.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='For Operator.';
 
 -- --------------------------------------------------------
 
@@ -100,23 +100,23 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `guid` varbinary(16) NOT NULL,
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  `pass_hash` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `pass_hash` varchar(80) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
-  `auth_key` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `access_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `auth_key` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `access_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `password_reset_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-  `source` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `source` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_id_unique` (`id`) USING BTREE,
   UNIQUE KEY `user_access_token_unique` (`access_token`) USING BTREE,
   UNIQUE KEY `user_auth_key_unique` (`auth_key`) USING BTREE,
   UNIQUE KEY `user_password_reset_token_unique` (`password_reset_token`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
   `seperate_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `content` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'User source',
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `confirmed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`guid`),
   KEY `user_guid` (`user_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   `parent_guid` varbinary(16) NOT NULL DEFAULT '',
   `user_guid` varbinary(16) NOT NULL,
   `post_guid` varbinary(16) NOT NULL,
-  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
   KEY `user_guid` (`user_guid`),
   KEY `post_guid` (`post_guid`),
   KEY `parent_guid` (`parent_guid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -196,11 +196,11 @@ CREATE TABLE IF NOT EXISTS `user_email` (
   `confirmed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `confirmed_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `confirm_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_email_id_unique` (`user_guid`,`id`) USING BTREE,
   KEY `user_email_normal` (`email`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -214,11 +214,11 @@ DROP TABLE IF EXISTS `user_meta`;
 CREATE TABLE IF NOT EXISTS `user_meta` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
-  `key` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '', -- key length should be less than 767 bytes.
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(190) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '', -- key length should be less than 767 bytes.
+  `value` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `meta__key_unique` (`user_guid`,`key`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `user_post` (
   `guid` varbinary(16) NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
   `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `ip` varbinary(16) NOT NULL DEFAULT '0',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `user_post` (
   PRIMARY KEY (`guid`),
   UNIQUE KEY `post_id_unique` (`id`) USING BTREE,
   KEY `user_post_guid_fkey` (`user_guid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
   `guid` varbinary(16) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `user_guid` varbinary(16) NOT NULL,
-  `remark` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remark` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `other_guid` varbinary(16) NOT NULL,
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `favorite` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
@@ -265,12 +265,12 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `groups` varbinary(800) NOT NULL DEFAULT '' COMMENT 'Group GUID array.',
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_other_unique` (`user_guid`,`other_guid`) USING BTREE,
   UNIQUE KEY `user_relation_id_unique` (`id`,`user_guid`) USING BTREE,
   KEY `relation_other_guid_fkey` (`other_guid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -285,14 +285,14 @@ CREATE TABLE IF NOT EXISTS `user_relation_group` (
   `guid` varbinary(16) NOT NULL,
   `id` varchar(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `user_guid` varbinary(16) NOT NULL,
-  `content` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_relation_group_id_unique` (`id`,`user_guid`) USING BTREE,
   KEY `user_guid` (`user_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -305,9 +305,9 @@ CREATE TABLE IF NOT EXISTS `user_relation_group` (
 DROP TABLE IF EXISTS `user_single_relation`;
 CREATE TABLE IF NOT EXISTS `user_single_relation` (
   `guid` varbinary(16) NOT NULL,
-  `id` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `id` varchar(8) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `user_guid` varbinary(16) NOT NULL,
-  `remark` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `remark` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `other_guid` varbinary(16) NOT NULL,
   `favorite` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `ip` varbinary(16) NOT NULL DEFAULT '0',
@@ -315,12 +315,12 @@ CREATE TABLE IF NOT EXISTS `user_single_relation` (
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `groups` varbinary(800) NOT NULL DEFAULT '',
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_other_unique` (`user_guid`,`other_guid`) USING BTREE,
   UNIQUE KEY `user_single_relation_unique` (`id`,`user_guid`) USING BTREE,
   KEY `user_single_relation_other_guid_fkey` (`other_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- 限制导出的表

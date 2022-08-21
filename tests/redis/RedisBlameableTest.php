@@ -41,7 +41,6 @@ class RedisBlameableTest extends RedisBlameableTestCase
     public function testFindByIdentity($severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
-        var_dump($this->blameable->attributes);
         $blameable = RedisBlameable::findByIdentity($this->user)->one();
         $this->assertInstanceOf(RedisBlameable::class, $blameable);
         $this->assertEquals(1, $blameable->delete());

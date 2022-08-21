@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="./tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         stopOnFailure="false"
-         timeoutForLargeTests="1200"
-         verbose="true"
-         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer">
-    <testsuites>
-        <testsuite name="Common">
-            <directory>./tests/entity</directory>
-            <directory>./tests/meta</directory>
-            <directory>./tests/mongodb</directory>
-            <directory>./tests/operator</directory>
-            <directory>./tests/redis</directory>
-            <directory>./tests/user</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">traits</directory>
-            <directory suffix=".php">models</directory>
-            <directory suffix=".php">queries</directory>
-            <directory suffix=".php">events</directory>
-        </whitelist>
-    </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./tests/bootstrap.php" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnFailure="false" timeoutForLargeTests="1200" verbose="true" printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">traits</directory>
+      <directory suffix=".php">models</directory>
+      <directory suffix=".php">queries</directory>
+      <directory suffix=".php">events</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="Common">
+      <directory>./tests/entity</directory>
+      <directory>./tests/meta</directory>
+      <directory>./tests/mongodb</directory>
+      <directory>./tests/operator</directory>
+      <directory>./tests/redis</directory>
+      <directory>./tests/user</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
