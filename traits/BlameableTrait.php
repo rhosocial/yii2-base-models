@@ -564,7 +564,7 @@ trait BlameableTrait
         if (is_string($host) && preg_match(Number::GUID_REGEX, $host)) {
             return $this->{$this->createdByAttribute} = Number::guid_bin($host);
         }
-        if (strlen($host) == 16) {
+        if (is_string($host) && strlen($host) == 16) {
             return $this->{$this->createdByAttribute} = $host;
         }
         return false;
@@ -613,7 +613,7 @@ trait BlameableTrait
         if (is_string($updater) && preg_match(Number::GUID_REGEX, $updater)) {
             return $this->{$this->updatedByAttribute} = Number::guid_bin($updater);
         }
-        if (strlen($updater) == 16) {
+        if (is_string($updater) && strlen($updater) == 16) {
             return $this->{$this->updatedByAttribute} = $updater;
         }
         return false;

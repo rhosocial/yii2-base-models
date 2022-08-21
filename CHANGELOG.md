@@ -5,6 +5,8 @@ Yii 2 Base Models Change Log
 -----------------------
 
 - Chg: `PasswordTrait` to set default value `null` to `PasswordResetToken` attribute.
+- Chg: The minimum [MySQL](https://github.com/mysql/mysql-server) version is set to 8.0.
+- Chg: `BlameableTrait` When setting host and updater, first check whether it is a string before checking the length to meet the PHP8.1 standard of `strlen()`.
 
 1.1.0 June 07, 2017
 -----------------------
