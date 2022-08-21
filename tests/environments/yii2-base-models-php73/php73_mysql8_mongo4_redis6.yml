@@ -13,7 +13,7 @@ services:
       - dev
     volumes:
       - composer_data:/root/.composer/cache
-      - ../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models:/root/yii2-base-models
     depends_on:
       - mysql
       - mongo
@@ -34,8 +34,8 @@ services:
       - dev
     volumes:
       - mysql_data:/var/lib/mysql
-      - ../../../yii2-base-models:/root/yii2-base-models
-      - ../../../yii2-base-models/tests/data/yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
+      - ../../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models/tests/data/yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_USER: user
@@ -50,8 +50,8 @@ services:
       - dev
     volumes:
       - mongo_data:/data/db
-      - ../../../yii2-base-models:/root/yii2-base-models
-      - ../../../yii2-base-models/tests/data/yii2-base-models.js:/docker-entrypoint-initdb.d/yii2-base-models.js
+      - ../../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models/tests/data/yii2-base-models.js:/docker-entrypoint-initdb.d/yii2-base-models.js
     environment:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: 123456
