@@ -183,7 +183,7 @@ jobs:
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/yii2-base-models-php81/php81_mysql8_mongo5_redis7.yml down
-  test_php82_mysql8_mongo5_redis7:
+  test_php82_mysql8_mongo6_redis7:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
