@@ -65,3 +65,4 @@ themes/classic/views/
 phpunit.xml.dist.bak
 clover.xml
 .phpunit.cache
+coverage
