@@ -6,16 +6,18 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\entity;
 
 use rhosocial\base\models\tests\data\ar\Entity;
+use yii\base\Exception;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class EntityTest extends EntityTestCase
@@ -59,24 +61,25 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception|\Throwable
      */
-    public function testHasEverEdited()
+    public function testHasEverBeenEdited()
     {
         $this->assertNotEmpty($this->entity->createdAtAttribute);
         $this->assertNotEmpty($this->entity->updatedAtAttribute);
         $this->assertNotEquals($this->entity->createdAtAttribute, $this->entity->updatedAtAttribute);
         $this->assertTrue($this->entity->save());
-        $this->assertFalse($this->entity->hasEverEdited());
+        $this->assertFalse($this->entity->hasEverBeenEdited());
         sleep(1);
         $this->assertTrue($this->entity->save());
         $this->assertEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
-        $this->assertFalse($this->entity->hasEverEdited());
+        $this->assertFalse($this->entity->hasEverBeenEdited());
         
         $this->entity->content = \Yii::$app->security->generateRandomString();
         sleep(1);
         $this->assertTrue($this->entity->save());
         $this->assertNotEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
-        $this->assertTrue($this->entity->hasEverEdited());
+        $this->assertTrue($this->entity->hasEverBeenEdited());
         
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
@@ -84,6 +87,7 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testOrderByCreatedAtASC()
     {
@@ -107,6 +111,7 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testOrderByCreatedAtDESC()
     {
@@ -130,6 +135,7 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testOrderByUpdatedAtASC()
     {
@@ -153,6 +159,7 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testOrderByUpdatedAtDESC()
     {
@@ -176,6 +183,7 @@ class EntityTest extends EntityTestCase
     /**
      * @group entity
      * @group query
+     * @throws Exception
      */
     public function testGuidOrId()
     {

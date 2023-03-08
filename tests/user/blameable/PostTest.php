@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -17,7 +17,8 @@ use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class PostTest extends BlameableTestCase
@@ -141,13 +142,13 @@ class PostTest extends BlameableTestCase
      * @group blameable
      * @group post
      */
-    public function testHasEverEdited()
+    public function testHasEverBeenEdited()
     {
         $this->assertTrue($this->user->register(array_merge([$this->post], $this->comments)));
-        $this->assertFalse($this->post->hasEverEdited());
+        $this->assertFalse($this->post->hasEverBeenEdited());
         foreach ($this->comments as $c) {
             /* @var $c UserComment */
-            $this->assertFalse($c->hasEverEdited());
+            $this->assertFalse($c->hasEverBeenEdited());
         }
         $this->assertTrue($this->user->deregister());
     }

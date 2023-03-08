@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,6 +14,7 @@ namespace rhosocial\base\models\traits;
 
 use Yii;
 use yii\base\InvalidArgumentException;
+use yii\web\Application;
 
 /**
  * Assemble PasswordTrait, RegistrationTrait and IdentityTrait into UserTrait.
@@ -23,7 +24,8 @@ use yii\base\InvalidArgumentException;
  * This trait implements two methods `create()` and `findOneOrCreate()`.
  * Please read the notes of methods and used traits for further detailed usage.
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait UserTrait
@@ -70,17 +72,17 @@ trait UserTrait
      * This method is only used for overriding [[removeSelf()]] in [[TimestampTrait]].
      * @see deregister()
      * @return boolean
-     */
+     *//*
     public function removeSelf()
     {
         return $this->deregister();
-    }
+    }*/
 
     /**
      * Get all rules with current user properties.
      * @return array all rules.
      */
-    public function rules()
+    public function rules(): array
     {
         return array_merge(
             parent::rules(),
@@ -95,16 +97,18 @@ trait UserTrait
 
     /**
      * Check whether the user is valid.
-     * @param static $user User instance. The current logged-in user is automatically
-     * used if a user is logged in and this parameter is null.
-     * @return static|false if current user is valid, it return as is, otherwise
+     * If it is currently a web application and has logged in, the current login identity will be returned
+     * regardless of the parameter passed in.
+     * @param ?static $user User instance. The current logged-in user is automatically
+     * used if a user is logged in and this parameter will be ignored.
+     * @return static|false if current user is valid, it returns as is, otherwise
      * false returned.
      * @throws InvalidArgumentException if the current user is not logged in and
      * the user is not a valid instance.
      */
-    public static function isValid($user)
+    public static function isValid(mixed $user): false|static
     {
-        if (Yii::$app instanceof \yii\web\Application && !Yii::$app->user->isGuest)
+        if (Yii::$app instanceof Application && !Yii::$app->user->isGuest)
         {
             return Yii::$app->user->identity;
         }

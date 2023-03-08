@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,14 +16,15 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\models\BaseBlameableModel;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class UserPost extends BaseBlameableModel
 {
-    public $idAttributeLength = 255;
+    public int $idAttributeLength = 255;
 
-    public $idCreatorCombinatedUnique = false;
+    public bool $idCreatorCombinatedUnique = false;
 
     public function __construct($config = array()) {
         $this->hostClass = User::class;
@@ -37,7 +38,7 @@ class UserPost extends BaseBlameableModel
         $this->setContent(\Yii::$app->security->generateRandomString());
     }
 
-    public $contentAttributeRule = ['string'];
+    public string|array $contentAttributeRule = ['string'];
 
     public static function tableName()
     {

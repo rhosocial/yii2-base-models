@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,13 +16,14 @@ use rhosocial\base\models\models\BaseUserRelationModel;
 use rhosocial\base\models\tests\data\ar\User;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class UserRelation extends BaseUserRelationModel
 {
-    public $multiBlamesAttribute = 'groups';
-    public $descriptionAttribute = 'description';
+    public string|false $multiBlamesAttribute = 'groups';
+    public string|false $descriptionAttribute = 'description';
 
     public function __construct($config = array())
     {

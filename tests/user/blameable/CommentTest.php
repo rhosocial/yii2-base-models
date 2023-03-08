@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,7 +16,8 @@ use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class CommentTest extends BlameableTestCase
@@ -334,7 +335,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onDeleteType = UserComment::$onRestrict;
+        $this->comments[5]->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->comments[5]->throwRestrictException = true;
         try {
             $this->comments[5]->delete();
@@ -379,7 +380,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onDeleteType = UserComment::$onSetNull;
+        $this->comments[5]->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $this->assertEquals(1, $this->comments[5]->delete());
 
         for ($i = 0; $i < 10; $i++) {
@@ -427,7 +428,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onDeleteType = UserComment::$onNoAction;
+        $this->comments[5]->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $this->assertEquals(1, $this->comments[5]->delete());
 
         for ($i = 0; $i < 10; $i++) {
@@ -511,7 +512,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onUpdateType = UserComment::$onRestrict;
+        $this->comments[5]->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->comments[5]->throwRestrictException = true;
 
         $newGUID = UserComment::generateGuid();
@@ -571,7 +572,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onUpdateType = UserComment::$onSetNull;
+        $this->comments[5]->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());
         $this->comments[5]->setGUID($newGUID);
@@ -618,7 +619,7 @@ class CommentTest extends BlameableTestCase
             $this->assertTrue($this->comments[$i + 1]->parent->equals($this->comments[$i]));
         }
 
-        $this->comments[5]->onUpdateType = UserComment::$onNoAction;
+        $this->comments[5]->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $oldGUID = $this->comments[5]->getRefId();
         $newGUID = UserComment::generateGuid();
         $this->assertNotEquals($newGUID, $this->comments[5]->getGUID());

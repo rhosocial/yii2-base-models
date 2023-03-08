@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -20,9 +20,10 @@ use yii\base\NotSupportedException;
 use yii\behaviors\BlameableBehavior;
 use yii\caching\TagDependency;
 use yii\data\Pagination;
+use yii\db\ActiveQueryInterface;
 
 /**
- * This trait is used for building blameable model. It contains following features：
+ * This trait is used for building blamable model. It contains following features：
  * 1.Single-column(field) content;
  * 2.Content type;
  * 3.Content rules(generated automatically);
@@ -31,10 +32,10 @@ use yii\data\Pagination;
  * 6.Confirmation features, provided by [[ConfirmationTrait]];
  * 7.Self referenced features, provided by [[SelfBlameableTrait]];
  * @property-read array $blameableAttributeRules Get all rules associated with
- * blameable.
+ * blamable.
  * @property array $blameableRules Get or set all the rules associated with
  * creator, updater, content and its ID, as well as all the inherited rules.
- * @property array $blameableBehaviors Get or set all the behaviors assoriated
+ * @property array $blameableBehaviors Get or set all the behaviors associated
  * with creator and updater, as well as all the inherited behaviors.
  * @property-read array $descriptionRules Get description property rules.
  * @property-read mixed $content Content.
@@ -43,7 +44,8 @@ use yii\data\Pagination;
  * @property BserUserModel $host The owner of this model.
  * @property BaseUserModel $user The owner of this model(the same as $host).
  * @property BaseUserModel $updater The updater who updated this model latest.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait BlameableTrait
@@ -51,11 +53,11 @@ trait BlameableTrait
     use ConfirmationTrait,
         SelfBlameableTrait;
 
-    private $blameableLocalRules = [];
-    private $blameableLocalBehaviors = [];
+    private array|false $blameableLocalRules = [];
+    private array|false $blameableLocalBehaviors = [];
 
     /**
-     * @var boolean|string|array Specify the attribute(s) name of content(s). If
+     * @var false|string|array Specify the attribute(s) name of content(s). If
      * there is only one content attribute, you can assign its name. Or there
      * is multiple attributes associated with contents, you can assign their
      * names in array. If you don't want to use this feature, please assign
@@ -75,21 +77,21 @@ trait BlameableTrait
      * If you don't need this feature, you should add rules corresponding with
      * `content` in `rules()` method of your user model by yourself.
      */
-    public $contentAttribute = 'content';
+    public string|array|false $contentAttribute = 'content';
 
     /**
-     * @var array built-in validator name or validatation method name and
+     * @var array|string built-in validator name or validation method name and
      * additional parameters.
      */
-    public $contentAttributeRule = ['string', 'max' => 255];
+    public array|string $contentAttributeRule = ['string', 'max' => 255];
 
     /**
-     * @var boolean|string Specify the field which stores the type of content.
+     * @var false|string Specify the field which stores the type of content.
      */
-    public $contentTypeAttribute = false;
+    public string|false $contentTypeAttribute = false;
 
     /**
-     * @var boolean|array Specify the logic type of content, not data type. If
+     * @var false|array Specify the logic type of content, not data type. If
      * your content doesn't need this feature. please specify false. If the
      * $contentAttribute is specified to false, this attribute will be skipped.
      * ```php
@@ -100,36 +102,36 @@ trait BlameableTrait
      * ];
      * ```
      */
-    public $contentTypes = false;
+    public array|false $contentTypes = false;
 
     /**
-     * @var boolean|string This attribute speicfy the name of description
+     * @var false|string This attribute specify the name of description
      * attribute. If this attribute is assigned to false, this feature will be
      * skipped.
      */
-    public $descriptionAttribute = false;
+    public string|false $descriptionAttribute = false;
 
     /**
      * @var string
      */
-    public $initDescription = '';
+    public string $initDescription = '';
 
     /**
-     * @var string the attribute that will receive current user ID value. This
+     * @var string|false the attribute that will receive current user ID value. This
      * attribute must be assigned.
      */
-    public $createdByAttribute = "user_guid";
+    public string|false $createdByAttribute = "user_guid";
 
     /**
-     * @var string the attribute that will receive current user ID value.
+     * @var string|false the attribute that will receive current user ID value.
      * Set this property to false if you do not want to record the updater ID.
      */
-    public $updatedByAttribute = "user_guid";
+    public string|false $updatedByAttribute = "user_guid";
 
     /**
-     * @var boolean Add combinated unique rule if assigned to true.
+     * @var boolean Add combined unique rule if assigned to true.
      */
-    public $idCreatorCombinatedUnique = true;
+    public bool $idCreatorCombinatedUnique = true;
 
     /**
      * @var boolean|string The name of user class which own the current entity.
@@ -140,13 +142,13 @@ trait BlameableTrait
     //public $userClass;
 
     /**
-     * @var boolean|string Host class.
+     * @var false|string Host class.
      */
-    public $hostClass;
-    public static $cacheKeyBlameableRules = 'blameable_rules';
-    public static $cacheTagBlameableRules = 'tag_blameable_rules';
-    public static $cacheKeyBlameableBehaviors = 'blameable_behaviors';
-    public static $cacheTagBlameableBehaviors = 'tag_blameable_behaviors';
+    public string|false $hostClass;
+    public static string $cacheKeyBlameableRules = 'blameable_rules';
+    public static string $cacheTagBlameableRules = 'tag_blameable_rules';
+    public static string $cacheKeyBlameableBehaviors = 'blameable_behaviors';
+    public static string $cacheTagBlameableBehaviors = 'tag_blameable_behaviors';
 
     /**
      * @inheritdoc
@@ -333,9 +335,9 @@ trait BlameableTrait
         return $rules;
     }
 
-    public function getIdRules()
+    public function getIdRules(): array
     {
-        if (is_string($this->idAttribute) && !empty($this->idAttribute) && $this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
+        if (!empty($this->idAttribute) && $this->idCreatorCombinatedUnique && $this->idAttributeType !== static::$idTypeAutoIncrement) {
             return [
                 [[$this->idAttribute], 'required'],
             ];
@@ -347,7 +349,7 @@ trait BlameableTrait
      * Get the rules associated with `description` attribute.
      * @return array rules.
      */
-    public function getDescriptionRules()
+    public function getDescriptionRules(): array
     {
         $rules = [];
         if (is_string($this->descriptionAttribute) && !empty($this->descriptionAttribute)) {
@@ -368,7 +370,7 @@ trait BlameableTrait
      * Get the rules associated with `content` and `contentType` attributes.
      * @return array rules.
      */
-    public function getContentRules()
+    public function getContentRules(): array
     {
         if (!$this->contentAttribute) {
             return [];
@@ -395,16 +397,16 @@ trait BlameableTrait
             $rules[] = [[
                 $this->contentTypeAttribute],
                 'in',
-                'range' => array_keys($this->contentTypes)];
+                'range' => array_values($this->contentTypes)];
         }
         return $rules;
     }
 
     /**
-     * Set blameable rules.
+     * Set blamable rules.
      * @param array $rules
      */
-    protected function setBlameableRules($rules = [])
+    protected function setBlameableRules($rules = []): void
     {
         $this->blameableLocalRules = $rules;
         $cache = $this->getCache();
@@ -415,29 +417,29 @@ trait BlameableTrait
     }
 
     /**
-     * Get blameable behaviors cache key.
+     * Get blamable behaviors cache key.
      * @return string cache key.
      */
-    public function getBlameableBehaviorsCacheKey()
+    public function getBlameableBehaviorsCacheKey(): string
     {
         return static::class . $this->cachePrefix . static::$cacheKeyBlameableBehaviors;
     }
 
     /**
-     * Get blameable behaviors cache tag.
+     * Get blamable behaviors cache tag.
      * @return string cache tag.
      */
-    public function getBlameableBehaviorsCacheTag()
+    public function getBlameableBehaviorsCacheTag(): string
     {
         return static::class . $this->cachePrefix . static::$cacheTagBlameableBehaviors;
     }
 
     /**
-     * Get blameable behaviors. If current behaviors array is empty, the init
+     * Get blamable behaviors. If current behaviors array is empty, the init
      * array will be given.
      * @return array
      */
-    public function getBlameableBehaviors()
+    public function getBlameableBehaviors(): array
     {
         $cache = $this->getCache();
         if ($cache) {
@@ -461,10 +463,10 @@ trait BlameableTrait
     }
 
     /**
-     * Set blameable behaviors.
+     * Set blamable behaviors.
      * @param array $behaviors
      */
-    protected function setBlameableBehaviors($behaviors = [])
+    protected function setBlameableBehaviors(array $behaviors = []): void
     {
         $this->blameableLocalBehaviors = $behaviors;
         $cache = $this->getCache();
@@ -477,9 +479,9 @@ trait BlameableTrait
 
     /**
      * Set description.
-     * @return string description.
+     * @return string|null description.
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         $descAttribute = $this->descriptionAttribute;
         return is_string($descAttribute) ? $this->$descAttribute : null;
@@ -490,19 +492,19 @@ trait BlameableTrait
      * @param string $desc description.
      * @return string|null description if enabled, or null if disabled.
      */
-    public function setDescription($desc)
+    public function setDescription(string $desc): ?string
     {
         $descAttribute = $this->descriptionAttribute;
         return is_string($descAttribute) ? $this->$descAttribute = $desc : null;
     }
 
     /**
-     * Get blame who owned this blameable model.
+     * Get blame who owned this blamable model.
      * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
-    public function getUser()
+    public function getUser(): BaseUserQuery
     {
         return $this->getHost();
     }
@@ -536,7 +538,7 @@ trait BlameableTrait
      * @param array $link the primary-foreign key constraint. The keys of the array refer to
      * the attributes of the record associated with the `$class` model, while the values of the
      * array refer to the corresponding attributes in **this** AR class.
-     * @return \yii\dbActiveQueryInterface the relational query object.
+     * @return ActiveQueryInterface the relational query object.
      */
     public abstract function hasOne($class, $link);
 
@@ -544,7 +546,7 @@ trait BlameableTrait
      * Get host of this model.
      * @return BaseUserQuery
      */
-    public function getHost()
+    public function getHost(): BaseUserQuery
     {
         $hostClass = $this->hostClass;
         $model = $hostClass::buildNoInitModel();
@@ -553,10 +555,10 @@ trait BlameableTrait
 
     /**
      * Set host of this model.
-     * @param string $host
+     * @param mixed $host
      * @return string|boolean
      */
-    public function setHost($host)
+    public function setHost(mixed $host): bool|string
     {
         if ($host instanceof $this->hostClass || $host instanceof \yii\web\IdentityInterface) {
             return $this->{$this->createdByAttribute} = $host->getGUID();
@@ -572,21 +574,21 @@ trait BlameableTrait
 
     /**
      *
-     * @param BaseUserModel|string $user
-     * @return boolean
+     * @param string|BaseUserModel $user
+     * @return bool
      */
-    public function setUser($user)
+    public function setUser(string|BaseUserModel $user): bool
     {
         return $this->setHost($user);
     }
 
     /**
-     * Get updater who updated this blameable model recently.
+     * Get updater who updated this blamable model recently.
      * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
-     * @return BaseUserQuery user.
+     * @return BaseUserQuery|null user.
      */
-    public function getUpdater()
+    public function getUpdater(): ?BaseUserQuery
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return null;
@@ -599,10 +601,10 @@ trait BlameableTrait
 
     /**
      * Set updater.
-     * @param BaseUserModel|string $updater
-     * @return boolean
+     * @param mixed $updater
+     * @return bool|string
      */
-    public function setUpdater($updater)
+    public function setUpdater(mixed $updater): bool|string
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
@@ -640,7 +642,7 @@ trait BlameableTrait
      * @param ModelEvent $event
      * @return string the GUID of current user or the owner.
      */
-    public function onGetCurrentUserGuid($event)
+    public function onGetCurrentUserGuid($event): string
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -659,7 +661,7 @@ trait BlameableTrait
      * $contentTypes will be used.
      * @param ModelEvent $event
      */
-    public function onInitContentType($event)
+    public function onInitContentType($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -678,7 +680,7 @@ trait BlameableTrait
      * Initialize description property with $initDescription.
      * @param ModelEvent $event
      */
-    public function onInitDescription($event)
+    public function onInitDescription($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -739,17 +741,17 @@ trait BlameableTrait
     /**
      * Attach events associated with blameable model.
      */
-    public function initBlameableEvents()
+    public function initBlameableEvents(): void
     {
-        $this->on(static::$eventConfirmationChanged, [$this, "onConfirmationChanged"]);
-        $this->on(static::$eventNewRecordCreated, [$this, "onInitConfirmation"]);
+        $this->on(self::EVENT_CONFIRMATION_CHANGED, [$this, "onConfirmationChanged"]);
+        $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, "onInitConfirmation"]);
         $contentTypeAttribute = $this->contentTypeAttribute;
         if (is_string($contentTypeAttribute) && !empty($contentTypeAttribute) && !isset($this->$contentTypeAttribute)) {
-            $this->on(static::$eventNewRecordCreated, [$this, "onInitContentType"]);
+            $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, "onInitContentType"]);
         }
         $descriptionAttribute = $this->descriptionAttribute;
         if (is_string($descriptionAttribute) && !empty($descriptionAttribute) && !isset($this->$descriptionAttribute)) {
-            $this->on(static::$eventNewRecordCreated, [$this, 'onInitDescription']);
+            $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, 'onInitDescription']);
         }
         $this->on(static::EVENT_BEFORE_UPDATE, [$this, "onContentChanged"]);
         $this->initSelfBlameableEvents();
@@ -758,7 +760,7 @@ trait BlameableTrait
     /**
      * @inheritdoc
      */
-    public function enabledFields()
+    public function enabledFields(): array
     {
         $fields = parent::enabledFields();
         if (is_string($this->createdByAttribute) && !empty($this->createdByAttribute)) {
@@ -789,14 +791,14 @@ trait BlameableTrait
     /**
      * Find all follows by specified identity. If `$identity` is null, the logged-in
      * identity will be taken.
-     * @param string|integer $pageSize If it is 'all`, then will find all follows,
+     * @param string|int|null $pageSize If it is 'all`, then will find all follows,
      * the `$currentPage` parameter will be skipped. If it is integer, it will be
      * regarded as sum of models in one page.
      * @param integer $currentPage The current page number, begun with 0.
      * @param mixed $identity It's type depends on {$this->hostClass}.
      * @return static[] If no follows, null will be given, or return follow array.
      */
-    public static function findAllByIdentityInBatch($pageSize = 'all', $currentPage = 0, $identity = null)
+    public static function findAllByIdentityInBatch(string|int|null $pageSize = 'all', $currentPage = 0, $identity = null)
     {
         if ($pageSize === 'all') {
             return static::findByIdentity($identity)->all();
@@ -806,15 +808,15 @@ trait BlameableTrait
 
     /**
      * Find one follow by specified identity. If `$identity` is null, the logged-in
-     * identity will be taken. If $identity doesn't has the follower, null will
+     * identity will be taken. If $identity doesn't have the follower, null will
      * be given.
-     * @param integer $id user id.
-     * @param boolean $throwException
-     * @param mixed $identity It's type depends on {$this->hostClass}.
-     * @return static
+     * @param int|string|null $id user id.
+     * @param bool $throwException
+     * @param mixed|null $identity It's type depends on {$this->hostClass}.
+     * @return ?static
      * @throws InvalidArgumentException
      */
-    public static function findOneById($id, $throwException = true, $identity = null)
+    public static function findOneById(int|string|null $id, bool $throwException = true, mixed $identity = null): ?static
     {
         $query = static::findByIdentity($identity);
         if (!empty($id)) {
@@ -829,21 +831,21 @@ trait BlameableTrait
 
     /**
      * Get total of follows of specified identity.
-     * @param mixed $identity It's type depends on {$this->hostClass}.
-     * @return integer total.
+     * @param mixed|null $identity It's type depends on {$this->hostClass}.
+     * @return int total.
      */
-    public static function countByIdentity($identity = null)
+    public static function countByIdentity(mixed $identity = null): int
     {
         return (int)(static::findByIdentity($identity)->count());
     }
 
     /**
      * Get pagination, used for building contents page by page.
-     * @param integer $limit
-     * @param mixed $identity It's type depends on {$this->hostClass}.
+     * @param int $limit
+     * @param mixed|null $identity It's type depends on {$this->hostClass}.
      * @return Pagination
      */
-    public static function getPagination($limit = 10, $identity = null)
+    public static function getPagination(int $limit = 10, mixed $identity = null): Pagination
     {
         $limit = (int) $limit;
         $count = static::countByIdentity($identity);

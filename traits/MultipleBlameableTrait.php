@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -54,43 +54,41 @@ use yii\base\InvalidArgumentException;
  * @property-read array $allBlames
  * @property-read array $nonBlameds
  * @property-read integer $blamesCount
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait MultipleBlameableTrait
 {
 
     /**
-     * @var string class name of multiple blameable class.
+     * @var string class name of multiple blamable class.
      */
-    public $multiBlamesClass = '';
+    public string $multiBlamesClass = '';
 
     /**
-     * @var string name of multiple blameable attribute.
+     * @var string|false name of multiple blameable attribute.
      */
-    public $multiBlamesAttribute = 'blames';
+    public string|false $multiBlamesAttribute = 'blames';
 
     /**
-     * @var integer the limit of blames. it should be greater than or equal 1, and
+     * @var int the limit of blames. it should be greater than or equal 1, and
      * less than or equal 10.
      */
-    public $blamesLimit = 10;
+    public int $blamesLimit = 10;
 
     /**
-     * @var boolean determines whether blames list has been changed.
+     * @var bool determines whether blames list has been changed.
      */
-    public $blamesChanged = false;
+    public bool $blamesChanged = false;
+
+    const EVENT_MULTIPLE_BLAMES_CHANGED = 'multipleBlamesChanged';
 
     /**
-     * @var string event name.
-     */
-    public static $eventMultipleBlamesChanged = 'multipleBlamesChanged';
-
-    /**
-     * Get the rules associated with multiple blameable attribute.
+     * Get the rules associated with multiple blamable attribute.
      * @return array rules.
      */
-    public function getMultipleBlameableAttributeRules()
+    public function getMultipleBlameableAttributeRules(): array
     {
         return is_string($this->multiBlamesAttribute) ? [
             [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 16],
@@ -283,7 +281,7 @@ trait MultipleBlameableTrait
             }
         }
         $diff = array_diff($unchecked, $guids);
-        $eventName = static::$eventMultipleBlamesChanged;
+        $eventName = static::EVENT_MULTIPLE_BLAMES_CHANGED;
         $this->trigger($eventName, new MultipleBlameableEvent(['blamesChanged' => !empty($diff)]));
         return $guids;
     }

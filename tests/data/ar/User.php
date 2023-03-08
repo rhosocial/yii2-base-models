@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -18,29 +18,32 @@ use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
 
 /**
- * Description of ActiveRecord
+ * Description of User
  * @property-read UserEmail[] $emails
  * @property-read AdditionalAccount[] $additionalAccounts
  * @author vistart <i@vistart.me>
+ * @version 2.0
  * @since 1.0
  */
 class User extends \rhosocial\base\models\models\BaseUserModel
 {
-    public $idAttributePrefix = '4';
-    public $idAttributeType = 1;
-    public $idAttributeLength = 8;
+    public string $idAttributePrefix = '4';
+    public int $idAttributeType = 1;
+    public int $idAttributeLength = 8;
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName(): string
+    {
         return '{{%user}}';
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels(): array
+    {
         return [
             'guid' => Yii::t('app', 'Guid'),
             'id' => Yii::t('app', 'ID'),
@@ -60,14 +63,16 @@ class User extends \rhosocial\base\models\models\BaseUserModel
     /**
      * @return BaseBlameableQuery
      */
-    public function getEmails() {
+    public function getEmails(): BaseBlameableQuery
+    {
         return $this->hasMany(UserEmail::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
 
     /**
      * @return BaseBlameableQuery
      */
-    public function getAdditionalAccounts() {
+    public function getAdditionalAccounts(): BaseBlameableQuery
+    {
         return $this->hasMany(AdditionalAccount::class, ['user_guid' => 'guid'])->inverseOf('user');
     }
 
@@ -75,7 +80,7 @@ class User extends \rhosocial\base\models\models\BaseUserModel
      * Friendly to IDE.
      * @return BaseUserQuery
      */
-    public static function find()
+    public static function find(): BaseUserQuery
     {
         return parent::find();
     }

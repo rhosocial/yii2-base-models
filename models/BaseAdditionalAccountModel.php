@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -37,18 +37,18 @@ abstract class BaseAdditionalAccountModel extends BaseBlameableModel
 {
     use AdditionalAccountTrait;
 
-    public $idAttributeLength = 8;
-    public $updatedByAttribute = false;
-    public $contentAttribute = 'content'; // Account type, types defined by yourself.
-    public $contentAttributeRule = ['integer', 'min' => 0];
-    public $contentTypeAttribute = 'source';  // Where did this account origin from, defined by yourself.
-    public $contentTypes = [
-        0 => 'self', // Self created or bound.
-        1 => 'third-party', // bound with third-party account.
+    public int $idAttributeLength = 8;
+    public string|false $updatedByAttribute = false;
+    public string|array|false $contentAttribute = 'content'; // Account type, types defined by yourself.
+    public string|array $contentAttributeRule = ['integer', 'min' => 0];
+    public string|false $contentTypeAttribute = 'source';  // Where did this account origin from, defined by yourself.
+    public array|false $contentTypes = [
+        'self' => 0, // Self created or bound.
+        'third-party' => 1, // bound with third-party account.
     ];
-    public $confirmationAttribute = 'confirmed';
-    public $confirmCodeAttribute = false;
-    public $descriptionAttribute = 'description';
+    public string|false $confirmationAttribute = 'confirmed';
+    public string|false $confirmCodeAttribute = false;
+    public string|false $descriptionAttribute = 'description';
 
     /**
      * @inheritdoc

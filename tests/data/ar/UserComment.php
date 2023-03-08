@@ -1,5 +1,15 @@
 <?php
 
+/**
+ *  _   __ __ _____ _____ ___  ____  _____
+ * | | / // // ___//_  _//   ||  __||_   _|
+ * | |/ // /(__  )  / / / /| || |     | |
+ * |___//_//____/  /_/ /_/ |_||_|     |_|
+ * @link https://vistart.me/
+ * @copyright Copyright (c) 2016 - 2023 vistart
+ * @license https://vistart.me/license/
+ */
+
 namespace rhosocial\base\models\tests\data\ar;
 
 use Yii;
@@ -21,10 +31,13 @@ use Yii;
  * @property string $confirm_code
  *
  * @property User $userGu
+ * @version 2.0
+ * @since 1.0
+ * @author vistart <i@vistart.me>
  */
 class UserComment extends \rhosocial\base\models\models\BaseBlameableModel
 {
-    public $parentAttribute = 'parent_guid';
+    public string|false $parentAttribute = 'parent_guid';
 
     /**
      * @inheritdoc

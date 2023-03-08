@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -15,6 +15,7 @@ namespace rhosocial\base\models\models;
 use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\base\models\queries\BaseEntityQuery;
 use rhosocial\base\models\traits\BlameableTrait;
+use yii\base\NotSupportedException;
 
 /**
  * BaseBlameableModel automatically fills the specified attributes with
@@ -82,6 +83,7 @@ abstract class BaseBlameableModel extends BaseEntityModel
      * If query class is not specified, [[BaseBlameableQuery]] will be taken.
      * Note: You must override this method and specify your own user class before
      * execute the parent one.
+     * @throws NotSupportedException
      */
     public function init()
     {

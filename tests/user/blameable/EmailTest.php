@@ -6,16 +6,22 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\user\blameable;
 
 use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
+use Throwable;
+use yii\base\Exception;
+use yii\base\NotSupportedException;
+use yii\db\IntegrityException;
+use yii\db\StaleObjectException;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class EmailTest extends BlameableTestCase
@@ -41,6 +47,7 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testNew()
     {
@@ -52,6 +59,7 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testBlameable()
     {
@@ -67,6 +75,7 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testEnabledFields()
     {
@@ -78,6 +87,7 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testNotConfirmed()
     {
@@ -91,6 +101,9 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws Exception
+     * @throws IntegrityException
+     * @throws NotSupportedException|Throwable
      */
     public function testConfirm()
     {
@@ -105,17 +118,20 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws Exception
+     * @throws IntegrityException
+     * @throws NotSupportedException|Throwable
      */
     public function testConfirmation()
     {
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertTrue($this->user->register([$this->email]));
-        $this->assertEquals(UserEmail::$confirmFalse, $this->email->getConfirmation());
+        $this->assertEquals(UserEmail::CONFIRMATION_STATUS_UNCONFIRMED, $this->email->getConfirmation());
 
         $this->assertTrue($this->email->applyConfirmation());
         $this->assertTrue($this->email->confirm($this->email->getConfirmCode()));
         $this->assertTrue($this->email->getIsConfirmed());
-        $this->assertEquals(UserEmail::$confirmTrue, $this->email->getConfirmation());
+        $this->assertEquals(UserEmail::CONFIRMATION_STATUS_CONFIRMED, $this->email->getConfirmation());
         $this->assertTrue($this->user->deregister());
     }
 
@@ -141,24 +157,26 @@ class EmailTest extends BlameableTestCase
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testQueryConfirmed()
     {
         $this->assertTrue($this->user->register([$this->email]));
         $this->assertFalse($this->email->getIsConfirmed());
         $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
-        $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
+        $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::CONFIRMATION_STATUS_UNCONFIRMED)->one());
 
-        $this->email->confirmation = UserEmail::$confirmTrue;
+        $this->email->confirmation = UserEmail::CONFIRMATION_STATUS_CONFIRMED;
         $this->assertTrue($this->email->save());
         $this->assertInstanceOf(UserEmail::class, UserEmail::find()->guid($this->email->getGUID())->confirmed()->one());
-        $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::$confirmFalse)->one());
+        $this->assertNull(UserEmail::find()->guid($this->email->getGUID())->confirmed(UserEmail::CONFIRMATION_STATUS_UNCONFIRMED)->one());
         $this->assertTrue($this->user->deregister());
     }
 
     /**
      * @group blameable
      * @group email
+     * @throws IntegrityException|Exception|Throwable
      */
     public function testDescription()
     {
@@ -173,6 +191,9 @@ class EmailTest extends BlameableTestCase
      * @group user
      * @group blameable
      * @group email
+     * @throws IntegrityException
+     * @throws Throwable
+     * @throws StaleObjectException
      */
     public function testFindOneOrCreate()
     {
@@ -205,6 +226,7 @@ class EmailTest extends BlameableTestCase
      * @group user
      * @group blameable
      * @group email
+     * @throws IntegrityException|Throwable
      */
     public function testUniqueId()
     {
@@ -246,7 +268,7 @@ class EmailTest extends BlameableTestCase
             $this->email->getContentCanBeEdited();
             $this->fail();
         } catch (\Exception $ex) {
-            $this->assertInstanceOf(\yii\base\NotSupportedException::class, $ex);
+            $this->assertInstanceOf(NotSupportedException::class, $ex);
         }
     }
 }

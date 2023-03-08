@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -30,7 +30,11 @@ abstract class BaseEntityModel extends ActiveRecord
     use EntityTrait;
 
     /**
+     * @inheritdoc
+     *
      * Initialize new entity.
+     * If you want
+     * @throws NotSupportedException
      */
     public function init()
     {
@@ -49,13 +53,13 @@ abstract class BaseEntityModel extends ActiveRecord
      * @return boolean true if all checks pass.
      * @throws NotSupportedException
      */
-    public function checkAttributes()
+    public function checkAttributes(): bool
     {
-        if (YII_ENV !== YII_ENV_PROD || YII_DEBUG) {
+        if (YII_ENV != YII_ENV_PROD || YII_DEBUG) {
             if (!is_string($this->idAttribute) && empty($this->idAttribute) &&
                 !is_string($this->guidAttribute) && empty($this->guidAttribute)) {
                 $errorInfo = 'ID and GUID attributes are not be disabled simultaneously in relational database.';
-                throw new \yii\base\NotSupportedException($errorInfo);
+                throw new NotSupportedException($errorInfo);
             }
         }
         return true;

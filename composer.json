@@ -13,16 +13,17 @@
         }
     ],
     "require": {
-        "php": ">=7.3.10",
-        "yiisoft/yii2": ">=2.0.43 < 2.1",
-        "rhosocial/helpers": "~1.0.0",
+        "php": ">=8.2.3",
+        "yiisoft/yii2": ">=2.0.47 < 2.1",
+        "rhosocial/helpers": "~1.0.4",
         "yiisoft/yii2-mongodb": "^2.1",
         "yiisoft/yii2-redis": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-faker": "*",
-        "phpunit/phpunit": "^9.5.10",
-        "codedungeon/phpunit-result-printer": "^0.31.0"
+        "phpunit/phpunit": "^10.0.7",
+        "codedungeon/phpunit-result-printer": "^0.31.0",
+        "ext-mbstring": "*"
     },
     "suggest": {
         "yiisoft/yii2-mongodb": "Required if you want to use mongo ActiveRecord and ActiveQuery. (php-mongodb extension required)",

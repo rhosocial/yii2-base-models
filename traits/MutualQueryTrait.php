@@ -6,18 +6,20 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
 
 use rhosocial\base\models\models\BaseUserModel;
+use yii\db\Connection;
 
 /**
  * This trait is used for building query class which contains mutual relation operations.
  *
- * @version 1.0
+ * @version 0.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait MutualQueryTrait
@@ -27,10 +29,10 @@ trait MutualQueryTrait
      * Get the opposite relation.
      * @param array|BaseUserModel|string $user initiator
      * @param array|BaseUserModel|string $other recipient.
-     * @param Connection $database
+     * @param Connection|null $database
      * @return mixed It's type depends on {$model->class}.
      */
-    public function opposite($user, $other, $database = null)
+    public function opposite($user, $other, ?Connection $database = null): mixed
     {
         $model = $this->noInitModel;
         return $this->andWhere(
@@ -40,12 +42,12 @@ trait MutualQueryTrait
 
     /**
      * Get all the opposites.
-     * @param array|string $user initator.
+     * @param array|string $user initiator.
      * @param array $others all recipients.
-     * @param Connection $database
+     * @param Connection|null $database
      * @return array instances.
      */
-    public function opposites($user, $others = [], $database = null)
+    public function opposites($user, $others = [], ?Connection $database = null): array
     {
         $model = $this->noInitModel;
         $query = $this->andWhere([$model->otherGuidAttribute => BaseUserModel::compositeGUIDs($user)]);
@@ -58,11 +60,11 @@ trait MutualQueryTrait
 
     /**
      * Specify initiators.
-     * @param string|array $users the guid of initiator if string, or guid array
-     * of initiators if array.
+     * @param string|array $users the guid of initiator if strung, or guid array
+     * of initiators if arrayed.
      * @return static $this
      */
-    public function initiators($users = [])
+    public function initiators($users = []): static
     {
         if (empty($users)) {
             return $this;
@@ -73,11 +75,11 @@ trait MutualQueryTrait
 
     /**
      * Specify recipients.
-     * @param string|array $users the guid of recipient if string, or guid array
-     * of recipients if array.
+     * @param string|array $users the guid of recipient if strung, or guid array
+     * of recipients if arrayed.
      * @return static $this
      */
-    public function recipients($users = [])
+    public function recipients($users = []): static
     {
         if (empty($users)) {
             return $this;

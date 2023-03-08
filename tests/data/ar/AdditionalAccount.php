@@ -6,21 +6,23 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\data\ar;
 
+use rhosocial\base\models\models\BaseAdditionalAccountModel;
 use Yii;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
-class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAccountModel
+class AdditionalAccount extends BaseAdditionalAccountModel
 {
-    public $seperateLoginAttribute = 'seperate_login';
+    public string|false $separateLoginAttribute = 'separate_login';
 
     public function __construct($config = array())
     {
@@ -28,22 +30,12 @@ class AdditionalAccount extends \rhosocial\base\models\models\BaseAdditionalAcco
         parent::__construct($config);
     }
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%user_additional_account}}';
     }
 
-    /**
-     *
-     * @return \rhosocial\base\models\queries\BaseUserQuery
-     */
-    /*
-    public function getUser()
-    {
-        return $this->hasOne(User::class, ['guid' => 'user_guid']);
-    }
-    */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'guid' => Yii::t('app', 'Guid'),

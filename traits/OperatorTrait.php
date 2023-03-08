@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -37,16 +37,17 @@ use yii\behaviors\BlameableBehavior;
  * Then, the current logged-in user will be recorded as operator when saving model.
  *
  * @property-read BaseUserModel $operator
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 Trait OperatorTrait
 {
     /**
-     * @var string|bool the attribute that stores the operator's GUID.
+     * @var string|false the attribute that stores the operator's GUID.
      * If you do not want to use this feature, please set false.
      */
-    public $operatorAttribute = 'operator_guid';
+    public string|false $operatorAttribute = 'operator_guid';
 
     /**
      * Get operator query.
@@ -70,7 +71,7 @@ Trait OperatorTrait
      * @param Event $event
      * @return null|string
      */
-    public function onAssignOperator($event)
+    public function onAssignOperator($event): ?string
     {
         $identity = Yii::$app->user->identity;
         if (empty($identity)) {
@@ -82,7 +83,7 @@ Trait OperatorTrait
     /**
      * @return array
      */
-    public function getOperatorBehaviors()
+    public function getOperatorBehaviors(): array
     {
         if (!empty($this->operatorAttribute) && is_string($this->operatorAttribute)) {
             $behaviors[] = [
@@ -100,7 +101,7 @@ Trait OperatorTrait
      * Mark the `operatorAttribute` as safe.
      * @return array
      */
-    public function getOperatorRules()
+    public function getOperatorRules(): array
     {
         if (!empty($this->operatorAttribute) && is_string($this->operatorAttribute)) {
             return [

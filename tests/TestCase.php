@@ -5,12 +5,13 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests;
 
+use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use PHPunit\Framework\TestCase as PHPunitTestCase;
@@ -20,17 +21,17 @@ use Yii;
 use yii\db\Connection;
 
 /**
- * Description of TestCase
- *
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class TestCase extends PHPunitTestCase {
     
     /**
      *
-     * @var Generator 
+     * @var ?Generator
      */
-    protected $faker = null;
+    protected ?Generator $faker = null;
     
     public function sleep($seconds = 1) {
         for ($i = $seconds; $i > 0; $i--) {
@@ -43,20 +44,21 @@ abstract class TestCase extends PHPunitTestCase {
     
     /**
      * Returns a test configuration param from /data/config.php
-     * @param  string $name params name
-     * @param  mixed $default default value to use when param is not set.
+     * @param string $name params name
+     * @param mixed|null $default default value to use when param is not set.
      * @return mixed  the value of the configuration param
      */
-    public static function getParam($name, $default = null) {
+    public static function getParam(string $name, mixed $default = null): mixed
+    {
         if (static::$params === null) {
             static::$params = require(__DIR__ . '/data/config.php');
         }
-        return isset(static::$params[$name]) ? static::$params[$name] : $default;
+        return static::$params[$name] ?? $default;
     }
     
     /**
      * Clean up after test.
-     * By default the application created with [[mockApplication]] will be destroyed.
+     * By default, the application created with [[mockApplication]] will be destroyed.
      */
     protected function tearDown() : void {
         parent::tearDown();
@@ -70,7 +72,7 @@ abstract class TestCase extends PHPunitTestCase {
      * @param array $config The application configuration, if needed
      * @param string $appClass name of the application class to create
      */
-    protected function mockApplication($config = [], $appClass = '\yii\console\Application') {
+    protected function mockApplication(array $config = [], string $appClass = '\yii\console\Application') {
         new $appClass(ArrayHelper::merge([
                     'id' => 'testapp',
                     'basePath' => __DIR__,
@@ -110,15 +112,15 @@ abstract class TestCase extends PHPunitTestCase {
         Yii::$container = new Container();
     }
     
-    public function __construct($name = null, array $data = array(), $dataName = '') {
-        parent::__construct($name, $data, $dataName);
+    public function __construct(string $name, array $data = array(), $dataName = '') {
+        parent::__construct($name);
         $this->faker = Factory::create();
         $this->faker->seed(time() % 1000000);
     }
     
     protected function setUp() : void {
         $databases = self::getParam('databases');
-        $params = isset($databases['mysql']) ? $databases['mysql'] : null;
+        $params = $databases['mysql'] ?? null;
         if ($params === null) {
             $this->markTestSkipped('No mysql server connection configured.');
         }
@@ -135,12 +137,13 @@ abstract class TestCase extends PHPunitTestCase {
     }
     
     /**
-     * @param  boolean    $reset whether to clean up the test database
+     * @param boolean $reset whether to clean up the test database
      * @return Connection
      */
-    public function getConnection($reset = true) {
+    public function getConnection(bool $reset = true): Connection
+    {
         $databases = self::getParam('databases');
-        $params = isset($databases['mysql']) ? $databases['mysql'] : [];
+        $params = $databases['mysql'] ?? [];
         $db = new Connection($params);
         if ($reset) {
             $db->open();

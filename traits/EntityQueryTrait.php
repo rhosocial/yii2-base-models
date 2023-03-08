@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,12 +14,15 @@ namespace rhosocial\base\models\traits;
 
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\models\BaseEntityModel;
+use rhosocial\base\models\models\BaseMongoEntityModel;
+use rhosocial\base\models\models\BaseRedisEntityModel;
 use yii\db\ActiveQuery;
 
 /**
  * This trait is used for building entity query class for entity model.
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait EntityQueryTrait
@@ -27,14 +30,14 @@ trait EntityQueryTrait
     use QueryTrait;
 
     /**
-     * @var BaseEntityModel
+     * @var BaseEntityModel|BaseMongoEntityModel|BaseRedisEntityModel
      */
-    public $noInitModel;
+    public mixed $noInitModel;
 
     /**
      * Build model without any initializations.
      */
-    public function buildNoInitModel()
+    public function buildNoInitModel(): void
     {
         if (empty($this->noInitModel) && is_string($this->modelClass)) {
             $modelClass = $this->modelClass;
@@ -44,24 +47,24 @@ trait EntityQueryTrait
 
     /**
      * Specify guid attribute.
-     * @param string|array $guid
+     * @param mixed $guid
      * @param false|string $like false, 'like', 'or like', 'not like', 'or not like'.
      * @return $this
      */
-    public function guid($guid, $like = false)
+    public function guid(mixed $guid, false|string $like = false): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        return $this->likeCondition((string)$guid, $model->guidAttribute, $like);
+        return $this->likeCondition($guid, $model->guidAttribute, $like);
     }
 
     /**
      * Specify id attribute.
-     * @param string|integer|array $id
+     * @param mixed $id
      * @param false|string $like false, 'like', 'or like', 'not like', 'or not like'.
      * @return $this
      */
-    public function id($id, $like = false)
+    public function id(mixed $id, false|string $like = false): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
@@ -72,11 +75,11 @@ trait EntityQueryTrait
      * Specify GUID or ID attribute.
      * Scalar parameter is acceptable only.
      * Please do not pass an array to the first parameter.
-     * @param string|integer $param
+     * @param int|string $param
      * @param bool|string $like false, 'like', 'or like', 'not like', 'or not like'.
      * @return $this
      */
-    public function guidOrId($param, $like = false)
+    public function guidOrId(int|string $param, bool|string $like = false): static
     {
         if (is_string($param) && (preg_match(Number::GUID_REGEX, $param) || strlen($param) == 16)) {
             return $this->guid($param, $like);
@@ -86,11 +89,11 @@ trait EntityQueryTrait
 
     /**
      * Specify creation time range.
-     * @param string $start
-     * @param string $end
+     * @param string|null $start
+     * @param string|null $end
      * @return $this
      */
-    public function createdAt($start = null, $end = null)
+    public function createdAt(?string $start = null, ?string $end = null): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
@@ -104,13 +107,13 @@ trait EntityQueryTrait
      * Specify creation time as today (in locally).
      * @return $this
      */
-    public function createdAtToday()
+    public function createdAtToday(): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
         $start = strtotime(date('Y-m-d'));
         $end = $start + 86400;
-        if ($model->timeFormat == BaseEntityModel::$timeFormatDatetime) {
+        if ($model->timeFormat == BaseEntityModel::TIME_FORMAT_DATETIME) {
             $start = gmdate('Y-m-d H:i:s', $start);
             $end = gmdate('Y-m-d H:i:s', $end);
         }
@@ -119,10 +122,10 @@ trait EntityQueryTrait
 
     /**
      * Specify order by creation time.
-     * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
+     * @param int|string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
      * @return $this
      */
-    public function orderByCreatedAt($sort = SORT_ASC)
+    public function orderByCreatedAt(int|string $sort = SORT_ASC): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
@@ -134,11 +137,11 @@ trait EntityQueryTrait
 
     /**
      * Specify last updated time range.
-     * @param string $start 
-     * @param string $end
+     * @param string|null $start
+     * @param string|null $end
      * @return $this
      */
-    public function updatedAt($start = null, $end = null)
+    public function updatedAt(?string $start = null, ?string $end = null): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
@@ -152,13 +155,13 @@ trait EntityQueryTrait
      * Specify last updated time as today (in locally).
      * @return $this
      */
-    public function updatedAtToday()
+    public function updatedAtToday(): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
         $start = strtotime(date('Y-m-d'));
         $end = $start + 86400;
-        if ($model->timeFormat == BaseEntityModel::$timeFormatDatetime) {
+        if ($model->timeFormat == BaseEntityModel::TIME_FORMAT_DATETIME) {
             $start = gmdate('Y-m-d H:i:s', $start);
             $end = gmdate('Y-m-d H:i:s', $end);
         }
@@ -167,10 +170,10 @@ trait EntityQueryTrait
 
     /**
      * Specify order by update time.
-     * @param string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
+     * @param int|string $sort only 'SORT_ASC' and 'SORT_DESC' are acceptable.
      * @return $this
      */
-    public function orderByUpdatedAt($sort = SORT_ASC)
+    public function orderByUpdatedAt(int|string $sort = SORT_ASC): static
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
@@ -185,12 +188,12 @@ trait EntityQueryTrait
     
     /**
      * Specify page condition.
-     * @param string|int $pageSize It will return all models if it is 'all',
+     * @param int|string|null $pageSize It will return all models if it is 'all',
      * or it will be regarded as sum of models.
-     * @param int $currentPage The current page number if it is integer begun with 0.
+     * @param ?int $currentPage The current page number if it is integer begun with 0.
      * @return $this
      */
-    public function page($pageSize = 10, $currentPage = 0)
+    public function page(int|string|null $pageSize = 10, ?int $currentPage = 0): static
     {
         if ($pageSize === static::$pageAll) {
             return $this;

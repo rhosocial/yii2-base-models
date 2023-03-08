@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   php:
     build:
@@ -6,14 +6,14 @@ services:
       args:
         TAG: 8.2-apache
     image: registry.us-west-1.aliyuncs.com/vistart_public/php:8.2-apache-dev
-    working_dir: /root/yii2-base-models
+    working_dir: /opt/project
     ports:
       - 8080:80
     networks:
       - dev
     volumes:
       - composer_data:/root/.composer/cache
-      - ../../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models:/opt/project
     depends_on:
       - mysql
       - mongo
@@ -26,14 +26,14 @@ services:
           memory: 256M
   mysql:
     image: mysql:8
-    working_dir: /root/yii2-base-models
+    working_dir: /opt/project
     ports:
       - 8306:3306
     networks:
       - dev
     volumes:
       - mysql_data:/var/lib/mysql
-      - ../../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models:/opt/project
       - ../../../../yii2-base-models/tests/data/yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
@@ -42,14 +42,14 @@ services:
       MYSQL_DATABASE: yii2-base-models
   mongo:
     image: mongo:6
-    working_dir: /root/yii2-base-models
+    working_dir: /opt/project
     ports:
       - 8707:27017
     networks:
       - dev
     volumes:
       - mongo_data:/data/db
-      - ../../../../yii2-base-models:/root/yii2-base-models
+      - ../../../../yii2-base-models:/opt/project
       - ../../../../yii2-base-models/tests/data/yii2-base-models.js:/docker-entrypoint-initdb.d/yii2-base-models.js
     environment:
       MONGO_INITDB_ROOT_USERNAME: user

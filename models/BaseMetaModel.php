@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -17,27 +17,28 @@ use rhosocial\base\models\traits\MetaTrait;
 /**
  * Description of BaseMetaModel
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseMetaModel extends BaseBlameableModel
 {
     use MetaTrait;
 
-    public $idAttribute = 'key';
-    public $idPreassigned = true;
+    public string|false $idAttribute = 'key';
+    public bool $idPreassigned = true;
 
     /**
      * Collation: utf8mb4_unicode_ci
      * MySQL 5.7 supports the length of key more than 767 bytes.
      * @var int 
      */
-    public $idAttributeLength = 190;
-    public $createdAtAttribute = false;
-    public $updatedAtAttribute = false;
-    public $enableIP = false;
-    public $contentAttribute = 'value';
-    public $updatedByAttribute = false;
-    public $confirmationAttribute = false;
+    public int $idAttributeLength = 190;
+    public string|false $createdAtAttribute = false;
+    public string|false $updatedAtAttribute = false;
+    public int $enableIP = 0;
+    public string|array|false $contentAttribute = 'value';
+    public string|false $updatedByAttribute = false;
+    public string|false $confirmationAttribute = false;
 
 }

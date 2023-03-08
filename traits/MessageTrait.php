@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -22,41 +22,42 @@ use yii\db\AfterSaveEvent;
  * @property-read array $messageRules
  * @property mixed $readAt
  * @property mixed $receivedAt
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait MessageTrait
 {
     use MutualTrait;
     
-    public $attachmentAttribute = 'attachment';
-    public $receivedAtAttribute = 'received_at';
-    public $readAtAttribute = 'read_at';
-    public static $eventMessageReceived = 'messageReceived';
-    public static $eventMessageRead = 'messageRead';
-    public $permitChangeContent = false;
-    public $permitChangeReceivedAt = false;
-    public $permitChangeReadAt = false;
+    public string|false $attachmentAttribute = 'attachment';
+    public string|false $receivedAtAttribute = 'received_at';
+    public string|false $readAtAttribute = 'read_at';
+    const EVENT_MESSAGE_RECEIVED = 'messageReceived';
+    const EVENT_MESSAGE_READ = 'messageRead';
+    public bool $permitChangeContent = false;
+    public bool $permitChangeReceivedAt = false;
+    public bool $permitChangeReadAt = false;
     
     /**
      * Whether the message has been received.
      * Note: This trait should be used for models which use [[TimestampTrait]].
-     * @return boolean
+     * @return bool
      */
-    public function hasBeenReceived()
+    public function hasBeenReceived(): bool
     {
-        return is_string($this->receivedAtAttribute) ? !$this->isInitDatetime($this->getReceivedAt()) : false;
+        return is_string($this->receivedAtAttribute) && !$this->isInitDatetime($this->getReceivedAt());
     }
     
     /**
      * Whether the message has been read.
      * If a message has been read, it must have been received.
      * Note: This trait should be used for models which use [[TimestampTrait]].
-     * @return boolean
+     * @return bool
      */
-    public function hasBeenRead()
+    public function hasBeenRead(): bool
     {
-        return is_string($this->readAtAttribute) ? !$this->isInitDatetime($this->getReadAt()) : false;
+        return is_string($this->readAtAttribute) && !$this->isInitDatetime($this->getReadAt());
     }
     
     public function touchReceived()
@@ -109,7 +110,7 @@ trait MessageTrait
      *
      * @param ModelEvent $event
      */
-    public function onInitReceivedAtAttribute($event)
+    public function onInitReceivedAtAttribute($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -120,7 +121,7 @@ trait MessageTrait
      *
      * @param ModelEvent $event
      */
-    public function onInitReadAtAttribute($event)
+    public function onInitReadAtAttribute($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -131,7 +132,7 @@ trait MessageTrait
      * We consider you have received the message if you read it.
      * @param ModelEvent $event
      */
-    public function onReadAtChanged($event)
+    public function onReadAtChanged($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -157,7 +158,7 @@ trait MessageTrait
      * You are not allowed to change receiving time if you have received it.
      * @param ModelEvent $event
      */
-    public function onReceivedAtChanged($event)
+    public function onReceivedAtChanged($event): void
     {
         $sender = $event->sender;
         $raAttribute = $sender->receivedAtAttribute;
@@ -178,14 +179,14 @@ trait MessageTrait
      * You are not allowed to change the content if it is not new message.
      * @param ModelEvent $event
      */
-    public function onContentChanged($event)
+    public function onContentChanged($event): void
     {
         $sender = $event->sender;
         // If it is permitted to change content, then it will return directly.
         if ($sender->permitChangeContent) {
             return;
         }
-        // The messgage will be reversed if it changed (current message isn't
+        // The message will be reversed if it changed (current message isn't
         // same as the old).
         $cAttribute = $sender->contentAttribute;
         $oldContent = $sender->getOldAttribute($cAttribute);
@@ -198,24 +199,24 @@ trait MessageTrait
      *
      * @param AfterSaveEvent $event
      */
-    public function onMessageUpdated($event)
+    public function onMessageUpdated($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
         $reaAttribute = $sender->receivedAtAttribute;
         if (isset($event->changedAttributes[$reaAttribute]) && $event->changedAttributes[$reaAttribute] != $sender->$reaAttribute) {
-            $sender->trigger(static::$eventMessageReceived);
+            $sender->trigger(static::EVENT_MESSAGE_RECEIVED);
         }
         $raAttribute = $sender->readAtAttribute;
         if (isset($event->changedAttributes[$raAttribute]) && $event->changedAttributes[$raAttribute] != $sender->$raAttribute) {
-            $sender->trigger(static::$eventMessageRead);
+            $sender->trigger(static::EVENT_MESSAGE_READ);
         }
     }
     
     /**
      *
      */
-    public function initMessageEvents()
+    public function initMessageEvents(): void
     {
         $this->on(static::EVENT_BEFORE_INSERT, [$this, 'onInitReceivedAtAttribute']);
         $this->on(static::EVENT_BEFORE_INSERT, [$this, 'onInitReadAtAttribute']);
@@ -229,7 +230,7 @@ trait MessageTrait
      * Return rules associated with message.
      * @return array
      */
-    public function getMessageRules()
+    public function getMessageRules(): array
     {
         $rules = [];
         $rules = array_merge($rules, $this->getMutualRules());
@@ -258,7 +259,7 @@ trait MessageTrait
      * @inheritdoc
      * @return array
      */
-    public function enabledFields()
+    public function enabledFields(): array
     {
         $fields = parent::enabledFields();
         if (is_string($this->otherGuidAttribute) && !empty($this->otherGuidAttribute)) {

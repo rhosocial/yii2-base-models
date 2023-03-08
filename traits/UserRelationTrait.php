@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -246,9 +246,9 @@ trait UserRelationTrait
     public function initUserRelationEvents()
     {
         $this->on(static::EVENT_INIT, [$this, 'onInitBlamesLimit']);
-        $this->on(static::$eventNewRecordCreated, [$this, 'onInitGroups']);
-        $this->on(static::$eventNewRecordCreated, [$this, 'onInitRemark']);
-        $this->on(static::$eventMultipleBlamesChanged, [$this, 'onBlamesChanged']);
+        $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, 'onInitGroups']);
+        $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, 'onInitRemark']);
+        $this->on(static::EVENT_MULTIPLE_BLAMES_CHANGED, [$this, 'onBlamesChanged']);
         $this->on(static::EVENT_AFTER_INSERT, [$this, 'onInsertRelation']);
         $this->on(static::EVENT_AFTER_UPDATE, [$this, 'onUpdateRelation']);
         $this->on(static::EVENT_AFTER_DELETE, [$this, 'onDeleteRelation']);

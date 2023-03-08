@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -24,7 +24,8 @@ use yii\base\InvalidConfigException;
  * $email = $user->createEmail(['content' => 'i@vistart.me']);
  * $email->save();
  * ```
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait SubsidiaryTrait
@@ -46,20 +47,20 @@ public $subsidiaryMap = [
      * The other elements will be taken if subsidiary configuration does not specify.
      * If you want to create subsidiary model and the class is not found, the array elements will be taken.
      */
-    public $subsidiaryMap = [];
+    public array $subsidiaryMap = [];
 
     /**
      * Add subsidiary class to map.
-     * @param string $name Subsidiary name, case insensitive.
-     * @param string|array $config If this parameter is string, it will regarded as class name.
+     * @param ?string $name Subsidiary name, case-insensitive.
+     * @param array|string|null $config If this parameter is string, it will be regarded as class name.
      * If this parameter is array, you should specify `class`, and the class should be existed.
      * @return boolean True if the class added.
      * @throws InvalidConfigException throws if subsidiary name is not specified or class is not
      * specified.
      */
-    public function addSubsidiaryClass($name, $config)
+    public function addSubsidiaryClass(?string $name, array|string|null $config): bool
     {
-        if (!is_string($name) || empty($name)) {
+        if (empty($name)) {
             throw new InvalidConfigException('Subsidiary name not specified.');
         }
         $name = strtolower($name);
@@ -81,10 +82,10 @@ public $subsidiaryMap = [
 
     /**
      * Remove subsidiary.
-     * @param string $name Subsidiary name, case insensitive.
+     * @param string $name Subsidiary name, case-insensitive.
      * @return boolean
      */
-    public function removeSubsidiary($name)
+    public function removeSubsidiary(string $name): bool
     {
         $name = strtolower($name);
         if (array_key_exists($name, $this->subsidiaryMap)) {
@@ -96,13 +97,13 @@ public $subsidiaryMap = [
 
     /**
      * Get subsidiary class according name.
-     * @param string $name Subsidiary name, case insensitive.
-     * @return string
+     * @param string $name Subsidiary name, case-insensitive.
+     * @return string|null
      */
-    public function getSubsidiaryClass($name)
+    public function getSubsidiaryClass(string $name): ?string
     {
         $name = strtolower($name);
-        if (array_key_exists($name, $this->subsidiaryMap) && array_key_exists('class', $this->subsidiaryMap[$name])) {
+        if (array_key_exists($name, $this->subsidiaryMap) && array_key_exists('class', (array)$this->subsidiaryMap[$name])) {
             return class_exists($this->subsidiaryMap[$name]['class']) ? $this->subsidiaryMap[$name]['class'] : null;
         }
         return null;
@@ -110,10 +111,10 @@ public $subsidiaryMap = [
 
     /**
      * Check whether the user has a subsidiary model.
-     * @param $name Subsidiary name, case insensitive.
+     * @param string $name Subsidiary name, case insensitive.
      * @return bool
      */
-    public function hasSubsidiary($name)
+    public function hasSubsidiary(string $name): bool
     {
         $class = $this->getSubsidiaryClass($name);
         if (empty($class)) {
@@ -128,12 +129,12 @@ public $subsidiaryMap = [
 
     /**
      * Get subsidiaries.
-     * @param $name Subsidiary name, case insensitive.
+     * @param string $name Subsidiary name, case-insensitive.
      * @param string $limit
      * @param int $page
-     * @return null
+     * @return ?array
      */
-    public function getSubsidiaries($name, $limit = 'all', $page = 0)
+    public function getSubsidiaries(string $name, string $limit = 'all', int $page = 0): ?array
     {
         $class = $this->getSubsidiaryClass($name);
         if (empty($class)) {
@@ -153,7 +154,7 @@ public $subsidiaryMap = [
      */
     public function __call($name, $arguments)
     {
-        if (strpos(strtolower($name), "create") === 0) {
+        if (str_starts_with(strtolower($name), "create")) {
             $class = strtolower(substr($name, 6));
             $config = (isset($arguments) && isset($arguments[0])) ? $arguments[0] : [];
             return $this->createSubsidiary($class, $config);
@@ -183,7 +184,7 @@ public $subsidiaryMap = [
         }
         $model = $className::findOne($condition);
         if (!$model) {
-            if ($config === null || !is_array($config)) {
+            if (!is_array($config)) {
                 $config = $condition;
             }
             $model = $this->create($className, $config);
@@ -227,13 +228,13 @@ public $subsidiaryMap = [
 
     /**
      * Create subsidiary model.
-     * @param string $name Subsidiary name, case insensitive.
+     * @param string $name Subsidiary name, case-insensitive.
      * @param array $config Subsidiary model configuration array.
      * @return mixed
      */
-    public function createSubsidiary($name, $config)
+    public function createSubsidiary(string $name, array $config): mixed
     {
-        if (!is_string($name) || empty($name)) {
+        if (empty($name)) {
             return null;
         }
         $className = '';

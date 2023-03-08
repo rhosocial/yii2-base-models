@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link http://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license http://vistart.me/license/
  */
 
@@ -23,27 +23,28 @@ use rhosocial\base\models\traits\UserRelationGroupTrait;
  * $contentAttribute name of user relation group.
  * $contentTypeAttribute type of user relation group.
  * 
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseUserRelationGroupModel extends BaseBlameableModel
 {
     use UserRelationGroupTrait;
 
-    public $confirmationAttribute = false;
-    public $descriptionAttribute = 'description';
+    public string|false $confirmationAttribute = false;
+    public string|false $descriptionAttribute = 'description';
     
     /**
-     * @var false This feature does not need to record IP address. 
+     * @var int This feature does not need to record IP address.
      */
-    public $enableIP = false;
+    public int $enableIP = self::IP_DISABLED;
     
-    public $idCreatorCombinatedUnique = true;
+    public bool $idCreatorCombinatedUnique = true;
     
     /**
-     * @var false This feature does not need to record the user who update this group. 
+     * @var string|false This feature does not need to record the user who update this group.
      */
-    public $updatedByAttribute = false;
+    public string|false $updatedByAttribute = false;
 
     /**
      * @inheritdoc

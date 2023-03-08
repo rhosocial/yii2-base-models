@@ -6,15 +6,18 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
 
 use Closure;
+use Throwable;
 use yii\base\ModelEvent;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Exception;
+use yii\db\StaleObjectException;
 
 /**
  * Entity features concerning timestamp.
@@ -25,50 +28,49 @@ use yii\behaviors\TimestampBehavior;
  * @property-read array $updatedAtRules
  * @property-read boolean isExpired
  * @property int|false expiredAfter the expiration duration in seconds, or false if not expired.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait TimestampTrait
 {
     /**
-     * @var string|false the attribute that receive datetime value
-     * Set this property to false if you do not want to record the creation time.
+     * @var string|false Specifies the attribute name that records the creation time.
+     * Set this attribute to false if you do not want to record it and know whether the entity has been edited.
      */
-    public $createdAtAttribute = 'created_at';
+    public string|false $createdAtAttribute = 'created_at';
 
     /**
-     * @var string|false the attribute that receive datetime value.
-     * Set this property to false if you do not want to record the update time.
+     * @var string|false Specifies the attribute name that records the last update time.
+     * Set this attribute to false if you do not want to record it and know whether the entity has been edited.
      */
-    public $updatedAtAttribute = 'updated_at';
+    public string|false $updatedAtAttribute = 'updated_at';
 
     /**
-     * @var string|false the attribute that determine when this entity expire.
-     * If this entity does not expire, set to false.
+     * @var string|false This attribute determines when the current entity expires.
+     * If not set, this function will not be enabled.
      */
-    public $expiredAfterAttribute = false;
+    public string|false $expiredAfterAttribute = false;
+
+    const TIME_FORMAT_DATETIME = 0;
+    const TIME_FORMAT_TIMESTAMP = 1;
+    const INIT_DATETIME = '1970-01-01 00:00:00';
+    const INIT_TIMESTAMP = 0;
+    const TIME_TYPE_UTC = 0;
+    const TIME_TYPE_LOCAL = 1;
 
     /**
-     * @var integer Determine the format of timestamp.
+     * @var int Determine the format of timestamp.
      */
-    public $timeFormat = 0;
-    public static $timeFormatDatetime = 0;
-    public static $timeFormatTimestamp = 1;
-    public static $initDatetime = '1970-01-01 00:00:00';
-    public static $initTimestamp = 0;
-    public $timeType = 0;
-    public static $timeTypeUtc = 0;
-    public static $timeTypeLocal = 1;
-    public static $timeTypes = [
-        0 => 'GMT',
-        1 => 'local',
-    ];
+    public int $timeFormat = 0;
+    public int $timeType = 0;
 
     /**
-     * @var Closure
+     * @var array|Closure|null
      */
-    public $expiredRemovingCallback;
-    public static $eventExpiredRemoved = 'expiredRemoved';
+    public array|Closure|null $expiredRemovingCallback = null;
+
+    const EVENT_EXPIRED_REMOVED = 'expiredRemoved';
 
     /**
      * Check this entity whether expired.
@@ -76,17 +78,17 @@ trait TimestampTrait
      * is returned.
      * This feature also need expiration duration. If expiration duration didn't
      * record, false is returned.
-     * @return boolean
+     * @return bool
      */
-    public function getIsExpired()
+    public function getIsExpired(): bool
     {
         $createdAt = $this->getCreatedAt();
         if ($this->getExpiredAfter() === false || $createdAt === null) {
             return false;
         }
-        if ($this->timeType == static::$timeTypeLocal) {
+        if ($this->timeType == self::TIME_TYPE_LOCAL) {
             return $this->getDatetimeOffset($this->offsetDatetime($this->currentDatetime(), -$this->getExpiredAfter()), $createdAt) > 0;
-        } elseif ($this->timeType == static::$timeTypeUtc) {
+        } elseif ($this->timeType == self::TIME_TYPE_UTC) {
             return $this->getDatetimeOffset($this->offsetDatetime($this->currentUtcDatetime(), -$this->getExpiredAfter()), $createdAt) > 0;
         }
         return false;
@@ -95,18 +97,21 @@ trait TimestampTrait
     /**
      * Remove myself if expired.
      * The `expiredRemovingCallback` will be called before removing itself,
-     * then it would trigger `static::$eventExpiredRemoved` event, and attach
+     * then it would trigger `self::EVENT_EXPIRED_REMOVED` event, and attach
      * the removing results.
-     * @return boolean
+     * @return bool
+     * @throws Exception
+     * @throws StaleObjectException
+     * @throws Throwable
      */
-    public function removeIfExpired()
+    public function removeIfExpired(): bool
     {
         if ($this->getIsExpired() && !$this->getIsNewRecord()) {
             if (($this->expiredRemovingCallback instanceof Closure || is_array($this->expiredRemovingCallback)) && is_callable($this->expiredRemovingCallback)) {
                 call_user_func($this->expiredRemovingCallback, $this);
             }
             $result = $this->removeSelf();
-            $this->trigger(static::$eventExpiredRemoved, new ModelEvent(['data' => ['result' => $result]]));
+            $this->trigger(self::EVENT_EXPIRED_REMOVED, new ModelEvent(['data' => ['result' => $result]]));
             return true;
         }
         return false;
@@ -115,20 +120,23 @@ trait TimestampTrait
     /**
      * Remove self.
      * You can override this method for implementing more complex features.
+     * @return int
+     * @throws Throwable
+     * @throws Exception
+     * @throws StaleObjectException
      * @see delete()
-     * @return integer
      */
-    public function removeSelf()
+    public function removeSelf(): int
     {
         return $this->delete();
     }
 
     /**
-     * We recommened you attach this event when after finding this active record.
+     * We recommended you attach this event when after finding this active record.
      * @param ModelEvent $event
-     * @return boolean
+     * @return bool
      */
-    public function onRemoveExpired($event)
+    public function onRemoveExpired($event): bool
     {
         return $event->sender->removeIfExpired();
     }
@@ -137,15 +145,15 @@ trait TimestampTrait
      * Get the current date & time in format of "Y-m-d H:i:s" or timestamp.
      * You can override this method to customize the return value.
      * @param ModelEvent $event
-     * @return string Date & Time.
+     * @return string|null Date & Time.
      */
-    public static function getCurrentDatetime($event)
+    public static function getCurrentDatetime($event): ?string
     {
         $sender = $event->sender;
         /* @var $sender static */
-        if ($sender->timeType == static::$timeTypeUtc) {
+        if ($sender->timeType == self::TIME_TYPE_UTC) {
             return $sender->currentUtcDatetime();
-        } elseif ($sender->timeType == static::$timeTypeLocal) {
+        } elseif ($sender->timeType == self::TIME_TYPE_LOCAL) {
             return $sender->currentDatetime();
         }
         return null;
@@ -153,14 +161,14 @@ trait TimestampTrait
 
     /**
      * Get current date & time, by current time format.
-     * @return string|int Date & time string if format is datetime, or timestamp.
+     * @return int|string|null Date & time string if format is datetime, or timestamp.
      */
-    public function currentDatetime()
+    public function currentDatetime(): int|string|null
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
+        if ($this->timeFormat === self::TIME_FORMAT_DATETIME) {
             return date('Y-m-d H:i:s');
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
+        if ($this->timeFormat === self::TIME_FORMAT_TIMESTAMP) {
             return time();
         }
         return null;
@@ -168,14 +176,14 @@ trait TimestampTrait
 
     /**
      * Get current Greenwich date & time (UTC), by current time format.
-     * @return string|int Date & time string if format is datetime, or timestamp.
+     * @return int|string|null Date & time string if format is datetime, or timestamp.
      */
-    public function currentUtcDatetime()
+    public function currentUtcDatetime(): int|string|null
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
+        if ($this->timeFormat === self::TIME_FORMAT_DATETIME) {
             return gmdate('Y-m-d H:i:s');
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
+        if ($this->timeFormat === self::TIME_FORMAT_TIMESTAMP) {
             return time();
         }
         return null;
@@ -183,16 +191,16 @@ trait TimestampTrait
 
     /**
      * Get offset date & time, by current time format.
-     * @param string|int $time Date &time string or timestamp.
+     * @param string|int|null $time Date &time string or timestamp.
      * @param int $offset Offset in seconds.
-     * @return string|int Date & time string if format is datetime, or timestamp.
+     * @return int|string|null Date & time string if format is datetime, or timestamp.
      */
-    public function offsetDatetime($time = null, $offset = 0)
+    public function offsetDatetime(string|int|null $time = null, int $offset = 0): int|string|null
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
+        if ($this->timeFormat === self::TIME_FORMAT_DATETIME) {
             return date('Y-m-d H:i:s', strtotime(($offset >= 0 ? "+$offset" : $offset) . " seconds", is_string($time) ? strtotime($time) : (is_int($time) ? $time : time())));
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
+        if ($this->timeFormat === self::TIME_FORMAT_TIMESTAMP) {
             return (is_int($time) ? $time : time()) + $offset;
         }
         return null;
@@ -200,20 +208,20 @@ trait TimestampTrait
 
     /**
      * Calculate the time difference(in seconds).
-     * @param string|integer $datetime1
-     * @param string|integer $datetime2
-     * @return integer Positive integer if $datetime1 is later than $datetime2, and vise versa.
+     * @param string|int $datetime1
+     * @param string|int|null $datetime2 If this parameter is not specified, the current time is used.
+     * @return int|string|null Positive integer if $datetime1 is later than $datetime2, and vise versa.
      */
-    public function getDatetimeOffset($datetime1, $datetime2 = null)
+    public function getDatetimeOffset(string|int $datetime1, string|int|null $datetime2 = null): int|string|null
     {
         if ($datetime2 === null) {
-            if ($this->timeType == static::$timeTypeLocal) {
+            if ($this->timeType == self::TIME_TYPE_LOCAL) {
                 $datetime2 = $this->currentDatetime();
-            } elseif ($this->timeType == static::$timeTypeUtc) {
+            } elseif ($this->timeType == self::TIME_TYPE_UTC) {
                 $datetime2 = $this->currentUtcDatetime();
             }
         }
-        if ($this->timeFormat == static::$timeFormatDatetime) {
+        if ($this->timeFormat == self::TIME_FORMAT_DATETIME) {
             $datetime1 = strtotime($datetime1);
             $datetime2 = strtotime($datetime2);
         }
@@ -223,25 +231,26 @@ trait TimestampTrait
     /**
      * Get init date & time in format of "Y-m-d H:i:s" or timestamp.
      * @param ModelEvent $event
-     * @return string|int
+     * @return int|string|null
      */
-    public static function getInitDatetime($event)
+    public static function getInitDatetime($event): int|string|null
     {
         $sender = $event->sender;
+        /* @var $sender static */
         return $sender->initDatetime();
     }
 
     /**
      * Get init date & time, by current time format.
-     * @return string|int Date & time string if format is datetime, or timestamp.
+     * @return int|string|null Date & time string if format is datetime, or timestamp.
      */
-    public function initDatetime()
+    public function initDatetime(): int|string|null
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
-            return static::$initDatetime;
+        if ($this->timeFormat === self::TIME_FORMAT_DATETIME) {
+            return self::INIT_DATETIME;
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
-            return static::$initTimestamp;
+        if ($this->timeFormat === self::TIME_FORMAT_TIMESTAMP) {
+            return self::INIT_TIMESTAMP;
         }
         return null;
     }
@@ -249,15 +258,15 @@ trait TimestampTrait
     /**
      * Check whether the attribute is init datetime.
      * @param mixed $attribute
-     * @return boolean
+     * @return bool
      */
-    protected function isInitDatetime($attribute)
+    protected function isInitDatetime(mixed $attribute): bool
     {
-        if ($this->timeFormat === static::$timeFormatDatetime) {
-            return $attribute == static::$initDatetime || $attribute == null;
+        if ($this->timeFormat === self::TIME_FORMAT_DATETIME) {
+            return $attribute == self::INIT_DATETIME || $attribute == null;
         }
-        if ($this->timeFormat === static::$timeFormatTimestamp) {
-            return $attribute == static::$initTimestamp || $attribute == null;
+        if ($this->timeFormat === self::TIME_FORMAT_TIMESTAMP) {
+            return $attribute == self::INIT_TIMESTAMP || $attribute == null;
         }
         return false;
     }
@@ -269,7 +278,7 @@ trait TimestampTrait
      * @param ModelEvent $event
      * @return string Date & Time.
      */
-    public function onUpdateCurrentDatetime($event)
+    public function onUpdateCurrentDatetime($event): string
     {
         return static::getCurrentDatetime($event);
     }
@@ -278,7 +287,7 @@ trait TimestampTrait
      * Behaviors associated with timestamp.
      * @return array behaviors
      */
-    public function getTimestampBehaviors()
+    public function getTimestampBehaviors(): array
     {
         return [
             [
@@ -291,10 +300,11 @@ trait TimestampTrait
     }
 
     /**
-     * Get creation time.
-     * @return string timestamp
+     * Get the creation time.
+     * If the property name of the record creation time [[$createdAtAttribute]] is not specified, null is returned.
+     * @return string|null timestamp
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?string
     {
         $createdAtAttribute = $this->createdAtAttribute;
         if (!is_string($createdAtAttribute) || empty($createdAtAttribute)) {
@@ -311,7 +321,7 @@ trait TimestampTrait
      * If `createdAtAttribute` is not specified, the empty array will be given.
      * @return array rules
      */
-    public function getCreatedAtRules()
+    public function getCreatedAtRules(): array
     {
         if (!is_string($this->createdAtAttribute) || empty($this->createdAtAttribute)) {
             return [];
@@ -322,10 +332,11 @@ trait TimestampTrait
     }
 
     /**
-     * Get update time.
-     * @return string timestamp
+     * Get the last update time.
+     * If the property name of the record last update time [[$updatedAtAttribute]] is not specified, null is returned.
+     * @return string|null timestamp
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?string
     {
         $updatedAtAttribute = $this->updatedAtAttribute;
         if (!is_string($updatedAtAttribute) || empty($updatedAtAttribute)) {
@@ -342,7 +353,7 @@ trait TimestampTrait
      * If `updatedAtAttribute` is not specified, the empty array will be given.
      * @return array rules
      */
-    public function getUpdatedAtRules()
+    public function getUpdatedAtRules(): array
     {
         if (!is_string($this->updatedAtAttribute) || empty ($this->updatedAtAttribute)) {
             return [];
@@ -355,9 +366,9 @@ trait TimestampTrait
     /**
      * Get expiration duration.
      * If `expiredAfterAttribute` is not specified, false will be given.
-     * @return boolean
+     * @return false|int
      */
-    public function getExpiredAfter()
+    public function getExpiredAfter(): false|int
     {
         if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
             return false;
@@ -367,17 +378,17 @@ trait TimestampTrait
 
     /**
      * Set expiration duration (in seconds).
-     * If `expiredAfterAttribute` is not specified, this feature will be skipped,
+     * If [[$expiredAfterAttribute]] is not specified, this feature will be skipped,
      * and return false.
-     * @param integer $expiredAfter the duration after which is expired (in seconds).
-     * @return boolean|integer
+     * @param int $expiredAfter the duration after which is expired (in seconds).
+     * @return bool|int
      */
-    public function setExpiredAfter($expiredAfter)
+    public function setExpiredAfter(int $expiredAfter): bool|int
     {
         if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
             return false;
         }
-        return (int)($this->{$this->expiredAfterAttribute} = (int)$expiredAfter);
+        return $this->{$this->expiredAfterAttribute} = $expiredAfter;
     }
 
     /**
@@ -387,7 +398,7 @@ trait TimestampTrait
      * If `expiredAfterAttribute` is not specified, the empty array will be given.
      * @return array The key of array is not specified.
      */
-    public function getExpiredAfterRules()
+    public function getExpiredAfterRules(): array
     {
         if (!is_string($this->expiredAfterAttribute) || empty($this->expiredAfterAttribute)) {
             return [];
@@ -402,7 +413,7 @@ trait TimestampTrait
      * `updatedAtAttribute` and `expiredAfterAttribute`.
      * @return array field list. The keys of array are not specified.
      */
-    public function enabledTimestampFields()
+    public function enabledTimestampFields(): array
     {
         $fields = [];
         if (is_string($this->createdAtAttribute) && !empty($this->createdAtAttribute)) {
@@ -418,14 +429,16 @@ trait TimestampTrait
     }
 
     /**
-     * Check it has been ever edited.
-     * The judgement principle is to compare the creation time and the last update time,
-     * if one of the two does not exist, then that has not been modified,
-     * if both exist but not consistent, that modified.
+     * Check to see if the entity has ever been edited.
+     *
+     * The specific judgment rules are:
+     *     Check whether the "creation time" and "last update time" are consistent.
+     *     If one of the two does not exist or is inconsistent, false is returned.
+     *     Returns true if they exist and are consistent.
      * You can override this method to implement more complex function.
-     * @return boolean Whether this entity has ever been edited.
+     * @return bool Whether this entity has ever been edited.
      */
-    public function hasEverEdited()
+    public function hasEverBeenEdited(): bool
     {
         if ($this->getCreatedAt() === null || $this->getUpdatedAt() === null) {
             return false;

@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,9 +14,11 @@ namespace rhosocial\base\models\tests\redis;
 
 use rhosocial\base\models\tests\data\ar\redis\TimestampEntity;
 use rhosocial\base\models\tests\data\ar\redis\ExpiredTimestampEntity;
+use yii\base\Exception;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisTimestampEntityTest extends RedisEntityTestCase
@@ -36,20 +38,21 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
      * @group redis
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testNew()
     {
         $this->assertTrue($this->entity->save());
         $this->assertEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
         $this->assertNotEmpty($this->entity->getCreatedAt());
-        $this->assertFalse($this->entity->hasEverEdited());
+        $this->assertFalse($this->entity->hasEverBeenEdited());
         
         sleep(1);
         $this->entity->content = \Yii::$app->security->generateRandomString();
         $this->assertTrue($this->entity->save());
         $this->assertNotEquals($this->entity->getCreatedAt(), $this->entity->getUpdatedAt());
         $this->assertNotEmpty($this->entity->getUpdatedAt());
-        $this->assertTrue($this->entity->hasEverEdited());
+        $this->assertTrue($this->entity->hasEverBeenEdited());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
 
@@ -109,11 +112,12 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
      * @group redis
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
-    public function testHasEverEdited()
+    public function testHasEverBeenEdited()
     {
         $this->assertTrue($this->entity->save());
-        $this->assertFalse($this->entity->hasEverEdited());
+        $this->assertFalse($this->entity->hasEverBeenEdited());
         $createdAt = $this->entity->getCreatedAt();
         $updatedAt = $this->entity->getUpdatedAt();
         $this->entity = TimestampEntity::findOne((string)($this->entity));
@@ -123,7 +127,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $this->entity = TimestampEntity::findOne((string)($this->entity));
         $this->assertEquals($createdAt, $this->entity->getCreatedAt());
         $this->assertNotEquals($updatedAt, $this->entity->getUpdatedAt());
-        $this->assertTrue($this->entity->hasEverEdited());
+        $this->assertTrue($this->entity->hasEverBeenEdited());
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
 

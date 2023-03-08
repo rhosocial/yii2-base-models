@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -15,6 +15,8 @@ namespace rhosocial\base\models\tests\user;
 use rhosocial\base\models\tests\data\ar\User;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class RegistrationTest extends UserTestCase
@@ -38,7 +40,7 @@ class RegistrationTest extends UserTestCase
         $this->user = new User();
         $this->user->setPasswordResetToken(sha1(\Yii::$app->security->generateRandomString()) . '1');
         $result = $this->user->register();
-        $this->assertInstanceOf(\Exception::class, $result);
+        $this->assertFalse($result);
         $this->assertFalse($this->user->deregister());
     }
     

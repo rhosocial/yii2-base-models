@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -20,22 +20,23 @@ use yii\base\ModelEvent;
  * @property string $GUID GUID value in 128-bit(16 bytes) binary format.
  * @property-read string $readableGUID Readable GUID value seperated with four hyphens.
  * @property-read array $guidRules
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait GUIDTrait
 {
     
     /**
-     * @var string REQUIRED. The attribute that will receive the GUID value.
+     * @var string|false REQUIRED. The attribute that will receive the GUID value.
      */
-    public $guidAttribute = 'guid';
+    public string|false $guidAttribute = 'guid';
     
     /**
      * DO NOT MODIFY OR OVERRIDE THIS METHOD UNLESS YOU KNOW THE CONSEQUENCES.
      * @return string
      */
-    public function getReadableGuidAttribute()
+    public function getReadableGuidAttribute(): string
     {
         return 'readableGuid';
     }
@@ -44,7 +45,7 @@ trait GUIDTrait
      * Attach `onInitGUIDAttribute` event.
      * @param string $eventName
      */
-    protected function attachInitGUIDEvent($eventName)
+    protected function attachInitGUIDEvent(string $eventName): void
     {
         $this->on($eventName, [$this, 'onInitGUIDAttribute']);
     }
@@ -52,10 +53,10 @@ trait GUIDTrait
     /**
      * Initialize the GUID attribute with new generated GUID.
      * This method is ONLY used for being triggered by event. DO NOT call,
-     * ovveride or modify it directly, unless you know the conquences.
+     * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
      */
-    public function onInitGUIDAttribute($event)
+    public function onInitGUIDAttribute($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -66,7 +67,7 @@ trait GUIDTrait
      * Generate GUID in binary.
      * @return string GUID.
      */
-    public static function generateGuid()
+    public static function generateGuid(): string
     {
         return Number::guid_bin();
     }
@@ -76,7 +77,7 @@ trait GUIDTrait
      * @param string $guid the GUID to be checked.
      * @return boolean Whether the $guid exists or not.
      */
-    public static function checkGuidExists($guid)
+    public static function checkGuidExists(string $guid): bool
     {
         return static::findOne($guid) !== null;
     }
@@ -85,10 +86,10 @@ trait GUIDTrait
      * Get the rules associated with GUID attribute.
      * @return array GUID rules.
      */
-    public function getGUIDRules()
+    public function getGUIDRules(): array
     {
         $rules = [];
-        if (is_string($this->guidAttribute) && !empty($this->guidAttribute)) {
+        if (!empty($this->guidAttribute)) {
             $rules = [
                 [[$this->guidAttribute], 'required',],
                 [[$this->guidAttribute], 'unique',],
@@ -97,22 +98,22 @@ trait GUIDTrait
         }
         return $rules;
     }
-    
+
     /**
      * Get GUID, in spite of guid attribute name.
-     * @return string
+     * @return string|null
      */
-    public function getGUID()
+    public function getGUID(): ?string
     {
         $guidAttribute = $this->guidAttribute;
-        return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute : null;
+        return (!empty($guidAttribute)) ? $this->$guidAttribute : null;
     }
     
     /**
      * Get Readable GUID.
      * @return string
      */
-    public function getReadableGUID()
+    public function getReadableGUID(): string
     {
         $guid = $this->getGUID();
         if (preg_match(Number::GUID_REGEX, $guid)) {
@@ -124,23 +125,23 @@ trait GUIDTrait
     /**
      * Set guid, in spite of guid attribute name.
      * @param string $guid
-     * @return string
+     * @return string|null
      */
-    public function setGUID($guid)
+    public function setGUID(string $guid): ?string
     {
         $guidAttribute = $this->guidAttribute;
         if (preg_match(Number::GUID_REGEX, $guid)) {
             $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
         }
-        return (is_string($guidAttribute) && !empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
+        return (!empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
     }
-    
+
     /**
      * Composite GUIDs from models.
-     * @param array|string $models
-     * @return array
+     * @param mixed $models
+     * @return array|string|null
      */
-    public static function compositeGUIDs($models)
+    public static function compositeGUIDs(mixed $models): array|string|null
     {
         if (empty($models)) {
             return null;

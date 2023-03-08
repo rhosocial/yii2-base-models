@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -29,39 +29,41 @@ trait EntityTrait
 {
     use GUIDTrait, IDTrait, IPTrait, TimestampTrait, SubsidiaryTrait;
     
-    private $entityLocalRules = [];
-    private $entityLocalBehaviors = [];
+    private array|false|null $entityLocalRules = [];
+    private array|false|null $entityLocalBehaviors = [];
 
     /**
      * @var string cache key and tag prefix. the prefix is usually set to full
      * qualified class name.
      */
-    public $cachePrefix = '';
-    public static $eventNewRecordCreated = 'newRecordCreated';
-    public static $cacheKeyEntityRules = 'entity_rules';
-    public static $cacheTagEntityRules = 'tag_entity_rules';
-    public static $cacheKeyEntityBehaviors = 'entity_behaviors';
-    public static $cacheTagEntityBehaviors = 'tag_entity_behaviors';
+    public string $cachePrefix = '';
+
+    const EVENT_NEW_RECORD_CREATED = 'newRecordCreated';
+
+    public static string $cacheKeyEntityRules = 'entity_rules';
+    public static string $cacheTagEntityRules = 'tag_entity_rules';
+    public static string $cacheKeyEntityBehaviors = 'entity_behaviors';
+    public static string $cacheTagEntityBehaviors = 'tag_entity_behaviors';
     
     /**
      * @var string cache component id.
      */
-    public $cacheId = 'cache';
+    public string $cacheId = 'cache';
     
     /**
-     * @var boolean Determines to skip initialization.
+     * @var bool Determines to skip initialization.
      */
-    public $skipInit = false;
+    public bool $skipInit = false;
     
     /**
-     * @var string the name of query class or sub-class.
+     * @var ?string the name of query class or subclass.
      */
-    public $queryClass;
+    public ?string $queryClass = null;
     
     /**
-     * @return \static New self without any initializations.
+     * @return static New self without any initializations.
      */
-    public static function buildNoInitModel()
+    public static function buildNoInitModel(): static
     {
         return new static(['skipInit' => true]);
     }
@@ -224,7 +226,7 @@ trait EntityTrait
      * @return boolean whether the value is successfully stored into cache. if
      * cache component was not configured, then return false directly.
      */
-    public function resetCacheKey($cacheKey, $value = false)
+    public function resetCacheKey($cacheKey, $value = false): bool
     {
         $cache = $this->getCache();
         if ($cache) {
@@ -236,14 +238,14 @@ trait EntityTrait
     /**
      * Attach events associated with entity model.
      */
-    protected function initEntityEvents()
+    protected function initEntityEvents(): void
     {
         $this->on(static::EVENT_INIT, [$this, 'onInitCache']);
-        $this->attachInitGUIDEvent(static::$eventNewRecordCreated);
-        $this->attachInitIDEvent(static::$eventNewRecordCreated);
-        $this->attachInitIPEvent(static::$eventNewRecordCreated);
+        $this->attachInitGUIDEvent(static::EVENT_NEW_RECORD_CREATED);
+        $this->attachInitIDEvent(static::EVENT_NEW_RECORD_CREATED);
+        $this->attachInitIPEvent(static::EVENT_NEW_RECORD_CREATED);
         if ($this->isNewRecord) {
-            $this->trigger(static::$eventNewRecordCreated);
+            $this->trigger(static::EVENT_NEW_RECORD_CREATED);
         }
         $this->on(static::EVENT_AFTER_FIND, [$this, 'onRemoveExpired']);
     }
@@ -252,7 +254,7 @@ trait EntityTrait
      * Initialize the cache prefix.
      * @param ModelEvent $event
      */
-    public function onInitCache($event)
+    public function onInitCache($event): void
     {
         $sender = $event->sender;
         $data = $event->data;
@@ -266,9 +268,9 @@ trait EntityTrait
     /**
      * Record warnings.
      */
-    protected function recordWarnings()
+    protected function recordWarnings(): void
     {
-        if (YII_ENV !== YII_ENV_PROD || YII_DEBUG) {
+        if (YII_ENV != YII_ENV_PROD || YII_DEBUG) {
             Yii::warning($this->errors);
         }
     }
@@ -294,7 +296,7 @@ trait EntityTrait
      * if enable `$idAttribute` and $row[$idAttribute] set, the `idPreassigned`
      * will be assigned to true.
      */
-    public static function instantiate($row)
+    public static function instantiate($row): static
     {
         $self = static::buildNoInitModel();
         if (isset($self->idAttribute) && isset($row[$self->idAttribute])) {
@@ -309,18 +311,18 @@ trait EntityTrait
      * unset entity attributes.
      * @return array result.
      */
-    public function unsetSelfFields()
+    public function unsetSelfFields(): array
     {
         return static::unsetFields($this->attributes, $this->enabledFields());
     }
     
     /**
      * unset fields of array.
-     * @param array $array
-     * @param array $fields
+     * @param array|null $array
+     * @param array|null $fields
      * @return array
      */
-    public static function unsetFields($array, $fields = null)
+    public static function unsetFields(array $array = null, array $fields = null): array
     {
         if (!is_array($array)) {
             $fields = [];
@@ -337,7 +339,7 @@ trait EntityTrait
      * Get enabled fields.
      * @return string[]
      */
-    public function enabledFields()
+    public function enabledFields(): array
     {
         return array_merge(
             (is_string($this->guidAttribute) && !empty($this->guidAttribute)) ? [$this->guidAttribute] : [],

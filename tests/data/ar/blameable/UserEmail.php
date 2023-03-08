@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 * 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,35 +16,42 @@ use Yii;
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\base\models\models\BaseBlameableModel;
+use yii\base\Exception;
+use yii\base\NotSupportedException;
 
 /**
  * User Email Test Model.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class UserEmail extends BaseBlameableModel
 {
-    public $confirmationAttribute = 'confirmed';
-    public $confirmCodeAttribute = 'confirm_code';
-    public $contentTypeAttribute = 'type';
+    public string|false $confirmationAttribute = 'confirmed';
+    public string|false $confirmCodeAttribute = 'confirm_code';
+    public string|false $contentTypeAttribute = 'type';
 
     const TYPE_HOME = 0;
     const TYPE_WORK = 1;
     const TYPE_OTHER = 0xff;
 
-    public $contentTypes = [
-        self::TYPE_HOME => 'home',
-        self::TYPE_WORK => 'work',
-        self::TYPE_OTHER => 'other',
+    public array|false $contentTypes = [
+        'home' => self::TYPE_HOME,
+        'work' => self::TYPE_WORK,
+        'other' => self::TYPE_OTHER,
     ];
 
-    public $updatedByAttribute = false;
-    public $contentAttribute = 'email';
-    public $contentAttributeRule = ['email', 'message' => 'Please input valid email address.', 'allowName' => true];
-    public $enableIP = false;
+    public string|false $updatedByAttribute = false;
+    public string|array|false $contentAttribute = 'email';
+    public array|string $contentAttributeRule = ['email', 'message' => 'Please input valid email address.', 'allowName' => true];
+    public int $enableIP = 0;
 
-    public $descriptionAttribute = 'description';
+    public string|false $descriptionAttribute = 'description';
 
+    /**
+     * @throws NotSupportedException
+     * @throws Exception
+     */
     public function init()
     {
         $this->hostClass = User::class;

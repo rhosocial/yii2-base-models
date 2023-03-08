@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 -2017 vistart
+ * @copyright Copyright (c) 2016 -2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,8 +16,13 @@ use rhosocial\base\models\tests\data\ar\Entity;
 use rhosocial\base\models\tests\data\ar\EntityLocal;
 use rhosocial\base\models\tests\data\ar\ExpiredEntity;
 use rhosocial\base\models\tests\data\ar\ExpiredCallbackEntity;
+use Throwable;
+use yii\base\Exception;
+use yii\db\StaleObjectException;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class TimestampTest extends EntityTestCase
@@ -34,36 +39,44 @@ class TimestampTest extends EntityTestCase
         $this->assertFalse($this->entity->getIsExpired());
         $this->assertFalse($this->entity->setExpiredAfter(1));
     }
-    
+
     /**
      * @group entity
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws StaleObjectException
+     * @throws Throwable
      * @dataProvider severalTimes
      */
-    public function testExpired($severalTimes)
+    public function testExpired(int $severalTimes)
     {
         $this->entity = new ExpiredEntity();
         $this->entity->setExpiredAfter(1);
         $this->assertEquals(1, $this->entity->getExpiredAfter());
         $this->assertTrue($this->entity->save());
-        $this->assertNotNull($this->entity->getCreatedAt());
-        $this->assertNotNull($this->entity->getUpdatedAt());
+        $createdAt = $this->entity->getCreatedAt();
+        $this->assertNotNull($createdAt);
+        $updatedAt = $this->entity->getUpdatedAt();
+        $this->assertNotNull($updatedAt);
         sleep(2);
         $entity = ExpiredEntity::findOne($this->entity->getGUID());
+        $this->assertEquals($createdAt, $entity->getCreatedAt());
+        $this->assertEquals($updatedAt, $entity->getUpdatedAt());
         $this->assertEquals(1, $entity->getExpiredAfter());
         $this->assertNotNull($entity->getCreatedAt());
         $this->assertTrue($entity->getIsExpired());
         $this->assertEquals(0, $entity->delete());
     }
-    
+
     /**
      * @group entity
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws Throwable
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testRemoveIfExpired($severalTimes)
+    public function testRemoveIfExpired(int $severalTimes)
     {
         $this->entity = new ExpiredEntity();
         $this->entity->setExpiredAfter(1);
@@ -92,11 +105,11 @@ class TimestampTest extends EntityTestCase
      */
     public function testInitDatetime()
     {
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatDatetime]);
-        $this->assertEquals(Entity::$initDatetime, $this->entity->initDatetime());
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_DATETIME]);
+        $this->assertEquals(Entity::INIT_DATETIME, $this->entity->initDatetime());
         
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatTimestamp]);
-        $this->assertEquals(Entity::$initTimestamp, $this->entity->initDatetime());
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_TIMESTAMP]);
+        $this->assertEquals(Entity::INIT_TIMESTAMP, $this->entity->initDatetime());
         
         $this->entity = new Entity(['timeFormat' => -1]);
         $this->assertNull($this->entity->initDatetime());
@@ -108,10 +121,10 @@ class TimestampTest extends EntityTestCase
      */
     public function testCurrentDatetime()
     {
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_DATETIME]);
         $this->assertEquals(date('Y-m-d H:i:s'), $this->entity->currentDatetime());
         
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_TIMESTAMP]);
         $this->assertEquals(time(), $this->entity->currentDatetime());
         
         $this->entity = new Entity(['timeFormat' => -1]);
@@ -127,10 +140,10 @@ class TimestampTest extends EntityTestCase
      */
     public function testCurrentLocalDatetime()
     {
-        $this->entity = new EntityLocal(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->entity = new EntityLocal(['timeFormat' => Entity::TIME_FORMAT_DATETIME]);
         $this->assertEquals(gmdate('Y-m-d H:i:s'), $this->entity->currentUtcDatetime());
         
-        $this->entity = new EntityLocal(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->entity = new EntityLocal(['timeFormat' => Entity::TIME_FORMAT_TIMESTAMP]);
         $this->assertEquals(time(), $this->entity->currentUtcDatetime());
         
         $this->entity = new EntityLocal(['timeFormat' => -1]);
@@ -143,10 +156,10 @@ class TimestampTest extends EntityTestCase
      */
     public function testOffsetDatetime()
     {
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatDatetime]);
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_DATETIME]);
         $this->assertEquals(date('Y-m-d H:i:s', strtotime("2 seconds")), $this->entity->offsetDatetime(date('Y-m-d H:i:s'), 2));
         
-        $this->entity = new Entity(['timeFormat' => Entity::$timeFormatTimestamp]);
+        $this->entity = new Entity(['timeFormat' => Entity::TIME_FORMAT_TIMESTAMP]);
         $this->assertEquals(time() + 2, $this->entity->offsetDatetime(null, 2));
         
         $this->entity = new Entity(['timeFormat' => -1]);
@@ -162,10 +175,10 @@ class TimestampTest extends EntityTestCase
      */
     public function testOffsetDatetimeLocal()
     {
-        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::$timeFormatDatetime]);
+        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::TIME_FORMAT_DATETIME]);
         $this->assertEquals(gmdate('Y-m-d H:i:s', strtotime("2 seconds")), $this->entity->offsetDatetime(gmdate('Y-m-d H:i:s'), 2));
         
-        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::$timeFormatTimestamp]);
+        $this->entity = new EntityLocal(['timeFormat' => EntityLocal::TIME_FORMAT_TIMESTAMP]);
         $this->assertEquals(time() + 2, $this->entity->offsetDatetime(null, 2));
         
         $this->entity = new EntityLocal(['timeFormat' => -1]);
@@ -183,10 +196,11 @@ class TimestampTest extends EntityTestCase
         $this->assertEmpty($this->entity->getCreatedAtRules());
         $this->assertTrue($this->entity->save());
     }
-    
+
     /**
      * @group entity
      * @group timestamp
+     * @throws Exception
      */
     public function testUpdatedAtChanged()
     {
@@ -254,7 +268,7 @@ class TimestampTest extends EntityTestCase
         $this->assertTrue($this->entity->save());
     }
     
-    public function severalTimes()
+    public function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

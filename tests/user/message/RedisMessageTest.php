@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -15,6 +15,9 @@ namespace rhosocial\base\models\tests\user\message;
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\redis\RedisMessage;
 use rhosocial\base\models\tests\user\UserTestCase;
+use yii\base\Exception;
+use yii\db\IntegrityException;
+use yii\db\StaleObjectException;
 
 /**
  * @version 1.0
@@ -25,13 +28,16 @@ class RedisMessageTest extends UserTestCase
     /**
      * @var User
      */
-    protected $other;
+    protected User $other;
 
     protected function setUp() : void {
         parent::setUp();
         $this->other = new User(['password' => '123456']);
     }
 
+    /**
+     * @throws IntegrityException
+     */
     protected function tearDown() : void {
         $this->other->deregister();
         parent::tearDown();
@@ -41,6 +47,9 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group message
      * @group redis
+     * @throws IntegrityException
+     * @throws \yii\db\Exception
+     * @throws StaleObjectException
      */
     public function testNew()
     {
@@ -60,6 +69,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
+     * @throws IntegrityException
      */
     public function testExpired()
     {
@@ -89,7 +99,7 @@ class RedisMessageTest extends UserTestCase
      * 
      * @param \yii\base\ModelEvent $event
      */
-    public function onReceived($event)
+    public function onReceived($event): true
     {
         //echo "Received Event Triggered\n";
         return $this->isReceived = true;
@@ -99,7 +109,7 @@ class RedisMessageTest extends UserTestCase
      * 
      * @param \yii\base\ModelEvent $event
      */
-    public function onRead($event)
+    public function onRead($event): true
     {
         //echo "Read Event Triggered\n";
         return $this->isRead = true;
@@ -115,13 +125,14 @@ class RedisMessageTest extends UserTestCase
             . "This event should not be triggered.");
     }
 
-    protected $isRead = false;
-    protected $isReceived = false;
+    protected bool $isRead = false;
+    protected bool $isReceived = false;
 
     /**
      * @group user
      * @group redis
      * @group message
+     * @throws Exception
      */
     public function testRead()
     {
@@ -153,9 +164,9 @@ class RedisMessageTest extends UserTestCase
         $this->assertFalse($message->isExpired);
         $this->assertFalse($message1->isExpired);
         
-        $message->on(RedisMessage::$eventMessageReceived, [$this, 'onReceived']);
-        $message->on(RedisMessage::$eventMessageRead, [$this, 'onRead']);
-        $message->on(RedisMessage::$eventExpiredRemoved, [$this, 'onShouldNotBeExpiredRemoved']);
+        $message->on(RedisMessage::EVENT_MESSAGE_RECEIVED, [$this, 'onReceived']);
+        $message->on(RedisMessage::EVENT_MESSAGE_READ, [$this, 'onRead']);
+        $message->on(RedisMessage::EVENT_EXPIRED_REMOVED, [$this, 'onShouldNotBeExpiredRemoved']);
         
         $message->content = "new $content";
         $this->assertTrue($message->save());
@@ -165,9 +176,9 @@ class RedisMessageTest extends UserTestCase
         $this->assertEquals($content, $message->content);
         
         if ($message->hasBeenRead()) {
-            var_dump(RedisMessage::$initDatetime);
+            var_dump(RedisMessage::INIT_DATETIME);
             var_dump($message->readAt);
-            var_dump(RedisMessage::$initDatetime == $message->readAt);
+            var_dump(RedisMessage::INIT_DATETIME == $message->readAt);
             $this->fail("The message has not been read yet.");
         } else {
             $this->assertTrue(true);
@@ -205,6 +216,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
+     * @throws Exception
      */
     public function testReceived()
     {
@@ -233,9 +245,9 @@ class RedisMessageTest extends UserTestCase
         $this->assertFalse($message->isExpired);
         $this->assertFalse($message1->isExpired);
         
-        $message->on(RedisMessage::$eventMessageReceived, [$this, 'onReceived']);
-        $message->on(RedisMessage::$eventMessageRead, [$this, 'onRead']);
-        $message->on(RedisMessage::$eventExpiredRemoved, [$this, 'onShouldNotBeExpiredRemoved']);
+        $message->on(RedisMessage::EVENT_MESSAGE_RECEIVED, [$this, 'onReceived']);
+        $message->on(RedisMessage::EVENT_MESSAGE_READ, [$this, 'onRead']);
+        $message->on(RedisMessage::EVENT_EXPIRED_REMOVED, [$this, 'onShouldNotBeExpiredRemoved']);
         
         $this->assertInstanceOf(RedisMessage::class, $message);
         $this->assertFalse($message->hasBeenReceived());
@@ -266,6 +278,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
+     * @throws Exception
      */
     public function testGetUpdater()
     {
@@ -287,6 +300,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
+     * @throws Exception
      */
     public function testSetUpdater()
     {
@@ -308,6 +322,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
+     * @throws Exception
      */
     public function testPagination()
     {
@@ -319,7 +334,6 @@ class RedisMessageTest extends UserTestCase
         /* @var $message RedisMessage */
         $this->assertTrue($message->save());
         $pagination = RedisMessage::getPagination();
-        /* @var $pagination \yii\data\Pagination */
         //sleep(20);
         $this->assertEquals(1, $pagination->limit);
         $this->assertEquals(1, $pagination->totalCount);

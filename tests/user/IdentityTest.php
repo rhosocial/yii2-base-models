@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,16 +14,25 @@ namespace rhosocial\base\models\tests\user;
 
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\User;
+use Throwable;
+use yii\base\Exception;
+use yii\db\IntegrityException;
 
+/**
+ * @version 2.0
+ * @since 1.0
+ * @author vistart <i@vistart.me>
+ */
 class IdentityTest extends UserTestCase
 {
     /**
      * @group user
      * @group identity
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
+     * @throws IntegrityException|Throwable
      */
-    public function testFindIdentity($severalTimes)
+    public function testFindIdentity(int $severalTimes)
     {
         $this->assertTrue($this->user->register());
         $user = User::findIdentity($this->user->getID());
@@ -32,14 +41,15 @@ class IdentityTest extends UserTestCase
         $this->assertNull($user);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group identity
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
+     * @throws IntegrityException|Throwable
      */
-    public function testFindIdentityByGUID($severalTimes)
+    public function testFindIdentityByGUID(int $severalTimes)
     {
         $this->assertTrue($this->user->register());
         $user = User::findIdentityByGuid($this->user);
@@ -48,23 +58,24 @@ class IdentityTest extends UserTestCase
         $this->assertNull($user);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group identity
+     * @throws IntegrityException|Throwable
      */
     public function testStatus()
     {
         $this->assertTrue($this->user->register());
-        $this->assertEquals(User::$statusActive, $this->user->status);
+        $this->assertEquals(User::STATUS_ACTIVE, $this->user->status);
         $this->assertTrue($this->user->deregister());
         
-        $this->user->status = User::$statusInactive;
+        $this->user->status = User::STATUS_INACTIVE;
         $this->assertTrue($this->user->register());
-        $this->assertEquals(User::$statusInactive, $this->user->status);
-        $this->user->setStatus(User::$statusActive);
+        $this->assertEquals(User::STATUS_INACTIVE, $this->user->status);
+        $this->user->setStatus(User::STATUS_ACTIVE);
         $this->assertTrue($this->user->save());
-        $this->assertEquals(User::$statusActive, $this->user->getStatus());
+        $this->assertEquals(User::STATUS_ACTIVE, $this->user->getStatus());
         $this->assertTrue($this->user->deregister());
     }
     
@@ -81,14 +92,15 @@ class IdentityTest extends UserTestCase
         $this->user->setStatusRules($rules);
         $this->assertTrue($this->user->validate());
     }
-    
+
     /**
      * @group user
      * @group identity
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
+     * @throws IntegrityException|Throwable
      */
-    public function testAccessToken($severalTimes)
+    public function testAccessToken(int $severalTimes)
     {
         $this->assertNotEmpty($this->user->accessToken);
         $this->assertTrue($this->user->register());
@@ -97,14 +109,15 @@ class IdentityTest extends UserTestCase
         $this->assertEquals(1, User::find()->guid($this->user)->andWhere([$this->user->accessTokenAttribute => $this->user->accessToken])->count());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group identity
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
+     * @throws IntegrityException|Exception|Throwable
      */
-    public function testSetAccessToken($severalTimes)
+    public function testSetAccessToken(int $severalTimes)
     {
         $this->assertTrue($this->user->register());
         $accessToken = sha1(\Yii::$app->security->generateRandomString());
@@ -113,10 +126,11 @@ class IdentityTest extends UserTestCase
         $this->assertNotEquals($accessToken, $this->user->getAccessToken());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group identity
+     * @throws Exception
      */
     public function testAccessTokenRulesPass()
     {
@@ -128,10 +142,11 @@ class IdentityTest extends UserTestCase
         ]);
         $this->assertTrue($this->user->validate());
     }
-        
+
     /**
      * @group user
      * @group identity
+     * @throws Exception
      */
     public function testAccessTokenRulesNotPass()
     {
@@ -142,14 +157,16 @@ class IdentityTest extends UserTestCase
         ];
         $this->assertFalse($this->user->validate());
     }
-    
+
     /**
      * @group user
      * @group identity
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws Exception
+     * @throws IntegrityException|Throwable
      * @dataProvider severalTimes
      */
-    public function testAuthKey($severalTimes)
+    public function testAuthKey(int $severalTimes)
     {
         $this->assertNotEmpty($this->user->authKey);
         $this->assertTrue($this->user->register());
@@ -159,10 +176,11 @@ class IdentityTest extends UserTestCase
         $this->assertFalse($this->user->validateAuthKey($authKey));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group identity
+     * @throws Exception
      */
     public function testAuthKeyRulesPass()
     {
@@ -173,10 +191,11 @@ class IdentityTest extends UserTestCase
         ];
         $this->assertTrue($this->user->validate());
     }
-    
+
     /**
      * @group user
      * @group identity
+     * @throws Exception
      */
     public function testAuthKeyRulesNotPass()
     {
@@ -188,7 +207,7 @@ class IdentityTest extends UserTestCase
         $this->assertFalse($this->user->validate());
     }
     
-    public function severalTimes()
+    public function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield [$i];

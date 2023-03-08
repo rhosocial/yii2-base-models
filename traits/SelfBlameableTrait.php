@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -17,6 +17,7 @@ use yii\base\ModelEvent;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidArgumentException;
 use yii\db\ActiveQuery;
+use yii\db\Exception;
 use yii\db\IntegrityException;
 
 /**
@@ -57,7 +58,8 @@ use yii\db\IntegrityException;
  * @property-read static[] $children
  * @property-read static[] $oldChildren
  * @property array $selfBlameableRules
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait SelfBlameableTrait
@@ -69,23 +71,23 @@ trait SelfBlameableTrait
      * Or if you access any features of this trait when this parameter is false,
      * exception may be thrown.
      */
-    public $parentAttribute = false;
+    public string|false $parentAttribute = false;
 
     /**
      * @var string|array rule name and parameters of parent attribute, as well
      * as self referenced ID attribute.
      */
-    public $parentAttributeRule = ['string', 'max' => 16];
+    public string|array $parentAttributeRule = ['string', 'max' => 16];
 
     /**
      * @var string self referenced ID attribute.
      * If you enable self-blameable features, this parameter should be specified,
      * otherwise, exception will be thrown.
      */
-    public $refIdAttribute = 'guid';
-    public static $parentNone = 0;
-    public static $parentParent = 1;
-    public static $parentTypes = [
+    public string $refIdAttribute = 'guid';
+    public static int $parentNone = 0;
+    public static int $parentParent = 1;
+    public static array $parentTypes = [
         0 => 'none',
         1 => 'parent',
     ];
@@ -93,60 +95,60 @@ trait SelfBlameableTrait
     /**
      * @var string The constant determines the null parent.
      */
-    public static $nullParent = '';
-    public static $onNoAction = 0;
-    public static $onRestrict = 1;
-    public static $onCascade = 2;
-    public static $onSetNull = 3;
-    public static $onUpdateTypes = [
-        0 => 'on action',
-        1 => 'restrict',
-        2 => 'cascade',
-        3 => 'set null',
+    public static string $nullParent = '';
+    const SELF_REF_UPDATE_TYPE_ON_NO_ACTION = 0;
+    const SELF_REF_UPDATE_TYPE_ON_RESTRICT = 1;
+    const SELF_REF_UPDATE_TYPE_ON_CASCADE = 2;
+    const SELF_REF_UPDATE_TYPE_ON_SET_NULL = 3;
+    const SELF_REF_UPDATE_TYPES = [
+        self::SELF_REF_UPDATE_TYPE_ON_NO_ACTION => 'on action',
+        self::SELF_REF_UPDATE_TYPE_ON_RESTRICT => 'restrict',
+        self::SELF_REF_UPDATE_TYPE_ON_CASCADE => 'cascade',
+        self::SELF_REF_UPDATE_TYPE_ON_SET_NULL => 'set null',
     ];
 
     /**
      * @var integer indicates the on delete type. default to cascade.
      */
-    public $onDeleteType = 2;
+    public int $onDeleteType = self::SELF_REF_UPDATE_TYPE_ON_CASCADE;
 
     /**
      * @var integer indicates the on update type. default to cascade.
      */
-    public $onUpdateType = 2;
+    public int $onUpdateType = self::SELF_REF_UPDATE_TYPE_ON_CASCADE;
 
     /**
-     * @var boolean indicates whether throw exception or not when restriction occured on updating or deleting operation.
+     * @var boolean indicates whether throw exception or not when restriction occurred on updating or deleting operation.
      */
-    public $throwRestrictException = false;
+    public bool $throwRestrictException = false;
 
     /**
      * @var array store the attribute validation rules.
      * If this field is a non-empty array, then it will be given.
      */
-    private $localSelfBlameableRules = [];
-    public static $eventParentChanged = 'parentChanged';
-    public static $eventChildAdded = 'childAdded';
+    private array $localSelfBlameableRules = [];
+    const EVENT_PARENT_CHANGED = 'parentChanged';
+    const EVENT_CHILD_ADDED = 'childAdded';
 
     /**
      * @var false|integer Set the limit of ancestor level. False is no limit.
      * We strongly recommend you set an unsigned integer which is less than 256.
      */
-    public $ancestorLimit = false;
+    public int|false|null $ancestorLimit = false;
 
     /**
-     * @var false|integer Set the limit of children (not descendants). False is no limit.
+     * @var false|int|null Set the limit of children (not descendants). False is no limit.
      * We strongly recommend you set an unsigned integer which is less than 1024.
      */
-    public $childrenLimit = false;
+    public int|false|null $childrenLimit = false;
 
     /**
-     * Get rules associated with self blameable attribute.
-     * If self-blameable rules has been stored locally, then it will be given,
+     * Get rules associated with self blamable attribute.
+     * If self-blamable rules has been stored locally, then it will be given,
      * or return the parent attribute rule.
      * @return array rules.
      */
-    public function getSelfBlameableRules()
+    public function getSelfBlameableRules(): array
     {
         if (!is_string($this->parentAttribute)) {
             return [];
@@ -164,21 +166,21 @@ trait SelfBlameableTrait
     }
 
     /**
-     * Set rules associated with self blameable attribute.
+     * Set rules associated with self blamable attribute.
      * @param array $rules rules.
      */
-    public function setSelfBlameableRules($rules = [])
+    public function setSelfBlameableRules($rules = []): void
     {
         $this->localSelfBlameableRules = $rules;
     }
 
     /**
      * Check whether this model has reached the ancestor limit.
-     * If $ancestorLimit is false, it will be regared as no limit(return false).
+     * If $ancestorLimit is false, it will be regarded as no limit(return false).
      * If $ancestorLimit is not false and not an unsigned integer, 256 will be taken.
-     * @return boolean
+     * @return bool
      */
-    public function hasReachedAncestorLimit()
+    public function hasReachedAncestorLimit(): bool
     {
         if ($this->ancestorLimit === false) {
             return false;
@@ -193,9 +195,9 @@ trait SelfBlameableTrait
      * Check whether this model has reached the children limit.
      * If $childrenLimit is false, it will be regarded as no limit(return false).
      * If $childrenLimit is not false and not an unsigned integer, 1024 will be taken.
-     * @return boolean
+     * @return bool
      */
-    public function hasReachedChildrenLimit()
+    public function hasReachedChildrenLimit(): bool
     {
         if ($this->childrenLimit === false) {
             return false;
@@ -213,12 +215,11 @@ trait SelfBlameableTrait
      * two comments are father and son, but do not belong to the same owner.
      * Therefore, you need to specify the creator of current model.
      * @param array $config
-     * @return static|null Null if reached the ancestor limit or children limit.
+     * @return false|SelfBlameableTrait|null Null if reached the ancestor limit or children limit.
      * @throws InvalidConfigException Self reference ID attribute or
      * parent attribute not determined.
-     * @throws InvalidArgumentException ancestor or children limit reached.
      */
-    public function bear($config = [])
+    public function bear(array $config = []): false|static|null
     {
         if (!$this->parentAttribute) {
             throw new InvalidConfigException("Parent Attribute Not Determined.");
@@ -246,9 +247,9 @@ trait SelfBlameableTrait
      * Add a child.
      * But if children limit reached, false will be given.
      * @param static $child
-     * @return boolean Whether adding child succeeded or not.
+     * @return bool Whether adding child succeeded or not.
      */
-    public function addChild($child)
+    public function addChild($child): bool
     {
         return $this->hasReachedChildrenLimit() ? false : $child->setParent($this);
     }
@@ -257,10 +258,10 @@ trait SelfBlameableTrait
      * Event triggered before deleting itself.
      * Note: DO NOT call it directly unless you know the consequences.
      * @param ModelEvent $event
-     * @return boolean true if parentAttribute not specified.
-     * @throws IntegrityException throw if $throwRestrictException is true when $onDeleteType is on restrict.
+     * @return bool true if parentAttribute not specified.
+     * @throws IntegrityException|Exception throw if $throwRestrictException is true when $onDeleteType is on restrict.
      */
-    public function onDeleteChildren($event)
+    public function onDeleteChildren($event): bool
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -268,33 +269,34 @@ trait SelfBlameableTrait
             return true;
         }
         switch ($sender->onDeleteType) {
-            case static::$onRestrict:
+            case self::SELF_REF_UPDATE_TYPE_ON_RESTRICT:
                 $event->isValid = $sender->children === null;
                 if ($sender->throwRestrictException) {
                     throw new IntegrityException('Delete restricted.');
                 }
                 break;
-            case static::$onCascade:
+            case self::SELF_REF_UPDATE_TYPE_ON_CASCADE:
                 $event->isValid = $sender->deleteChildren();
                 break;
-            case static::$onSetNull:
+            case self::SELF_REF_UPDATE_TYPE_ON_SET_NULL:
                 $event->isValid = $sender->updateChildren(null);
                 break;
-            case static::$onNoAction:
+            case self::SELF_REF_UPDATE_TYPE_ON_NO_ACTION:
             default:
                 $event->isValid = true;
                 break;
         }
+        return true;
     }
 
     /**
      * Event triggered before updating itself.
      * Note: DO NOT call it directly unless you know the consequences.
      * @param ModelEvent $event
-     * @return boolean true if parentAttribute not specified.
-     * @throws IntegrityException throw if $throwRestrictException is true when $onUpdateType is on restrict.
+     * @return bool true if parentAttribute not specified.
+     * @throws IntegrityException|Exception throw if $throwRestrictException is true when $onUpdateType is on restrict.
      */
-    public function onUpdateChildren($event)
+    public function onUpdateChildren($event): bool
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -302,23 +304,24 @@ trait SelfBlameableTrait
             return true;
         }
         switch ($sender->onUpdateType) {
-            case static::$onRestrict:
+            case self::SELF_REF_UPDATE_TYPE_ON_RESTRICT:
                 $event->isValid = $sender->getOldChildren() === null;
                 if ($sender->throwRestrictException) {
                     throw new IntegrityException('Update restricted.');
                 }
                 break;
-            case static::$onCascade:
+            case self::SELF_REF_UPDATE_TYPE_ON_CASCADE:
                 $event->isValid = $sender->updateChildren();
                 break;
-            case static::$onSetNull:
+            case self::SELF_REF_UPDATE_TYPE_ON_SET_NULL:
                 $event->isValid = $sender->updateChildren(null);
                 break;
-            case static::$onNoAction:
+            case self::SELF_REF_UPDATE_TYPE_ON_NO_ACTION:
             default:
                 $event->isValid = true;
                 break;
         }
+        return true;
     }
 
     /**
@@ -335,7 +338,7 @@ trait SelfBlameableTrait
      * Get parent ID.
      * @return string|null null if parent attribute isn't enabled.
      */
-    public function getParentId()
+    public function getParentId(): ?string
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
             $this->{$this->parentAttribute} : null;
@@ -346,7 +349,7 @@ trait SelfBlameableTrait
      * @param string $parentId
      * @return string|null null if parent attribute isn't enabled.
      */
-    public function setParentId($parentId)
+    public function setParentId($parentId): ?string
     {
         return (is_string($this->parentAttribute) && !empty($this->parentAttribute)) ?
             $this->{$this->parentAttribute} = $parentId : null;
@@ -354,9 +357,9 @@ trait SelfBlameableTrait
 
     /**
      * Get reference ID.
-     * @return string
+     * @return ?string
      */
-    public function getRefId()
+    public function getRefId(): ?string
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
             return $this->getGUID();
@@ -372,7 +375,7 @@ trait SelfBlameableTrait
      * @param string $refId
      * @return string
      */
-    public function setRefId($refId)
+    public function setRefId($refId): string
     {
         if ($this->refIdAttribute == $this->guidAttribute) {
             return $this->setGUID($refId);
@@ -389,7 +392,7 @@ trait SelfBlameableTrait
      * @param static $parent
      * @return false|string False if restriction reached. Otherwise parent's GUID given.
      */
-    public function setParent($parent)
+    public function setParent($parent): false|string
     {
         if (empty($parent) || $this->getRefId() == $parent->getRefId() ||
             $parent->hasAncestor($this) || $this->hasReachedAncestorLimit()) {
@@ -397,8 +400,8 @@ trait SelfBlameableTrait
         }
         unset($this->parent);
         unset($parent->children);
-        $this->trigger(static::$eventParentChanged);
-        $parent->trigger(static::$eventChildAdded);
+        $this->trigger(self::EVENT_PARENT_CHANGED);
+        $parent->trigger(self::EVENT_CHILD_ADDED);
         return $this->{$this->parentAttribute} = $parent->getRefId();
     }
 
@@ -418,20 +421,20 @@ trait SelfBlameableTrait
 
     /**
      * Check whether this model has parent.
-     * @return boolean
+     * @return bool
      */
-    public function hasParent()
+    public function hasParent(): bool
     {
         return $this->parent !== null;
     }
 
     /**
      * Check whether if $ancestor is the ancestor of myself.
-     * Note: Itself will not be regarded as the its ancestor.
+     * Note: Itself will not be regarded as the ancestor.
      * @param static $ancestor
-     * @return boolean
+     * @return bool
      */
-    public function hasAncestor($ancestor)
+    public function hasAncestor($ancestor): bool
     {
         if (!$this->hasParent()) {
             return false;
@@ -451,7 +454,7 @@ trait SelfBlameableTrait
      * @param string[] $ancestor
      * @return string[]
      */
-    public function getAncestorChain($ancestor = [])
+    public function getAncestorChain($ancestor = []): array
     {
         if (!is_string($this->parentAttribute) || empty($this->parentAttribute)) {
             return [];
@@ -544,7 +547,7 @@ trait SelfBlameableTrait
      * @return IntegrityException|boolean true if all update operations
      * succeeded to execute, or false if anyone of them failed. If not production
      * environment or enable debug mode, it will return exception.
-     * @throws IntegrityException throw if anyone update failed.
+     * @throws IntegrityException|Exception throw if anyone update failed.
      * The exception message only contains the first error.
      */
     public function updateChildren($value = false)
@@ -589,7 +592,7 @@ trait SelfBlameableTrait
      * @return IntegrityException|boolean true if all delete operations
      * succeeded to execute, or false if anyone of them failed. If not production
      * environment or enable debug mode, it will return exception.
-     * @throws IntegrityException throw if anyone delete failed.
+     * @throws IntegrityException|Exception throw if anyone delete failed.
      * The exception message only contains the first error.
      */
     public function deleteChildren()
@@ -601,7 +604,6 @@ trait SelfBlameableTrait
         $transaction = $this->getDb()->beginTransaction();
         try {
             foreach ($children as $child) {
-                /* @var $child static */
                 if (!$child->delete()) {
                     throw new IntegrityException('Delete failed:', $child->getErrors());
                 }
@@ -647,9 +649,9 @@ trait SelfBlameableTrait
      * Clear invalid parent.
      * The invalid state depends on which if parent id exists but it's corresponding
      * parent cannot be found.
-     * @return boolean True if parent attribute is set null, False if parent valid.
+     * @return bool True if parent attribute is set null, False if parent valid.
      */
-    public function clearInvalidParent()
+    public function clearInvalidParent(): bool
     {
         if ($this->getParentId() !== static::$nullParent && !$this->hasParent()) {
             $this->setNullParent();

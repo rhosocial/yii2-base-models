@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -88,24 +88,24 @@ abstract class BaseMongoEntityModel extends ActiveRecord
      * Get the rules associated with ip attributes.
      * @return array
      */
-    public function getIPRules()
+    public function getIPRules(): array
     {
         $rules = [];
-        if ($this->enableIP & static::$ipv4) {
+        if ($this->enableIP & self::IP_V4_ENABLED) {
             $rules = [
                 [[$this->ipAttribute],
                     'string'
                 ],
             ];
         }
-        if ($this->enableIP & static::$ipv6) {
+        if ($this->enableIP & self::IP_V6_ENABLED) {
             $rules = [
                 [[$this->ipAttribute],
                     'string'
                 ],
             ];
         }
-        if ($this->enableIP & static::$ipAll) {
+        if ($this->enableIP & self::IP_ALL_ENABLED) {
             $rules[] = [
                 [$this->ipTypeAttribute], 'in', 'range' => [IP::IPv4, IP::IPv6],
             ];
@@ -117,7 +117,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
      * Get the IPv4 address.
      * @return string
      */
-    protected function getIPv4Address()
+    protected function getIPv4Address(): string
     {
         return ($this->{$this->ipAttribute});
     }
@@ -126,7 +126,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
      * Get the IPv6 address.
      * @return string
      */
-    protected function getIPv6Address()
+    protected function getIPv6Address(): string
     {
         return ($this->{$this->ipAttribute});
     }
@@ -162,7 +162,6 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     public static function find()
     {
         $self = static::buildNoInitModel();
-        /* @var $self static */
         if (!is_string($self->queryClass)) {
             $self->queryClass = BaseMongoEntityQuery::class;
         }
@@ -175,7 +174,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
      * You can override this method if enabled fields cannot meet you requirements.
      * @return array
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->enabledFields();
     }

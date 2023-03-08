@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -34,12 +34,13 @@ trait BlameableQueryTrait
 
     /**
      * Specify confirmation.
-     * @param boolean $isConfirmed
+     * @param bool $isConfirmed
      * @return $this
      */
-    public function confirmed($isConfirmed = true)
+    public function confirmed(bool $isConfirmed = true): static
     {
         $model = $this->noInitModel;
+        /* @var $model static */
         if (!is_string($model->confirmationAttribute)) {
             return $this;
         }
@@ -52,22 +53,24 @@ trait BlameableQueryTrait
      * @param false|string $like false, 'like', 'or like', 'not like', 'or not like'.
      * @return $this
      */
-    public function content($content, $like = false)
+    public function content(mixed $content, false|string $like = false): static
     {
         $model = $this->noInitModel;
+        /* @var $model static */
         return $this->likeCondition($content, $model->contentAttribute, $like);
     }
 
     /**
      * Specify parent.
-     * @param array|string $guid parent guid or array of them. non-parent if
+     * @param array|string|BlameableQueryTrait $guid parent guid or array of them. non-parent if
      * empty. If you don't want to specify parent, please do not access this
      * method.
      * @return $this
      */
-    public function parentGuid($guid)
+    public function parentGuid(mixed $guid): static
     {
         $model = $this->noInitModel;
+        /* @var $model static */
         if (!is_string($model->parentAttribute)) {
             return $this;
         }
@@ -82,9 +85,10 @@ trait BlameableQueryTrait
      * @param string|array $guid
      * @return $this
      */
-    public function createdBy($guid)
+    public function createdBy($guid): static
     {
         $model = $this->noInitModel;
+        /* @var $model static */
         if (!is_string($model->createdByAttribute) || empty($model->createdByAttribute)) {
             return $this;
         }
@@ -99,9 +103,10 @@ trait BlameableQueryTrait
      * @param string|array $guid
      * @return $this
      */
-    public function updatedBy($guid)
+    public function updatedBy($guid): static
     {
         $model = $this->noInitModel;
+        /* @var $model static */
         if (!is_string($model->updatedByAttribute)) {
             return $this;
         }
@@ -113,10 +118,10 @@ trait BlameableQueryTrait
 
     /**
      * Attach current identity to createdBy condition.
-     * @param BaseUserModel $identity
+     * @param BaseUserModel|null $identity
      * @return $this
      */
-    public function byIdentity($identity = null)
+    public function byIdentity(?BaseUserModel $identity = null): static
     {
         if (!$identity) {
             $identity = Yii::$app->user->identity;

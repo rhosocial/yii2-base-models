@@ -6,16 +6,21 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\redis;
 
 use rhosocial\base\models\tests\data\ar\RedisBlameable;
+use Throwable;
+use yii\base\Exception;
+use yii\db\IntegrityException;
+use yii\db\StaleObjectException;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisBlameableTest extends RedisBlameableTestCase
@@ -23,22 +28,28 @@ class RedisBlameableTest extends RedisBlameableTestCase
     /**
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider severalTimes
      */
-    public function testNew($severalTimes)
+    public function testNew(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
+     * @throws \yii\db\Exception
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testFindByIdentity($severalTimes)
+    public function testFindByIdentity(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
         $blameable = RedisBlameable::findByIdentity($this->user)->one();
@@ -48,31 +59,34 @@ class RedisBlameableTest extends RedisBlameableTestCase
         $this->assertNull($nonExists);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
+     * @throws Exception|Throwable
      */
-    public function testHasEverEdited($severalTimes)
+    public function testHasEverBeenEdited(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
-        $this->assertFalse($this->blameable->hasEverEdited());
+        $this->assertFalse($this->blameable->hasEverBeenEdited());
         sleep(1);
         $this->blameable->setContent(\Yii::$app->security->generateRandomString());
         $this->assertTrue($this->blameable->save());
-        $this->assertTrue($this->blameable->hasEverEdited()); // RedisBlameable 没有实现
+        $this->assertTrue($this->blameable->hasEverBeenEdited()); // RedisBlameable 没有实现
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider severalTimes
      */
-    public function testCreatedBy($severalTimes)
+    public function testCreatedBy(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
         $this->assertTrue($this->user->equals($this->blameable->user));
@@ -80,14 +94,16 @@ class RedisBlameableTest extends RedisBlameableTestCase
         $this->assertTrue($this->blameable->user->equals($this->user));
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider severalTimes
      */
-    public function testQueryConfirmed($severalTimes)
+    public function testQueryConfirmed(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
         $query = RedisBlameable::find();
@@ -95,15 +111,17 @@ class RedisBlameableTest extends RedisBlameableTestCase
         $this->assertEquals($query, $confirmedQuery);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * Redis 查询不支持 like。
      * @group redis
      * @group blameable
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws Throwable
+     * @throws IntegrityException
      * @dataProvider severalTimes
      */
-    public function testQuery($severalTimes)
+    public function testQuery(int $severalTimes)
     {
         $this->assertTrue($this->user->register([$this->blameable]));
         $content = $this->blameable->content;
@@ -118,7 +136,7 @@ class RedisBlameableTest extends RedisBlameableTestCase
         $this->assertTrue($this->user->deregister());
     }
     
-    public function severalTimes()
+    public function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

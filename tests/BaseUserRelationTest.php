@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -18,6 +18,8 @@ use rhosocial\base\models\tests\data\ar\UserSingleRelation;
 use rhosocial\base\models\tests\data\ar\UserRelationGroup;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class BaseUserRelationTest extends TestCase

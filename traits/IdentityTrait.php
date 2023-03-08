@@ -6,13 +6,14 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\ModelEvent;
 
 /**
@@ -24,27 +25,27 @@ use yii\base\ModelEvent;
  * @property array $authKeyRules
  * @property integer $status
  * @property array $statusRules
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait IdentityTrait
 {
-
-    public static $statusActive = 1;
-    public static $statusInactive = 0;
-    public $statusAttribute = 'status';
-    private $statusRules = [];
-    public $authKeyAttribute = 'auth_key';
-    private $authKeyRules = [];
-    public $accessTokenAttribute = 'access_token';
-    private $accessTokenRules = [];
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+    public string|false $statusAttribute = 'status';
+    private array $statusRules = [];
+    public string|false $authKeyAttribute = 'auth_key';
+    private array $authKeyRules = [];
+    public string|false $accessTokenAttribute = 'access_token';
+    private array $accessTokenRules = [];
 
     /**
      * Finds an identity by the given ID.
-     * @param string|integer $identity
-     * @return static
+     * @param mixed $identity
+     * @return static|null
      */
-    public static function findIdentity($identity)
+    public static function findIdentity(mixed $identity): ?static
     {
         $self = static::buildNoInitModel();
         return static::findOne([$self->idAttribute => $identity]);
@@ -52,21 +53,21 @@ trait IdentityTrait
 
     /**
      * Finds an identity by the given GUID.
-     * @param string $guid
-     * @return static
+     * @param mixed $guid
+     * @return static|null
      */
-    public static function findIdentityByGuid($guid)
+    public static function findIdentityByGuid(mixed $guid): ?static
     {
-        return static::findOne((string)$guid);
+        return static::findOne($guid);
     }
 
     /**
      * Finds an identity by the given token.
      * @param string $token
      * @param mixed $type
-     * @return static
+     * @return static|null
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function findIdentityByAccessToken($token, $type = null): ?static
     {
         $self = static::buildNoInitModel();
         return static::findOne([$self->accessTokenAttribute => $token]);
@@ -76,7 +77,7 @@ trait IdentityTrait
      * Get auth key.
      * @return string|null
      */
-    public function getAuthKey()
+    public function getAuthKey(): ?string
     {
         $authKeyAttribute = $this->authKeyAttribute;
         return (is_string($authKeyAttribute) && !empty($authKeyAttribute)) ? $this->$authKeyAttribute : null;
@@ -85,9 +86,9 @@ trait IdentityTrait
     /**
      * Set auth key.
      * @param string $key
-     * @return string
+     * @return string|null
      */
-    public function setAuthKey($key)
+    public function setAuthKey($key): ?string
     {
         $authKeyAttribute = $this->authKeyAttribute;
         return (is_string($authKeyAttribute) && !empty($authKeyAttribute)) ? $this->$authKeyAttribute = $key : null;
@@ -96,9 +97,9 @@ trait IdentityTrait
     /**
      * Validate the auth key.
      * @param string $authKey
-     * @return string
+     * @return bool
      */
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($authKey): bool
     {
         return $this->getAuthKey() === $authKey;
     }
@@ -107,7 +108,7 @@ trait IdentityTrait
      * Get the rules associated with auth key attribute.
      * @return array
      */
-    public function getAuthKeyRules()
+    public function getAuthKeyRules(): array
     {
         if (!is_string($this->authKeyAttribute) || empty($this->authKeyAttribute)) {
             return [];
@@ -125,7 +126,7 @@ trait IdentityTrait
      * Set the rules associated with auth key attribute.
      * @param array $rules
      */
-    public function setAuthKeyRules($rules)
+    public function setAuthKeyRules($rules): void
     {
         if (!empty($rules) && is_array($rules)) {
             $this->authKeyRules = $rules;
@@ -138,7 +139,7 @@ trait IdentityTrait
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
      */
-    public function onInitAuthKey($event)
+    public function onInitAuthKey($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -149,7 +150,7 @@ trait IdentityTrait
      * Get access token.
      * @return string|null
      */
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         $accessTokenAttribute = $this->accessTokenAttribute;
         return (is_string($accessTokenAttribute) && !empty($accessTokenAttribute)) ? $this->$accessTokenAttribute : null;
@@ -160,7 +161,7 @@ trait IdentityTrait
      * @param string $token
      * @return string|null
      */
-    public function setAccessToken($token)
+    public function setAccessToken($token): ?string
     {
         $accessTokenAttribute = $this->accessTokenAttribute;
         return (is_string($accessTokenAttribute) && !empty($accessTokenAttribute)) ? $this->$accessTokenAttribute = $token : null;
@@ -170,7 +171,7 @@ trait IdentityTrait
      * Get the rules associated with access token attribute.
      * @return array
      */
-    public function getAccessTokenRules()
+    public function getAccessTokenRules(): array
     {
         if (!is_string($this->accessTokenAttribute) || empty($this->accessTokenAttribute)) {
             return [];
@@ -188,7 +189,7 @@ trait IdentityTrait
      * Set the rules associated with access token attribute.
      * @param array $rules
      */
-    public function setAccessTokenRules($rules)
+    public function setAccessTokenRules($rules): void
     {
         if (!empty($rules) && is_array($rules)) {
             $this->accessTokenRules = $rules;
@@ -200,8 +201,9 @@ trait IdentityTrait
      * This method is ONLY used for being triggered by event. DO NOT call,
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
+     * @throws Exception
      */
-    public function onInitAccessToken($event)
+    public function onInitAccessToken($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -210,9 +212,9 @@ trait IdentityTrait
 
     /**
      * Get status.
-     * @return integer
+     * @return int|null
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         $statusAttribute = $this->statusAttribute;
         return (is_string($statusAttribute) && !empty($statusAttribute)) ? $this->$statusAttribute : null;
@@ -221,9 +223,9 @@ trait IdentityTrait
     /**
      * Set status.
      * @param integer $status
-     * @return integer|null
+     * @return int|null
      */
-    public function setStatus($status)
+    public function setStatus($status): ?int
     {
         $statusAttribute = $this->statusAttribute;
         return (is_string($statusAttribute) && !empty($statusAttribute)) ? $this->$statusAttribute = $status : null;
@@ -233,7 +235,7 @@ trait IdentityTrait
      * Get the rules associated with status attribute.
      * @return array
      */
-    public function getStatusRules()
+    public function getStatusRules(): array
     {
         if (!is_string($this->statusAttribute) || empty($this->statusAttribute)) {
             return [];
@@ -251,7 +253,7 @@ trait IdentityTrait
      * Set the rules associated with status attribute.
      * @param array $rules
      */
-    public function setStatusRules($rules)
+    public function setStatusRules($rules): void
     {
         if (!empty($rules) && is_array($rules)) {
             $this->statusRules = $rules;
@@ -264,12 +266,12 @@ trait IdentityTrait
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
      */
-    public function onInitStatusAttribute($event)
+    public function onInitStatusAttribute($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
         if (empty($sender->getStatus())) {
-            $sender->setStatus(self::$statusActive);
+            $sender->setStatus(self::STATUS_ACTIVE);
         }
     }
 }

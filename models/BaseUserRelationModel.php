@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -66,19 +66,19 @@ abstract class BaseUserRelationModel extends BaseBlameableModel
      * @var false|string this model will not need to be confirmed any more.
      * If you consider it required, please redeclare it by yourself.
      */
-    public $confirmationAttribute = false;
+    public string|false $confirmationAttribute = false;
 
     /**
      * @var false|string this model will not record content any more.
      * If you consider it required, please redeclare it by yourself.
      */
-    public $contentAttribute = false;
+    public string|array|false $contentAttribute = false;
 
     /**
      * @var false|string this model will not record updater when being updated.
      * If you consider it required, please redeclare it by yourself.
      */
-    public $updatedByAttribute = false;
+    public string|false $updatedByAttribute = false;
 
     /**
      * This method will assign the `$queryClass` property if it is not string.

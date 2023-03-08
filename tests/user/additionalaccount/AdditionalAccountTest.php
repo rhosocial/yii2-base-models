@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -24,7 +24,7 @@ class AdditionalAccountTest extends UserTestCase
 {
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      * @group registration
      */
     public function testInit()
@@ -64,12 +64,12 @@ class AdditionalAccountTest extends UserTestCase
 
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      */
-    public function testSeperatePassword()
+    public function testSeparatePassword()
     {
         $this->user = new User(['password' => '123456']);
-        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'password' => $this->faker->randomLetter, 'seperateLogin' => true]);
+        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'password' => $this->faker->randomLetter, 'separateLogin' => true]);
         /* @var $aa AdditionalAccount */
         $this->assertTrue($this->user->register([$aa]));
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
@@ -102,14 +102,14 @@ class AdditionalAccountTest extends UserTestCase
     public function testSeperateLogin()
     {
         $this->user = new User(['password' => '123456']);
-        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'seperateLogin' => true]);
+        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'separateLogin' => true]);
         /* @var $aa AdditionalAccount */
         $aa->setEmptyPassword();
         $this->assertTrue($this->user->register([$aa]));
 
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
         $aa = $this->user->additionalAccounts[0];
-        $this->assertTrue($aa->seperateLogin);
+        $this->assertTrue($aa->separateLogin);
 
         $this->assertTrue($this->user->deregister());
     }
@@ -122,14 +122,14 @@ class AdditionalAccountTest extends UserTestCase
     {
         $password = '123456';
         $this->user = new User(['password' => $password]);
-        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'seperateLogin' => false]);
+        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'separateLogin' => false]);
         /* @var $aa AdditionalAccount */
         $aa->setEmptyPassword();
         $this->assertTrue($this->user->register([$aa]));
 
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
         $aa = $this->user->additionalAccounts[0];
-        $this->assertFalse($aa->seperateLogin);
+        $this->assertFalse($aa->separateLogin);
 
         $this->assertTrue($this->user->deregister());
     }
@@ -142,15 +142,15 @@ class AdditionalAccountTest extends UserTestCase
     {
         $password = '123456';
         $this->user = new User(['password' => $password]);
-        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'seperateLoginAttribute' => false]);
+        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'separateLoginAttribute' => false]);
         /* @var $aa AdditionalAccount */
-        $this->assertFalse($aa->seperateLoginAttribute);
+        $this->assertFalse($aa->separateLoginAttribute);
         $this->assertTrue($this->user->register([$aa]));
-        $this->assertFalse($aa->getSeperateLogin());
-        $aa->setSeperateLogin(true);
-        $this->assertFalse($aa->getSeperateLogin());
-        $aa->setSeperateLogin(false);
-        $this->assertFalse($aa->getSeperateLogin());
+        $this->assertFalse($aa->getSeparateLogin());
+        $aa->setSeparateLogin(true);
+        $this->assertFalse($aa->getSeparateLogin());
+        $aa->setSeparateLogin(false);
+        $this->assertFalse($aa->getSeparateLogin());
         $this->assertTrue($this->user->deregister());
     }
 }

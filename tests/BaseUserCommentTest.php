@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,6 +16,8 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\UserComment;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class BaseUserCommentTest extends TestCase
@@ -112,10 +114,10 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onDeleteType = UserComment::$onRestrict;
+        $comment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $comment->throwRestrictException = true;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onDeleteType = UserComment::$onRestrict;
+        $subComment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $subComment->throwRestrictException = true;
         $this->assertTrue($comment->save());
         $this->assertTrue($subComment->save());
@@ -131,9 +133,9 @@ class BaseUserCommentTest extends TestCase
         $this->assertTrue($user->deregister());
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onDeleteType = UserComment::$onRestrict;
+        $comment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onDeleteType = UserComment::$onRestrict;
+        $subComment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->assertTrue($comment->save());
         $this->assertTrue($subComment->save());
         if ($comment->delete()) {
@@ -158,9 +160,9 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onDeleteType = UserComment::$onNoAction;
+        $comment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onDeleteType = UserComment::$onNoAction;
+        $subComment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $comment->save();
         $subComment->save();
         if ($comment->delete()) {
@@ -188,9 +190,9 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onDeleteType = UserComment::$onSetNull;
+        $comment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onDeleteType = UserComment::$onSetNull;
+        $subComment->onDeleteType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $comment->save();
         $subComment->save();
         if ($comment->delete()) {
@@ -242,10 +244,10 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onUpdateType = UserComment::$onRestrict;
+        $comment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $comment->throwRestrictException = true;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onUpdateType = UserComment::$onRestrict;
+        $subComment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $subComment->throwRestrictException = true;
         $comment->save();
         $subComment->save();
@@ -275,9 +277,9 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onUpdateType = UserComment::$onNoAction;
+        $comment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onUpdateType = UserComment::$onNoAction;
+        $subComment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_NO_ACTION;
         $comment->save();
         $subComment->save();
         $guid = $comment->guid;
@@ -302,9 +304,9 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onUpdateType = UserComment::$onSetNull;
+        $comment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $subComment = $this->prepareSubComment($comment);
-        $subComment->onUpdateType = UserComment::$onSetNull;
+        $subComment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_SET_NULL;
         $comment->save();
         $subComment->save();
         $comment->guid = UserComment::GenerateGuid();
@@ -328,15 +330,15 @@ class BaseUserCommentTest extends TestCase
     {
         $user = $this->prepareUser();
         $comment = $this->prepareComment($user);
-        $comment->onUpdateType = UserComment::$onRestrict;
+        $comment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->assertTrue($comment->save());
         $comments = [];
         $comments[] = $this->prepareSubComment($comment);
-        $comments[0]->onUpdateType = UserComment::$onRestrict;
+        $comments[0]->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->assertTrue($comments[0]->save());
         for ($i = 1; $i < 10; $i++) {
             $comments[] = $this->prepareSubComment($comments[$i - 1]);
-            $comments[$i]->onUpdateType = UserComment::$onRestrict;
+            $comments[$i]->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
             $this->assertTrue($comments[$i]->save());
         }
         $this->assertEquals(10, count($comments));
@@ -356,10 +358,10 @@ class BaseUserCommentTest extends TestCase
             $this->assertEquals($ancestor[$i], $ancestorModels[$i]->guid);
         }
         $commonComment = $this->prepareSubComment($comments[5]);
-        $commonComment->onUpdateType = UserComment::$onRestrict;
+        $commonComment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->assertTrue($commonComment->save());
         $subCommonComment = $this->prepareSubComment($commonComment);
-        $subCommonComment->onUpdateType = UserComment::$onRestrict;
+        $subCommonComment->onUpdateType = UserComment::SELF_REF_UPDATE_TYPE_ON_RESTRICT;
         $this->assertTrue($subCommonComment->save());
         
         // $comments[9] 和 $subCommonComment 应该有共同的祖先。

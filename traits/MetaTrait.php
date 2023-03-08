@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -19,7 +19,8 @@ use Yii;
  *
  * @property string $key
  * @property string $value
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait MetaTrait
@@ -27,7 +28,7 @@ trait MetaTrait
 
     /**
      * Store the guid of blame.
-     * @var string 
+     * @return array
      */
     public function behaviors()
     {
@@ -66,9 +67,9 @@ trait MetaTrait
     /**
      * Get meta value by specified key. If key doesn't exist, null will be given.
      * @param string $key meta key.
-     * @return string meta value.
+     * @return string|null meta value.
      */
-    public static function get($key)
+    public static function get($key): ?string
     {
         $noInitModel = static::buildNoInitModel();
         $model = static::find()->where([$noInitModel->idAttribute => $key])->one();
@@ -109,11 +110,11 @@ trait MetaTrait
     /**
      * Set value.
      * @param string $key
-     * @param string $value
-     * @param string $createdBy
-     * @return int
+     * @param string|null $value
+     * @param string|null $createdBy
+     * @return bool
      */
-    public static function set($key, $value = null, $createdBy = null)
+    public static function set(string $key, ?string $value = null, ?string $createdBy = null): bool
     {
         $noInitModel = static::buildNoInitModel();
         $model = static::find()->where([$noInitModel->idAttribute => $key])->one();
@@ -132,11 +133,11 @@ trait MetaTrait
 
     /**
      * Set values in batch.
-     * @param array $keys meta key-value pairs.
-     * @param string $createdBy
-     * @return false if $keys is not an array.
+     * @param array|null $keys meta key-value pairs.
+     * @param string|null $createdBy
+     * @return bool if $keys is not an array.
      */
-    public static function sets($keys, $createdBy = null)
+    public static function sets(?array $keys, ?string $createdBy = null): bool
     {
         if (!is_array($keys)) {
             return false;
@@ -144,6 +145,7 @@ trait MetaTrait
         foreach ($keys as $key => $value) {
             static::set($key, $value, $createdBy);
         }
+        return true;
     }
 
     public static function remove($key)

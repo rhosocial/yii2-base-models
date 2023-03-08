@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -171,9 +171,9 @@ class MongoMessageTest extends MongoTestCase
         $this->assertFalse($message->isExpired);
         $this->assertFalse($message1->isExpired);
         
-        $message->on(MongoMessage::$eventMessageReceived, [$this, 'onReceived']);
-        $message->on(MongoMessage::$eventMessageRead, [$this, 'onRead']);
-        $message->on(MongoMessage::$eventExpiredRemoved, [$this, 'onShouldNotBeExpiredRemoved']);
+        $message->on(MongoMessage::EVENT_MESSAGE_RECEIVED, [$this, 'onReceived']);
+        $message->on(MongoMessage::EVENT_MESSAGE_READ, [$this, 'onRead']);
+        $message->on(MongoMessage::EVENT_EXPIRED_REMOVED, [$this, 'onShouldNotBeExpiredRemoved']);
         
         $message->content = "new $content";
         $this->assertTrue($message->save());
@@ -183,9 +183,9 @@ class MongoMessageTest extends MongoTestCase
         $this->assertEquals($content, $message->content);
         
         if ($message->hasBeenRead()) {
-            var_dump(MongoMessage::$initDatetime);
+            var_dump(MongoMessage::INIT_DATETIME);
             var_dump($message->readAt);
-            var_dump(MongoMessage::$initDatetime == $message->readAt);
+            var_dump(MongoMessage::INIT_DATETIME == $message->readAt);
             $this->fail("The message has not been read yet.");
         } else {
             $this->assertTrue(true);
@@ -250,9 +250,9 @@ class MongoMessageTest extends MongoTestCase
         $this->assertFalse($message->isExpired);
         $this->assertFalse($message1->isExpired);
         
-        $message->on(MongoMessage::$eventMessageReceived, [$this, 'onReceived']);
-        $message->on(MongoMessage::$eventMessageRead, [$this, 'onRead']);
-        $message->on(MongoMessage::$eventExpiredRemoved, [$this, 'onShouldNotBeExpiredRemoved']);
+        $message->on(MongoMessage::EVENT_MESSAGE_RECEIVED, [$this, 'onReceived']);
+        $message->on(MongoMessage::EVENT_MESSAGE_READ, [$this, 'onRead']);
+        $message->on(MongoMessage::EVENT_EXPIRED_REMOVED, [$this, 'onShouldNotBeExpiredRemoved']);
         
         $this->assertInstanceOf(MongoMessage::class, $message);
         $this->assertFalse($message->hasBeenReceived());

@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,6 +14,7 @@ namespace rhosocial\base\models\models;
 
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\traits\UserTrait;
+use yii\base\NotSupportedException;
 use yii\web\IdentityInterface;
 
 /**
@@ -67,6 +68,7 @@ abstract class BaseUserModel extends BaseEntityModel implements IdentityInterfac
      * When `$skipInit` is assigned to `false`, the above processes will be skipped.
      * If you want to modify or override this method, you should add `parent::init()`
      * statement at the end of your init() method.
+     * @throws NotSupportedException
      */
     public function init()
     {
@@ -76,12 +78,12 @@ abstract class BaseUserModel extends BaseEntityModel implements IdentityInterfac
         if ($this->skipInit) {
             return;
         }
-        $this->on(self::$eventNewRecordCreated, [$this, 'onInitStatusAttribute']);
-        $this->on(self::$eventNewRecordCreated, [$this, 'onInitSourceAttribute']);
-        $this->on(self::$eventNewRecordCreated, [$this, 'onInitAuthKey']);
-        $this->on(self::$eventNewRecordCreated, [$this, 'onInitAccessToken']);
-        $this->on(self::$eventNewRecordCreated, [$this, 'onInitPasswordResetToken']);
-        $this->on(self::$eventAfterSetPassword, [$this, 'onAfterSetNewPassword']);
+        $this->on(self::EVENT_NEW_RECORD_CREATED, [$this, 'onInitStatusAttribute']);
+        $this->on(self::EVENT_NEW_RECORD_CREATED, [$this, 'onInitSourceAttribute']);
+        $this->on(self::EVENT_NEW_RECORD_CREATED, [$this, 'onInitAuthKey']);
+        $this->on(self::EVENT_NEW_RECORD_CREATED, [$this, 'onInitAccessToken']);
+        $this->on(self::EVENT_NEW_RECORD_CREATED, [$this, 'onInitPasswordResetToken']);
+        $this->on(self::EVENT_AFTER_SET_PASSWORD, [$this, 'onAfterSetNewPassword']);
         parent::init();
     }
 }

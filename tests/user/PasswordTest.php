@@ -6,19 +6,24 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\user;
 
+use Faker\Factory;
 use rhosocial\base\models\tests\data\ar\User;
+use yii\base\Exception;
+use yii\db\IntegrityException;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class PasswordTest extends UserTestCase
-{    
+{
     /**
      * 测试用户注册再读取后的密码验证。
      * 正确情况下，validatePassword() 方法应该返回 true。
@@ -26,6 +31,7 @@ class PasswordTest extends UserTestCase
      * @group password
      * @group registration
      * @dataProvider passwordProvider
+     * @throws IntegrityException
      */
     public function testAfterRegister($password)
     {
@@ -36,10 +42,11 @@ class PasswordTest extends UserTestCase
         $this->assertTrue($this->user->validatePassword($password), 'Password: ' . $password);
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws Exception
      */
     public function testValidatePassword()
     {
@@ -50,10 +57,11 @@ class PasswordTest extends UserTestCase
         $this->user->password = $password . '1';
         $this->assertFalse($this->user->validatePassword($password));
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws IntegrityException
      */
     public function testEmptyPassword()
     {
@@ -63,10 +71,12 @@ class PasswordTest extends UserTestCase
         $this->assertTrue($this->user->deregister());
     }
     
-    public function passwordProvider()
+    public function passwordProvider(): \Generator
     {
+        $faker = Factory::create();
+        $faker->seed(time() % 1000000);
         for ($i = 0; $i < 3; $i++) {
-            yield [$this->faker->password($this->faker->randomElement([1, 2, 3, 4, 5, 6]), $this->faker->randomElement([16, 17, 18, 19, 20, 21]))];
+            yield [$faker->password($faker->randomElement([1, 2, 3, 4, 5, 6]), $faker->randomElement([16, 17, 18, 19, 20, 21]))];
         }
     }
     
@@ -95,10 +105,11 @@ class PasswordTest extends UserTestCase
         $this->user->setPassword();
         $this->assertFalse($this->user->validate());
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws Exception
      */
     public function testPasswordResetTokenRulesNotPass()
     {
@@ -130,10 +141,11 @@ class PasswordTest extends UserTestCase
         }
         $this->assertTrue($this->user->save());
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws IntegrityException|Exception
      */
     public function testApplyforNewPassword()
     {

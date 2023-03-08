@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,6 +16,8 @@ use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\MongoEntity;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class MongoEntityTest extends MongoTestCase
@@ -48,7 +50,7 @@ class MongoEntityTest extends MongoTestCase
         $this->assertTrue($entity->save());
         $existed = MongoEntity::find()->guid($entity->guid)->one();
         /* @var $existed MongoEntity */
-        $this->assertRegExp(Number::GUID_REGEX, $existed->getGUID());
+        $this->assertMatchesRegularExpression(Number::GUID_REGEX, $existed->getReadableGUID());
         $this->assertEquals(1, $existed->delete());
     }
     

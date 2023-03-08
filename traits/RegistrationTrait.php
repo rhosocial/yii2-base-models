@@ -6,12 +6,13 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
 
+use Throwable;
 use Yii;
 use yii\base\ModelEvent;
 use yii\db\IntegrityException;
@@ -24,61 +25,38 @@ use yii\rbac\Item;
  * @property-read mixed $authManager
  * @property mixed $source
  * @property array $sourceRules rules associated with source attribute.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait RegistrationTrait
 {
+    const EVENT_AFTER_REGISTER = 'afterRegister';
+    const EVENT_BEFORE_REGISTER = 'beforeRegister';
+    const EVENT_REGISTER_FAILED = 'registerFailed';
+    const EVENT_AFTER_UNREGISTER = 'afterUnregister';
+    const EVENT_BEFORE_UNREGISTER = 'beforeUnregister';
+    const EVENT_UNREGISTER_FAILED = 'unregisterFailed';
 
     /**
-     * @event Event an event that is triggered after user is registered successfully.
-     */
-    public static $eventAfterRegister = "afterRegister";
-
-    /**
-     * @event Event an event that is triggered before registration.
-     */
-    public static $eventBeforeRegister = "beforeRegister";
-
-    /**
-     * @event Event an event that is triggered when registration failed.
-     */
-    public static $eventRegisterFailed = "registerFailed";
-
-    /**
-     * @event Event an event that is triggered after user is deregistered successfully.
-     */
-    public static $eventAfterDeregister = "afterDeregister";
-
-    /**
-     * @event Event an event that is triggered before deregistration.
-     */
-    public static $eventBeforeDeregister = "beforeDeregister";
-
-    /**
-     * @event Event an event that is triggered when deregistration failed.
-     */
-    public static $eventDeregisterFailed = "deregisterFailed";
-
-    /**
-     * @var string name of attribute which store the source. if you don't want to
+     * @var string|false name of attribute which store the source. if you don't want to
      * record source, please assign false.
      */
-    public $sourceAttribute = 'source';
-    private $_sourceRules = [];
-    public static $sourceSelf = '0';
+    public string|false $sourceAttribute = 'source';
+    private array $_sourceRules = [];
+    public static string $sourceSelf = '0';
 
     /**
      * @var string auth manager component id.
      */
-    public $authManagerId = 'authManager';
+    public string $authManagerId = 'authManager';
 
     /**
      * Get auth manager. If auth manager not configured, Yii::$app->authManager
      * will be given.
-     * @return ManagerInterface
+     * @return ?ManagerInterface
      */
-    public function getAuthManager()
+    public function getAuthManager(): ?ManagerInterface
     {
         $authManagerId = $this->authManagerId;
         return empty($authManagerId) ? Yii::$app->authManager : Yii::$app->$authManagerId;
@@ -96,22 +74,21 @@ trait RegistrationTrait
      * will be skipped and return false.
      * The $eventBeforeRegister will be triggered before registration starts.
      * If registration finished, the $eventAfterRegister will be triggered. or
-     * $eventRegisterFailed will be triggered when any errors occured.
-     * @param array $associatedModels The models associated with user to be stored synchronously.
-     * @param string|Item[] $authRoles auth name, auth instance, auth name array or auth instance array.
-     * @return boolean Whether the registration succeeds or not.
-     * @throws IntegrityException when inserting user and associated models failed.
+     * $eventRegisterFailed will be triggered when any errors occurred.
+     * @param array|null $associatedModels The models associated with user to be stored synchronously.
+     * @param array|string|null $authRoles auth name, auth instance, auth name array or auth instance array.
+     * @return bool Whether the registration succeeds or not.
      */
-    public function register($associatedModels = [], $authRoles = [])
+    public function register(?array $associatedModels = [], array|string|null $authRoles = []): bool
     {
         if (!$this->getIsNewRecord()) {
             return false;
         }
-        $this->trigger(static::$eventBeforeRegister);
+        $this->trigger(self::EVENT_BEFORE_REGISTER);
         $transaction = $this->getDb()->beginTransaction();
         try {
             if (!$this->save()) {
-                throw new IntegrityException('Registration Error(s) Occured: User Save Failed.', $this->getErrors());
+                throw new IntegrityException('Registration Error(s) Occurred: User Save Failed.', $this->getErrors());
             }
             if (($authManager = $this->getAuthManager()) && !empty($authRoles)) {
                 if (is_string($authRoles) || $authRoles instanceof Item || !is_array($authRoles)) {
@@ -130,23 +107,31 @@ trait RegistrationTrait
                 foreach ($associatedModels as $model) {
                     if (!$model->save()) {
                         throw new IntegrityException
-                        ('Registration Error(s) Occured: Associated Models Save Failed.', $model->getErrors());
+                        ('Registration Error(s) Occurred: Associated Models Save Failed.', $model->getErrors());
                     }
                 }
             }
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
-            $this->trigger(static::$eventRegisterFailed);
-            if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
+            $this->trigger(self::EVENT_REGISTER_FAILED);
+            if (YII_DEBUG || YII_ENV != YII_ENV_PROD) {
                 Yii::error($ex->getMessage(), __METHOD__);
-                return $ex;
             }
             Yii::warning($ex->getMessage(), __METHOD__);
             return false;
         }
-        $this->trigger(static::$eventAfterRegister);
+        $this->trigger(self::EVENT_AFTER_REGISTER);
         return true;
+    }
+
+    /**
+     * @throws Throwable
+     * @throws IntegrityException
+     */
+    public function deregister(): bool
+    {
+        return $this->unregister();
     }
 
     /**
@@ -156,18 +141,18 @@ trait RegistrationTrait
      * forwardly. So you should set the foreign key of associated models' table
      * referenced from primary key of user table, and their association mode is
      * 'on update cascade' and 'on delete cascade'.
-     * the $eventBeforeDeregister will be triggered before deregistration starts.
-     * if deregistration finished, the $eventAfterDeregister will be triggered. or
-     * $eventDeregisterFailed will be triggered when any errors occured.
-     * @return boolean Whether deregistration succeeds or not.
-     * @throws IntegrityException when deleting user failed.
+     * the $eventBeforeDeregister will be triggered before un-registration starts.
+     * if un-registration finished, the $eventAfterDeregister will be triggered. or
+     * $eventDeregisterFailed will be triggered when any errors occurred.
+     * @return bool Whether un-registration succeeds or not.
+     * @throws IntegrityException|Throwable when deleting user failed.
      */
-    public function deregister()
+    public function unregister(): bool
     {
         if ($this->getIsNewRecord()) {
             return false;
         }
-        $this->trigger(static::$eventBeforeDeregister);
+        $this->trigger(self::EVENT_BEFORE_UNREGISTER);
         $transaction = $this->getDb()->beginTransaction();
         try {
             $result = $this->delete();
@@ -175,28 +160,27 @@ trait RegistrationTrait
                 throw new IntegrityException('User has not existed.');
             }
             if ($result != 1) {
-                throw new IntegrityException('Deregistration Error(s) Occured.', $this->getErrors());
+                throw new IntegrityException('Unregistration Error(s) Occurred.', $this->getErrors());
             }
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
-            $this->trigger(static::$eventDeregisterFailed);
-            if (YII_DEBUG || YII_ENV !== YII_ENV_PROD) {
+            $this->trigger(self::EVENT_UNREGISTER_FAILED);
+            if (YII_DEBUG || YII_ENV != YII_ENV_PROD) {
                 Yii::error($ex->getMessage(), __METHOD__);
-                return $ex;
             }
             Yii::warning($ex->getMessage(), __METHOD__);
             return false;
         }
-        $this->trigger(static::$eventAfterDeregister);
-        return $result == 1;
+        $this->trigger(self::EVENT_AFTER_UNREGISTER);
+        return true;
     }
 
     /**
      * Get source.
-     * @return string
+     * @return string|null
      */
-    public function getSource()
+    public function getSource(): ?string
     {
         $sourceAttribute = $this->sourceAttribute;
         return is_string($sourceAttribute) ? $this->$sourceAttribute : null;
@@ -205,8 +189,9 @@ trait RegistrationTrait
     /**
      * Set source.
      * @param string $source
+     * @return string|null
      */
-    public function setSource($source)
+    public function setSource(string $source): ?string
     {
         $sourceAttribute = $this->sourceAttribute;
         return (is_string($sourceAttribute) && !empty($sourceAttribute)) ? $this->$sourceAttribute = $source : null;
@@ -216,7 +201,7 @@ trait RegistrationTrait
      * Get the rules associated with source attribute.
      * @return array rules.
      */
-    public function getSourceRules()
+    public function getSourceRules(): array
     {
         if (!is_string($this->sourceAttribute) || empty($this->sourceAttribute)) {
             return [];
@@ -234,7 +219,7 @@ trait RegistrationTrait
      * Set the rules associated with source attribute.
      * @param array $rules
      */
-    public function setSourceRules($rules)
+    public function setSourceRules($rules): void
     {
         if (!empty($rules) && is_array($rules)) {
             $this->_sourceRules = $rules;
@@ -247,7 +232,7 @@ trait RegistrationTrait
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
      */
-    public function onInitSourceAttribute($event)
+    public function onInitSourceAttribute($event): ?string
     {
         $sender = $event->sender;
         /* @var $sender static */

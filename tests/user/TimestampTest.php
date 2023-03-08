@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -17,6 +17,8 @@ use rhosocial\base\models\tests\data\ar\ExpiredUser;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class TimestampTest extends UserTestCase
@@ -144,19 +146,19 @@ class TimestampTest extends UserTestCase
      * @group user
      * @group timestamp
      */
-    public function testHasEverEdited()
+    public function testHasEverBeenEdited()
     {
         $this->assertTrue($this->user->register());
         $this->assertNotEmpty($this->user->createdAtAttribute);
         $this->assertNotEmpty($this->user->updatedAtAttribute);
         $this->assertEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
         $this->assertNotEmpty($this->user->getCreatedAt());
-        $this->assertFalse($this->user->hasEverEdited());
+        $this->assertFalse($this->user->hasEverBeenEdited());
         sleep(2);
         $this->user->password = \Yii::$app->security->generateRandomString();
         $this->assertTrue($this->user->save());
         $this->assertNotEquals($this->user->getCreatedAt(), $this->user->getUpdatedAt());
-        $this->assertTrue($this->user->hasEverEdited());
+        $this->assertTrue($this->user->hasEverBeenEdited());
 
         $this->assertEquals(1, $this->user->setExpiredAfter(1));
         $this->assertTrue($this->user->save());

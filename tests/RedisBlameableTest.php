@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -16,6 +16,8 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\RedisBlameable;
 
 /**
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisBlameableTest extends TestCase
@@ -23,9 +25,7 @@ class RedisBlameableTest extends TestCase
     public static function prepareUser()
     {
         $user = new User(['password' => '123456']);
-        if (!$user->register()) {
-            $this->fail();
-        }
+        $user->register();
         return $user;
     }
     

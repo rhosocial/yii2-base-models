@@ -6,13 +6,14 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\traits;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\ModelEvent;
 
 /**
@@ -32,48 +33,48 @@ use yii\base\ModelEvent;
  * @property array $passwordResetTokenRules
  * @property array $rules
  * @property string|null $passwordResetToken Password Reset Token.
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait PasswordTrait
 {
-
-    public static $eventAfterSetPassword = "afterSetPassword";
-    public static $eventBeforeValidatePassword = "beforeValidatePassword";
-    public static $eventValidatePasswordSucceeded = "validatePasswordSucceeded";
-    public static $eventValidatePasswordFailed = "validatePasswordFailed";
-    public static $eventBeforeResetPassword = "beforeResetPassword";
-    public static $eventAfterResetPassword = "afterResetPassword";
-    public static $eventResetPasswordFailed = "resetPasswordFailed";
-    public static $eventNewPasswordAppliedFor = "newPasswordAppliedFor";
-    public static $eventPasswordResetTokenGenerated = "passwordResetTokenGenerated";
+    const EVENT_AFTER_SET_PASSWORD = 'afterSetPassword';
+    const EVENT_BEFORE_VALIDATE_PASSWORD = 'beforeValidatePassword';
+    const EVENT_VALIDATE_PASSWORD_SUCCEEDED = 'validatePasswordSucceeded';
+    const EVENT_VALIDATE_PASSWORD_FAILED = 'validatePasswordFailed';
+    const EVENT_BEFORE_RESET_PASSWORD = 'beforeResetPassword';
+    const EVENT_AFTER_RESET_PASSWORD = 'afterResetPassword';
+    const EVENT_RESET_PASSWORD_FAILED = 'resetPasswordFailed';
+    const EVENT_NEW_PASSWORD_APPLIED_FOR = 'newPasswordAppliedFor';
+    const EVENT_PASSWORD_RESET_TOKEN_GENERATED = 'passwordResetTokenGenerated';
 
     /**
-     * @var string The name of attribute used for storing password hash.
+     * @var string|false The name of attribute used for storing password hash.
      * We strongly recommend you not to change `pass_hash` property directly,
      * please use setPassword() magic property instead.
      */
-    public $passwordHashAttribute = 'pass_hash';
+    public string|false $passwordHashAttribute = 'pass_hash';
 
     /**
-     * @var string The name of attribute used for storing password reset token.
+     * @var string|false The name of attribute used for storing password reset token.
      * Please ensure that this field is unique in the database while allowing null values.
      * If you do not want to provide password reset feature, please set `false`.
      */
-    public $passwordResetTokenAttribute = 'password_reset_token';
+    public string|false $passwordResetTokenAttribute = 'password_reset_token';
 
     /**
-     * @var integer Cost parameter used by the Blowfish hash algorithm.
+     * @var int Cost parameter used by the Blowfish hash algorithm.
      */
-    public $passwordCost = 13;
+    public int $passwordCost = 13;
 
     /**
-     * @var integer if $passwordHashStrategy equals 'crypt', this value statically
+     * @var int if $passwordHashStrategy equals 'crypt', this value statically
      * equals 60.
      */
-    public $passwordHashAttributeLength = 60;
-    private $passwordHashRules = [];
-    private $passwordResetTokenRules = [];
+    public int $passwordHashAttributeLength = 60;
+    private array $passwordHashRules = [];
+    private array $passwordResetTokenRules = [];
     
     /**
      * Return the empty password specialty.
@@ -82,18 +83,22 @@ trait PasswordTrait
      * - Uppercase and lowercase letters, punctuation marks, numbers, and underscores are required.
      * @return string The string regarded as empty password.
      */
-    protected function getEmptyPasswordSpecialty()
+    protected function getEmptyPasswordSpecialty(): string
     {
         return 'Rrvl-7}cXt_<iAx[5s';
     }
-    
-    protected $_password;
+
+    /**
+     * @var string Temporarily store the original password.
+     * Note that the content cannot be exposed to the outside, otherwise the password will be leaked.
+     */
+    protected string $_password;
 
     /**
      * Get rules of password hash.
      * @return array password hash rules.
      */
-    public function getPasswordHashRules()
+    public function getPasswordHashRules(): array
     {
         if (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) {
             return [];
@@ -110,9 +115,9 @@ trait PasswordTrait
      * Set rules of password hash.
      * @param array $rules password hash rules.
      */
-    public function setPasswordHashRules($rules)
+    public function setPasswordHashRules(array $rules): void
     {
-        if (!empty($rules) && is_array($rules)) {
+        if (!empty($rules)) {
             $this->passwordHashRules = $rules;
         }
     }
@@ -120,9 +125,9 @@ trait PasswordTrait
     /**
      * Get the rules associated with password reset token attribute.
      * If password reset feature is not enabled, the empty array will be given.
-     * @return mixed
+     * @return array
      */
-    public function getPasswordResetTokenRules()
+    public function getPasswordResetTokenRules(): array
     {
         if (!is_string($this->passwordResetTokenAttribute) || empty($this->passwordResetTokenAttribute)) {
             return [];
@@ -140,7 +145,7 @@ trait PasswordTrait
      * Set the rules associated with password reset token attribute.
      * @param mixed $rules
      */
-    public function setPasswordResetTokenRules($rules)
+    public function setPasswordResetTokenRules(mixed $rules): void
     {
         if (!empty($rules) && is_array($rules)) {
             $this->passwordResetTokenRules = $rules;
@@ -171,8 +176,9 @@ trait PasswordTrait
      * @return string The password hash string. When [[passwordHashStrategy]] is set to 'crypt',
      * the output is always 60 ASCII characters, when set to 'password_hash' the output length
      * might increase in future versions of PHP (http://php.net/manual/en/function.password-hash.php)
+     * @throws Exception
      */
-    public function generatePasswordHash($password)
+    public function generatePasswordHash(string $password): string
     {
         return Yii::$app->security->generatePasswordHash((string)$password, $this->passwordCost);
     }
@@ -182,25 +188,26 @@ trait PasswordTrait
      * @param string $password The password to verify.
      * @return boolean whether the password is correct.
      */
-    public function validatePassword($password)
+    public function validatePassword(string $password): bool
     {
         $phAttribute = $this->passwordHashAttribute;
         $result = Yii::$app->security->validatePassword($password, $this->$phAttribute);
         if ($result) {
-            $this->trigger(static::$eventValidatePasswordSucceeded);
+            $this->trigger(static::EVENT_VALIDATE_PASSWORD_SUCCEEDED);
             return $result;
         }
-        $this->trigger(static::$eventValidatePasswordFailed);
+        $this->trigger(static::EVENT_VALIDATE_PASSWORD_FAILED);
         return $result;
     }
 
     /**
      * Set new password.
-     * If $password is empty, the specilty which represents the empty will be taken.
+     * If $password is empty, the specialty which represents the empty will be taken.
      * Finally, it will trigger `static::$eventAfterSetPassword` event.
-     * @param string $password the new password to be set.
+     * @param string|null $password the new password to be set.
+     * @throws Exception
      */
-    public function setPassword($password = null)
+    public function setPassword(?string $password = null): void
     {
         if (empty($password)) {
             $password = $this->getEmptyPasswordSpecialty();
@@ -211,26 +218,25 @@ trait PasswordTrait
         }
         $this->$phAttribute = $this->generatePasswordHash($password);
         $this->_password = $password;
-        $this->trigger(static::$eventAfterSetPassword);
+        $this->trigger(static::EVENT_AFTER_SET_PASSWORD);
     }
     
     /**
      * Set empty password.
      */
-    public function setEmptyPassword()
+    public function setEmptyPassword(): void
     {
         $this->password = $this->getEmptyPasswordSpecialty();
     }
     
     /**
      * Check whether password is empty.
-     * @return boolean
+     * @return bool
      */
-    public function getIsEmptyPassword()
+    public function getIsEmptyPassword(): bool
     {
-        return 
-        (!is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute)) ? 
-        true : $this->validatePassword($this->getEmptyPasswordSpecialty());
+        return
+            !is_string($this->passwordHashAttribute) || empty($this->passwordHashAttribute) || $this->validatePassword($this->getEmptyPasswordSpecialty());
     }
 
     /**
@@ -241,47 +247,47 @@ trait PasswordTrait
      * Otherwise, the new password reset token will be regenerated and saved. Then
      * trigger the `$eventNewPasswordAppliedFor` and
      * `$eventPasswordResetTokenGenerated` events and return true.
-     * @return boolean
+     * @return bool
      */
-    public function applyForNewPassword()
+    public function applyForNewPassword(): bool
     {
         if ($this->isNewRecord) {
             return false;
         }
         if (!is_string($this->passwordResetTokenAttribute)) {
-            $this->trigger(static::$eventNewPasswordAppliedFor);
+            $this->trigger(static::EVENT_NEW_PASSWORD_APPLIED_FOR);
             return true;
         }
         $this->setPasswordResetToken(static::generatePasswordResetToken());
         if (!$this->save()) {
-            $this->trigger(static::$eventResetPasswordFailed);
+            $this->trigger(static::EVENT_RESET_PASSWORD_FAILED);
             return false;
         }
-        $this->trigger(static::$eventNewPasswordAppliedFor);
-        $this->trigger(static::$eventPasswordResetTokenGenerated);
+        $this->trigger(static::EVENT_NEW_PASSWORD_APPLIED_FOR);
+        $this->trigger(static::EVENT_PASSWORD_RESET_TOKEN_GENERATED);
         return true;
     }
 
     /**
      * Reset password with password reset token.
-     * It will validate password reset token, before reseting password.
+     * It will validate password reset token, before resetting password.
      * @param string $password New password to be reset.
      * @param string $token Password reset token.
-     * @return boolean whether reset password successfully or not.
+     * @return bool whether reset password successfully or not.
      */
-    public function resetPassword($password, $token)
+    public function resetPassword(string $password, string $token): bool
     {
         if (!$this->validatePasswordResetToken($token)) {
             return false;
         }
-        $this->trigger(static::$eventBeforeResetPassword);
+        $this->trigger(static::EVENT_BEFORE_RESET_PASSWORD);
         $this->password = $password;
         $this->setPasswordResetToken();
         if (!$this->save()) {
-            $this->trigger(static::$eventResetPasswordFailed);
+            $this->trigger(static::EVENT_RESET_PASSWORD_FAILED);
             return false;
         }
-        $this->trigger(static::$eventAfterResetPassword);
+        $this->trigger(static::EVENT_AFTER_RESET_PASSWORD);
         return true;
     }
 
@@ -290,7 +296,7 @@ trait PasswordTrait
      * The token is hash value of `sha1()` pass through the random string.
      * @return string The generated password reset token.
      */
-    public static function generatePasswordResetToken()
+    public static function generatePasswordResetToken(): string
     {
         return sha1(Yii::$app->security->generateRandomString());
     }
@@ -300,7 +306,7 @@ trait PasswordTrait
      * The auth key and access token should be regenerated if new password has applied.
      * @param ModelEvent $event
      */
-    public function onAfterSetNewPassword($event)
+    public function onAfterSetNewPassword($event): void
     {
         $this->onInitAuthKey($event);
         $this->onInitAccessToken($event);
@@ -311,9 +317,9 @@ trait PasswordTrait
      * If password reset feature is not enabled, true will be given.
      * Note: We DO NOT treat the `null` specially.
      * @param string|null $token the token to be validated.
-     * @return boolean whether the $token is correct.
+     * @return bool whether the $token is correct.
      */
-    protected function validatePasswordResetToken($token)
+    protected function validatePasswordResetToken(?string $token): bool
     {
         if (!is_string($this->passwordResetTokenAttribute) || empty($this->passwordResetTokenAttribute)) {
             return true;
@@ -327,19 +333,19 @@ trait PasswordTrait
      * Please ensure that this field is unique in the database while allowing null values.
      * @param ModelEvent $event
      */
-    public function onInitPasswordResetToken($event)
+    public function onInitPasswordResetToken($event): ?string
     {
         $sender = $event->sender;
         /* @var $sender static */
         return $sender->setPasswordResetToken(null);
     }
-    
+
     /**
      * Set password reset token.
      * @param string|null $token
-     * @return string
+     * @return string|null
      */
-    public function setPasswordResetToken($token = null)
+    public function setPasswordResetToken(?string $token = null): ?string
     {
         if (empty($this->passwordResetTokenAttribute) || !is_string($this->passwordResetTokenAttribute)) {
             return null;
@@ -351,7 +357,7 @@ trait PasswordTrait
      * Get password reset token.
      * @return string|null Null if this attribute is not enabled, or the value is `null`.
      */
-    public function getPasswordResetToken()
+    public function getPasswordResetToken(): ?string
     {
         if (empty($this->passwordResetTokenAttribute) || !is_string($this->passwordResetTokenAttribute)) {
             return null;

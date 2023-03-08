@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -14,7 +14,7 @@ namespace rhosocial\base\models\models;
 
 use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
-use rhosocial\base\models\models\BaseUserModel;
+use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
 use rhosocial\base\models\traits\BlameableTrait;
 use yii\web\IdentityInterface;
@@ -22,7 +22,8 @@ use yii\web\IdentityInterface;
 /**
  * Description of BaseMongoBlameableModel
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
@@ -57,29 +58,29 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
 
     /**
      * Because every document has a `MongoId" class, this class no longer needs GUID feature.
-     * @var boolean determines whether enable the GUID features.
+     * @var string|false determines whether enable the GUID features.
      */
-    public $guidAttribute = false;
-    public $idAttribute = '_id';
-    public $idAttributeType = 2;
+    public string|false $guidAttribute = false;
+    public string|false $idAttribute = '_id';
+    public int $idAttributeType = 2;
 
     /**
      * @inheritdoc
      * You can override this method if enabled fields cannot meet your requirements.
      * @return array
      */
-    public function attributes()
+    public function attributes(): array
     {
         return $this->enabledFields();
     }
 
     /**
-     * Get blame who owned this blameable model.
+     * Get blame who owned this blamable model.
      * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
      * @return BaseUserQuery user.
      */
-    public function getHost()
+    public function getHost(): BaseUserQuery
     {
         $hostClass = $this->hostClass;
         $user = $hostClass::buildNoInitModel();
@@ -91,7 +92,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * Get created_by attribute.
      * @return string|null
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?string
     {
         $createdByAttribute = $this->createdByAttribute;
         return (!is_string($createdByAttribute) || empty($createdByAttribute)) ? null : $this->$createdByAttribute->getData();
@@ -99,10 +100,10 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     
     /**
      * Set host.
-     * @param Binary|IdentityInterface|string $host
+     * @param string|Binary $host
      * @return Binary|false
      */
-    public function setHost($host)
+    public function setHost(string|Binary $host): Binary|false
     {
         if ($host instanceof Binary && $host->getType() == Binary::TYPE_UUID) {
             return $this->{$this->createdByAttribute} = $host;
@@ -123,9 +124,9 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * Get updater who updated this blameable model recently.
      * NOTICE! This method will not check whether `$hostClass` exists. You should
      * specify it in `init()` method.
-     * @return BaseUserQuery user.
+     * @return ?BaseUserQuery user.
      */
-    public function getUpdater()
+    public function getUpdater(): ?BaseUserQuery
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return null;
@@ -140,7 +141,7 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * Get updated_by attribute.
      * @return string|null
      */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?string
     {
         $updatedByAttribute = $this->updatedByAttribute;
         return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
@@ -148,10 +149,10 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     
     /**
      * Set updater.
-     * @param Binary|IdentityInterface|string $updater
+     * @param string|\rhosocial\base\models\models\BaseUserModel $updater
      * @return Binary|false
      */
-    public function setUpdater($updater)
+    public function setUpdater(string|\rhosocial\base\models\traits\BaseUserModel $updater): Binary|false
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;
@@ -177,9 +178,9 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
      * This method is ONLY used for being triggered by event. DO NOT call,
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
-     * @return Binary the GUID of current user or the owner.
+     * @return ?Binary the GUID of current user or the owner.
      */
-    public function onGetCurrentUserGuid($event)
+    public function onGetCurrentUserGuid($event): ?Binary
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -191,5 +192,6 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         if ($identity) {
             return new Binary($identity->getGUID(), Binary::TYPE_UUID);
         }
+        return null;
     }
 }

@@ -6,7 +6,7 @@
  * | |/ // /(__  )  / / / /| || |     | |
  * |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -15,8 +15,8 @@ use rhosocial\base\models\tests\data\ar\AdditionalAccount;
 use rhosocial\base\models\tests\data\ar\User;
 
 /**
- * Description of BaseAdditionalAccountModelTest
- *
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class BaseAdditionalAccountModelTest extends TestCase
@@ -60,7 +60,7 @@ class BaseAdditionalAccountModelTest extends TestCase
     {
         $user = new User(['password' => '123456']);
         $aa = $user->create(AdditionalAccount::class, ['content' => 0]);
-        
+        /* @var $aa AdditionalAccount */
         // 必须返回一个“额外账户”模型。
         $this->assertNotNull($aa);
         
@@ -72,7 +72,7 @@ class BaseAdditionalAccountModelTest extends TestCase
         $this->assertEquals(0, $aa->content);
         
         // “额外账户”的所有属性都应当通过规则验证。
-        $this->assertTrue($aa->validate());
+        $this->assertTrue($aa->validate(), print_r($aa->getErrors(), true));
         $result = $user->register([$aa]);
         if ($result === true) {
             $this->assertTrue($result);
@@ -85,7 +85,7 @@ class BaseAdditionalAccountModelTest extends TestCase
         $this->assertEquals(1, $aa->countOfOwner());
         
         // 测试完毕，注销账户。
-        $this->assertTrue($user->deregister());
+        $this->assertTrue($user->deregister(), print_r($aa->getErrors(), true));
     }
     
     /**

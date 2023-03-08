@@ -6,48 +6,57 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
 namespace rhosocial\base\models\tests\user;
 
 use rhosocial\base\models\tests\data\ar\User;
+use yii\db\IntegrityException;
 
+/**
+ * @version 2.0
+ * @since 1.0
+ * @author vistart <i@vistart.me>
+ */
 class QueryTest extends UserTestCase
 {
     /**
      * @group user
      * @group query
+     * @throws IntegrityException
      */
     public function testActive()
     {
         $this->assertTrue($this->user->register());
-        $this->assertEquals(User::$statusActive, $this->user->status);
-        $this->assertEquals(User::$statusActive, $this->user->getStatus());
-        $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->active(User::$statusActive)->one());
-        $this->assertNull(User::find()->guid($this->user->getGUID())->active(User::$statusInactive)->one());
+        $this->assertEquals(User::STATUS_ACTIVE, $this->user->status);
+        $this->assertEquals(User::STATUS_ACTIVE, $this->user->getStatus());
+        $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->active(User::STATUS_ACTIVE)->one());
+        $this->assertNull(User::find()->guid($this->user->getGUID())->active(User::STATUS_INACTIVE)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group query
+     * @throws IntegrityException
      */
     public function testInactive()
     {
-        $this->user->status = User::$statusInactive;
+        $this->user->status = User::STATUS_INACTIVE;
         $this->assertTrue($this->user->register());
-        $this->assertEquals(User::$statusInactive, $this->user->status);
-        $this->assertEquals(User::$statusInactive, $this->user->getStatus());
-        $this->assertNull(User::find()->guid($this->user->getGUID())->active(User::$statusActive)->one());
-        $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->active(User::$statusInactive)->one());
+        $this->assertEquals(User::STATUS_INACTIVE, $this->user->status);
+        $this->assertEquals(User::STATUS_INACTIVE, $this->user->getStatus());
+        $this->assertNull(User::find()->guid($this->user->getGUID())->active(User::STATUS_ACTIVE)->one());
+        $this->assertInstanceOf(User::class, User::find()->guid($this->user->getGUID())->active(User::STATUS_INACTIVE)->one());
         $this->assertTrue($this->user->deregister());
     }
-    
+
     /**
      * @group user
      * @group query
+     * @throws IntegrityException
      */
     public function testSource()
     {

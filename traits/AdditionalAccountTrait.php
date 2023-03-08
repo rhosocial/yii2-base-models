@@ -6,7 +6,7 @@
  *  | |/ // /(__  )  / / / /| || |     | |
  *  |___//_//____/  /_/ /_/ |_||_|     |_|
  * @link https://vistart.me/
- * @copyright Copyright (c) 2016 - 2022 vistart
+ * @copyright Copyright (c) 2016 - 2023 vistart
  * @license https://vistart.me/license/
  */
 
@@ -21,7 +21,7 @@ namespace rhosocial\base\models\traits;
  * Note: The extra account password should not be the same as the master account
  * password, but we will not take the initiative to determine whether the two are the same.
  * 
- * @property boolean $seperateLogin determines whether this account could be used
+ * @property bool $separateLogin determines whether this account could be used
  * for logging-in.
  * @property-read array $enableLoginAttributeRules
  * @property-read array $additionAccountRules
@@ -33,47 +33,47 @@ trait AdditionalAccountTrait
     use PasswordTrait;
     
     /**
-     * @var boolean|string The attribute of which determines whether enable to
+     * @var false|string The attribute of which determines whether enable to
      * login with current additional account. You can assign it to false if you
-     * want to disable this feature, this is equivolent to not allow to login
+     * want to disable this feature, this is equivalent to not allow to log in
      * with current additional account among all the users.
      */
-    public $seperateLoginAttribute = false;
+    public string|false $separateLoginAttribute = false;
     
     /**
-     * @var boolean  Determines whether login with current additional
-     * account with a seperate password or not. If you set $enableLoginAttribute
+     * @return bool  Determines whether login with current additional
+     * account with a separate password or not. If you set $enableLoginAttribute
      * to false, this feature will be skipped.
      */
-    public function getPasswordIsSeperate()
+    public function getPasswordIsSeparate(): bool
     {
-        return $this->getSeperateLogin() && !$this->getIsEmptyPassword();
+        return $this->getSeparateLogin() && !$this->getIsEmptyPassword();
     }
     
     /**
      * Get this additional account could be used for logging-in.
-     * @return boolean
+     * @return bool
      */
-    public function getSeperateLogin()
+    public function getSeparateLogin(): bool
     {
-        if (!$this->seperateLoginAttribute || empty($this->seperateLoginAttribute)) {
+        if (empty($this->separateLoginAttribute)) {
             return false;
         }
-        $enableLoginAttribute = $this->seperateLoginAttribute;
+        $enableLoginAttribute = $this->separateLoginAttribute;
         return $this->$enableLoginAttribute > 0;
     }
     
     /**
-     * Set this additional accunt could be used for logging-in.
-     * @param boolean $can
-     * @return integer
+     * Set this additional account could be used for logging-in.
+     * @param bool $can
+     * @return void
      */
-    public function setSeperateLogin($can)
+    public function setSeparateLogin(bool $can): void
     {
-        if (!$this->seperateLoginAttribute || empty($this->seperateLoginAttribute)) {
+        if (empty($this->separateLoginAttribute)) {
             return;
         }
-        $enableLoginAttribute = $this->seperateLoginAttribute;
+        $enableLoginAttribute = $this->separateLoginAttribute;
         $this->$enableLoginAttribute = ($can ? 1 : 0);
     }
     
@@ -83,11 +83,11 @@ trait AdditionalAccountTrait
      * with true by default.
      * @return array rules.
      */
-    public function getEnableLoginAttributeRules()
+    public function getEnableLoginAttributeRules(): array
     {
-        return $this->seperateLoginAttribute && is_string($this->seperateLoginAttribute) && !empty($this->seperateLoginAttribute) ? [
-            [[$this->seperateLoginAttribute], 'boolean'],
-            [[$this->seperateLoginAttribute], 'default', 'value' => true],
+        return is_string($this->separateLoginAttribute) && !empty($this->separateLoginAttribute) ? [
+            [[$this->separateLoginAttribute], 'boolean'],
+            [[$this->separateLoginAttribute], 'default', 'value' => true],
             ] : [];
     }
     
@@ -95,10 +95,10 @@ trait AdditionalAccountTrait
      * Get rules associated with additional account attributes.
      * @return array rules.
      */
-    public function getAdditionalAccountRules()
+    public function getAdditionalAccountRules(): array
     {
         $rules = $this->getEnableLoginAttributeRules();
-        if ($this->getPasswordIsSeperate()) {
+        if ($this->getPasswordIsSeparate()) {
             $rules = array_merge($rules, $this->getPasswordHashRules());
         }
         return $rules;
