@@ -324,7 +324,7 @@ trait BlameableTrait
         }
 
         if ($this->idCreatorCombinatedUnique && is_string($this->idAttribute)) {
-            $rules ['id'] = [
+            $rules[] = [
                 [$this->idAttribute,
                     $this->createdByAttribute],
                 'unique',
@@ -672,7 +672,7 @@ trait BlameableTrait
         if (!isset($sender->$contentTypeAttribute) &&
             !empty($sender->contentTypes) &&
             is_array($sender->contentTypes)) {
-            $sender->$contentTypeAttribute = $sender->contentTypes[0];
+            $sender->$contentTypeAttribute = $sender->contentTypes[array_key_first($sender->contentTypes)];
         }
     }
 

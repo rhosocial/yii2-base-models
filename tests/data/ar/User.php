@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
+use rhosocial\base\models\models\BaseUserModel;
 use Yii;
 use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\base\models\queries\BaseUserQuery;
@@ -25,7 +26,7 @@ use rhosocial\base\models\tests\data\ar\blameable\UserEmail;
  * @version 2.0
  * @since 1.0
  */
-class User extends \rhosocial\base\models\models\BaseUserModel
+class User extends BaseUserModel
 {
     public string $idAttributePrefix = '4';
     public int $idAttributeType = 1;

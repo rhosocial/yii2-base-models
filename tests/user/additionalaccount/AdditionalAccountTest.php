@@ -17,7 +17,8 @@ use rhosocial\base\models\tests\data\ar\AdditionalAccount;
 use rhosocial\base\models\tests\user\UserTestCase;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class AdditionalAccountTest extends UserTestCase
