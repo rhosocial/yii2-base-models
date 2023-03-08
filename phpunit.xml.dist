@@ -18,10 +18,4 @@
       <directory>./tests/user</directory>
     </testsuite>
   </testsuites>
-  <phpunit>
-    <displayDetailsOnTestsThatTriggerDeprecations>true</displayDetailsOnTestsThatTriggerDeprecations>
-    <displayDetailsOnTestsThatTriggerErrors>true</displayDetailsOnTestsThatTriggerErrors>
-    <displayDetailsOnTestsThatTriggerNotices>true</displayDetailsOnTestsThatTriggerNotices>
-    <displayDetailsOnTestsThatTriggerWarnings>true</displayDetailsOnTestsThatTriggerWarnings>
-  </phpunit>
 </phpunit>
