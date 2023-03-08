@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
   `user_guid` varbinary(16) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `pass_hash` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `seperate_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
+  `separate_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `content` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'User source',
   `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,

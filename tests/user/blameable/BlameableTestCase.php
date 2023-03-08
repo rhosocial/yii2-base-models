@@ -16,6 +16,7 @@ use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\blameable\UserPost;
 use rhosocial\base\models\tests\data\ar\blameable\UserComment;
 use rhosocial\base\models\tests\user\UserTestCase;
+use yii\base\Exception;
 
 /**
  * @version 2.0
@@ -28,7 +29,7 @@ class BlameableTestCase extends UserTestCase
      *
      * @var UserPost
      */
-    public $post = null;
+    public mixed $post = null;
 
     /**
      *
@@ -37,10 +38,13 @@ class BlameableTestCase extends UserTestCase
     public ?array $comments = null;
 
     /**
-     * @var User 
+     * @var ?User
      */
-    public $other = null;
+    public ?User $other = null;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp() : void {
         parent::setUp();
         $this->other = new User(['password' => \Yii::$app->security->generateRandomString()]);

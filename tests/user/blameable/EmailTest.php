@@ -30,11 +30,11 @@ class EmailTest extends BlameableTestCase
      *
      * @var UserEmail
      */
-    public $email = null;
+    public mixed $email = null;
 
     protected function setUp() : void {
         parent::setUp();
-        $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email, 'type' => 0]);
+        $this->email = $this->user->create(UserEmail::class, ['email' => $this->faker->email(), 'type' => 0]);
         //print_r($this->email->attributes);
         //print_r($this->email->rules());
     }
@@ -147,7 +147,7 @@ class EmailTest extends BlameableTestCase
         $this->assertTrue($this->email->confirm($this->email->getConfirmCode()));
         $this->assertTrue($this->email->getIsConfirmed());
 
-        $this->email->setContent($this->faker->email);
+        $this->email->setContent($this->faker->email());
         $this->assertTrue($this->email->isAttributeChanged($this->email->contentAttribute));
         $this->assertTrue($this->email->save());
         $this->assertFalse($this->email->getIsConfirmed());
@@ -198,7 +198,7 @@ class EmailTest extends BlameableTestCase
     public function testFindOneOrCreate()
     {
         $this->assertTrue($this->user->register([$this->email]));
-        $faker = $this->faker->email;
+        $faker = $this->faker->email();
         $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email], ['email' => $faker]);
         /* @var $email UserEmail */
         $this->assertInstanceOf(UserEmail::class, $email);
@@ -206,13 +206,13 @@ class EmailTest extends BlameableTestCase
         $this->assertNotEquals($faker, $email->email);
 
         $this->assertGreaterThanOrEqual(1, $email->delete());
-        $faker = $this->faker->email;
+        $faker = $this->faker->email();
         $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email], ['email' => $faker]);
         $this->assertInstanceOf(UserEmail::class, $email);
         $this->assertTrue($email->getIsNewRecord());
         $this->assertEquals($faker, $email->email);
 
-        $faker = $this->faker->email;
+        $faker = $this->faker->email();
         $email = $this->user->findOneOrCreate(UserEmail::class, ['email' => $this->email->email]);
         $this->assertInstanceOf(UserEmail::class, $email);
         $this->assertTrue($email->getIsNewRecord());
@@ -232,7 +232,7 @@ class EmailTest extends BlameableTestCase
     {
         $this->assertTrue($this->user->register([$this->email]));
 
-        $email = $this->user->create(UserEmail::class, ['email' => $this->faker->email, 'type' => 0]);
+        $email = $this->user->create(UserEmail::class, ['email' => $this->faker->email(), 'type' => 0]);
         $this->assertNotEquals($email->getGUID(), $this->email->getGUID());
         $email->setID($this->email->getID());
         $this->assertEquals($email->getID(), $this->email->getID());

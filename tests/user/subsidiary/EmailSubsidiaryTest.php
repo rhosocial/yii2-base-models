@@ -29,7 +29,7 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
     protected function setUp() : void {
         parent::setUp();
         $this->user->addSubsidiaryClass('Email', UserEmail::class);
-        $this->email = $this->user->createEmail(['email' => $this->faker->email, 'type' => 0]);
+        $this->email = $this->user->createEmail(['email' => $this->faker->email(), 'type' => 0]);
     }
 
     protected function tearDown() : void {
@@ -53,8 +53,8 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
         } catch (\yii\base\InvalidConfigException $ex) {
             $this->assertEquals('Subsidiary name not specified.', $ex->getMessage());
         }
-        $this->assertNull($this->user->createEmails(['email' => $this->faker->email]));
-        $faker = $this->faker->email;
+        $this->assertNull($this->user->createEmails(['email' => $this->faker->email()]));
+        $faker = $this->faker->email();
         $email = $this->user->createSubsidiary(UserEmail::class, ['email' => $faker]);
         $this->assertInstanceOf(UserEmail::class, $email);
     }
@@ -120,7 +120,7 @@ class EmailSubsidiaryTest extends SubsidiaryTestCase
             $this->fail($ex->getMessage());
         }
         try {
-            $faker = $this->faker->email;
+            $faker = $this->faker->email();
             $model = $this->user->createEmail(['email' => $faker]);
         } catch (\Exception $ex) {
             $this->fail($ex->getMessage());

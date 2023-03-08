@@ -16,6 +16,7 @@ use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\MongoEntity;
 use rhosocial\base\models\tests\data\ar\Entity;
+use yii\base\Exception;
 use yii\db\StaleObjectException;
 
 /**
@@ -91,7 +92,7 @@ class MongoEntityTest extends MongoEntityTestCase
      */
     public function testIPv4Address(int $severalTimes)
     {
-        $ipv4 = $this->faker->ipv4;
+        $ipv4 = $this->faker->ipv4();
         $this->entity->setIPAddress($ipv4);
         $this->assertTrue($this->entity->save());
         $this->assertEquals($ipv4, $this->entity->getIPAddress());
@@ -107,7 +108,7 @@ class MongoEntityTest extends MongoEntityTestCase
      */
     public function testIPv6Address(int $severalTimes)
     {
-        $ipv6 = $this->faker->ipv6;
+        $ipv6 = $this->faker->ipv6();
         $this->entity->setIPAddress($ipv6);
         $this->assertTrue($this->entity->save());
         $this->assertEquals($ipv6, $this->entity->getIPAddress());
@@ -117,6 +118,7 @@ class MongoEntityTest extends MongoEntityTestCase
     /**
      * @group mongo
      * @group entity
+     * @throws Exception
      */
     public function testCompositeGUID()
     {

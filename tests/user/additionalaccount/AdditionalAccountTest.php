@@ -31,7 +31,6 @@ class AdditionalAccountTest extends UserTestCase
     {
         $user = new User(['password' => '123456']);
 
-        /* @var $user User */
         $aa = $user->create(AdditionalAccount::class, ['source' => 0]);
 
         // 必须返回一个“额外账户”模型。
@@ -69,7 +68,7 @@ class AdditionalAccountTest extends UserTestCase
     public function testSeparatePassword()
     {
         $this->user = new User(['password' => '123456']);
-        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'password' => $this->faker->randomLetter, 'separateLogin' => true]);
+        $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'password' => $this->faker->randomLetter(), 'separateLogin' => true]);
         /* @var $aa AdditionalAccount */
         $this->assertTrue($this->user->register([$aa]));
         $this->assertInstanceOf(AdditionalAccount::class, $this->user->additionalAccounts[0]);
@@ -80,9 +79,9 @@ class AdditionalAccountTest extends UserTestCase
 
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      */
-    public function testNotSeperatePassword()
+    public function testNotSeparatePassword()
     {
         $this->user = new User(['password' => '123456']);
         $aa = $this->user->create(AdditionalAccount::class, ['source' => 0]);
@@ -97,9 +96,9 @@ class AdditionalAccountTest extends UserTestCase
 
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      */
-    public function testSeperateLogin()
+    public function testSeparateLogin()
     {
         $this->user = new User(['password' => '123456']);
         $aa = $this->user->create(AdditionalAccount::class, ['source' => 0, 'separateLogin' => true]);
@@ -116,9 +115,9 @@ class AdditionalAccountTest extends UserTestCase
 
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      */
-    public function testNotSeperateLogin()
+    public function testNotSeparateLogin()
     {
         $password = '123456';
         $this->user = new User(['password' => $password]);
@@ -136,9 +135,9 @@ class AdditionalAccountTest extends UserTestCase
 
     /**
      * @group user
-     * @group additionalaccount
+     * @group additional-account
      */
-    public function testSeperateLoginAttribute()
+    public function testSeparateLoginAttribute()
     {
         $password = '123456';
         $this->user = new User(['password' => $password]);

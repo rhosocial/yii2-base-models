@@ -44,7 +44,7 @@ class UserEmail extends BaseBlameableModel
     public string|false $updatedByAttribute = false;
     public string|array|false $contentAttribute = 'email';
     public array|string $contentAttributeRule = ['email', 'message' => 'Please input valid email address.', 'allowName' => true];
-    public int $enableIP = 0;
+    public int $enableIP = self::IP_DISABLED;
 
     public string|false $descriptionAttribute = 'description';
 

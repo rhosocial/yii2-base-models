@@ -15,6 +15,7 @@ namespace rhosocial\base\models\tests\user;
 use Faker\Factory;
 use rhosocial\base\helpers\IP;
 use rhosocial\base\models\tests\data\ar\User;
+use Throwable;
 use yii\db\IntegrityException;
 
 /**
@@ -43,7 +44,7 @@ class IPTest extends UserTestCase
      * @group user
      * @group ip
      * @param string $ip
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      * @dataProvider IPv4Provider
      * @depends      testAfterRegister
      */
@@ -81,7 +82,7 @@ class IPTest extends UserTestCase
      * @group user
      * @group ip
      * @param string $ip
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      * @dataProvider IPv6Provider
      * @depends      testAfterRegister
      */
@@ -121,7 +122,7 @@ class IPTest extends UserTestCase
      */
     public function testWebRequest()
     {
-        $ip = $this->faker->ipv4;
+        $ip = $this->faker->ipv4();
         $this->user = new User(['requestId' => null, 'ipAddress' => $ip]);
         $this->assertEquals($ip, $this->user->ipAddress);
         
@@ -159,7 +160,7 @@ class IPTest extends UserTestCase
         $faker->seed(time() % 1000000);
         for ($i = 0; $i < 3; $i++)
         {
-            yield [$faker->ipv4];
+            yield [$faker->ipv4()];
         }
     }
     
@@ -169,7 +170,7 @@ class IPTest extends UserTestCase
         $faker->seed(time() % 1000000);
         for ($i = 0; $i < 3; $i++)
         {
-            yield [$faker->ipv6];
+            yield [$faker->ipv6()];
         }
     }
 }
