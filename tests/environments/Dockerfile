@@ -3,4 +3,4 @@ FROM registry.us-west-1.aliyuncs.com/vistart_public/php:${TAG}
 
 LABEL maintainer="vistart <i@vistart.me>"
 
-RUN wget https://phar.phpunit.de/phpunit-10.phar -O /usr/bin/phpunit && chmod +x /usr/bin/phpunit
+RUN wget https://phar.phpunit.de/phpunit-10.phar -qO /usr/bin/phpunit && chmod +x /usr/bin/phpunit
