@@ -15,6 +15,8 @@ namespace rhosocial\base\models\tests\user;
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\ExpiredUser;
 use rhosocial\base\models\tests\user\UserTestCase;
+use Throwable;
+use yii\db\IntegrityException;
 
 /**
  * @version 2.0
@@ -27,14 +29,17 @@ class TimestampTest extends UserTestCase
         parent::setUp();
         $this->user = new ExpiredUser();
     }
+
     /**
      * @group user
      * @group registration
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider timestampProvider
      */
-    public function testAfterRegister($severalTimes)
+    public function testAfterRegister(int $severalTimes)
     {
         $this->assertNull($this->user->getCreatedAt());
         $this->assertNull($this->user->getUpdatedAt());
@@ -48,10 +53,12 @@ class TimestampTest extends UserTestCase
     /**
      * @group user
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider timestampProvider
      */
-    public function testNoCreatedAt($severalTimes)
+    public function testNoCreatedAt(int $severalTimes)
     {
         $this->user = new ExpiredUser(['createdAtAttribute' => false]);
         $this->assertNull($this->user->getCreatedAt());
@@ -66,10 +73,12 @@ class TimestampTest extends UserTestCase
     /**
      * @group user
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider timestampProvider
      */
-    public function testNoUpdatedAt($severalTimes)
+    public function testNoUpdatedAt(int $severalTimes)
     {
         $this->user = new ExpiredUser(['updatedAtAttribute' => false]);
         $this->assertNull($this->user->getCreatedAt());
@@ -84,10 +93,12 @@ class TimestampTest extends UserTestCase
     /**
      * @group user
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws IntegrityException
+     * @throws Throwable
      * @dataProvider timestampProvider
      */
-    public function testNoTimestamp($severalTimes)
+    public function testNoTimestamp(int $severalTimes)
     {
         $this->user = new ExpiredUser(['createdAtAttribute' => false, 'updatedAtAttribute' => false]);
         $this->assertNull($this->user->getCreatedAt());
@@ -102,10 +113,12 @@ class TimestampTest extends UserTestCase
     /**
      * @group user
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws Throwable
+     * @throws IntegrityException
      * @dataProvider timestampProvider
      */
-    public function testRemoveIfExpired($severalTimes)
+    public function testRemoveIfExpired(int $severalTimes)
     {
         $this->assertNull($this->user->getCreatedAt());
         $this->assertNull($this->user->getUpdatedAt());
@@ -169,7 +182,7 @@ class TimestampTest extends UserTestCase
     }
 
 
-    public function timestampProvider()
+    public static function timestampProvider(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

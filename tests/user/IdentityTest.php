@@ -207,7 +207,7 @@ class IdentityTest extends UserTestCase
         $this->assertFalse($this->user->validate());
     }
     
-    public function severalTimes(): \Generator
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield [$i];

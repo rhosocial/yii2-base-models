@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\tests\user;
 
 use rhosocial\base\models\tests\data\ar\User;
+use Throwable;
 use yii\db\IntegrityException;
 
 /**
@@ -27,7 +28,7 @@ class IDTest extends UserTestCase
      * @group id
      * @group registration
      * @param int $severalTimes
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      * @dataProvider severalTimes
      */
     public function testAfterRegister(int $severalTimes)
@@ -47,7 +48,7 @@ class IDTest extends UserTestCase
      * @group user
      * @group id
      * @param int $severalTimes
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      * @dataProvider severalTimes
      * @depends      testAfterRegister
      */
@@ -66,7 +67,7 @@ class IDTest extends UserTestCase
      * @group user
      * @group id
      * @param int $severalTimes
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      * @dataProvider severalTimes
      * @depends      testAfterRegister
      */
@@ -80,7 +81,7 @@ class IDTest extends UserTestCase
         $this->assertTrue($this->user->deregister());
     }
     
-    public function severalTimes()
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield [$i];

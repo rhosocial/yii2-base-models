@@ -30,10 +30,10 @@ class TimestampTest extends EntityTestCase
     /**
      * @group entity
      * @group timestamp
-     * @param integer $severalTimes
+     * @param int $severalTimes
      * @dataProvider severalTimes
      */
-    public function testNotExpired($severalTimes)
+    public function testNotExpired(int $severalTimes)
     {
         $this->assertFalse($this->entity->expiredAfterAttribute);
         $this->assertFalse($this->entity->getIsExpired());
@@ -268,7 +268,7 @@ class TimestampTest extends EntityTestCase
         $this->assertTrue($this->entity->save());
     }
     
-    public function severalTimes(): \Generator
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

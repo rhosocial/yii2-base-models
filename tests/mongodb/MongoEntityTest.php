@@ -16,6 +16,7 @@ use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\MongoEntity;
 use rhosocial\base\models\tests\data\ar\Entity;
+use yii\db\StaleObjectException;
 
 /**
  * @version 2.0
@@ -27,10 +28,11 @@ class MongoEntityTest extends MongoEntityTestCase
     /**
      * @group mongo
      * @group entity
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testNew($severalTimes)
+    public function testNew(int $severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $this->assertEquals(1, $this->entity->delete());
@@ -39,10 +41,11 @@ class MongoEntityTest extends MongoEntityTestCase
     /**
      * @group mongo
      * @group entity
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testGUID($severalTimes)
+    public function testGUID(int $severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $guid = $this->entity->getGUID();
@@ -64,9 +67,10 @@ class MongoEntityTest extends MongoEntityTestCase
      * @group mongo
      * @group entity
      * @param integer $severalTimes
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testCheckGuidExists($severalTimes)
+    public function testCheckGuidExists(int $severalTimes)
     {
         $this->assertTrue($this->entity->save());
         $this->assertTrue(MongoEntity::checkGuidExists($this->entity->getGUID()));
@@ -81,10 +85,11 @@ class MongoEntityTest extends MongoEntityTestCase
     /**
      * @group mongo
      * @group entity
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testIPv4Address($severalTimes)
+    public function testIPv4Address(int $severalTimes)
     {
         $ipv4 = $this->faker->ipv4;
         $this->entity->setIPAddress($ipv4);
@@ -96,10 +101,11 @@ class MongoEntityTest extends MongoEntityTestCase
     /**
      * @group mongo
      * @group entity
-     * @param integer $severalTimes
+     * @param int $severalTimes
+     * @throws StaleObjectException
      * @dataProvider severalTimes
      */
-    public function testIPv6Address($severalTimes)
+    public function testIPv6Address(int $severalTimes)
     {
         $ipv6 = $this->faker->ipv6;
         $this->entity->setIPAddress($ipv6);
@@ -129,7 +135,7 @@ class MongoEntityTest extends MongoEntityTestCase
         $this->assertEquals($guids[2]->getData(), Number::guid_bin($models[2]));
     }
 
-    public function severalTimes()
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

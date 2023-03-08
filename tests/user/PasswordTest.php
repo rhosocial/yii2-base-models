@@ -14,6 +14,7 @@ namespace rhosocial\base\models\tests\user;
 
 use Faker\Factory;
 use rhosocial\base\models\tests\data\ar\User;
+use Throwable;
 use yii\base\Exception;
 use yii\db\IntegrityException;
 
@@ -31,7 +32,7 @@ class PasswordTest extends UserTestCase
      * @group password
      * @group registration
      * @dataProvider passwordProvider
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      */
     public function testAfterRegister($password)
     {
@@ -61,7 +62,7 @@ class PasswordTest extends UserTestCase
     /**
      * @group user
      * @group password
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      */
     public function testEmptyPassword()
     {
@@ -71,7 +72,7 @@ class PasswordTest extends UserTestCase
         $this->assertTrue($this->user->deregister());
     }
     
-    public function passwordProvider(): \Generator
+    public static function passwordProvider(): \Generator
     {
         $faker = Factory::create();
         $faker->seed(time() % 1000000);
@@ -79,10 +80,11 @@ class PasswordTest extends UserTestCase
             yield [$faker->password($faker->randomElement([1, 2, 3, 4, 5, 6]), $faker->randomElement([16, 17, 18, 19, 20, 21]))];
         }
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws Exception
      */
     public function testPasswordRulesPass()
     {
@@ -92,10 +94,11 @@ class PasswordTest extends UserTestCase
         $this->user->setPassword();
         $this->assertTrue($this->user->validate());
     }
-    
+
     /**
      * @group user
      * @group password
+     * @throws Exception
      */
     public function testPasswordRulesNotPass()
     {

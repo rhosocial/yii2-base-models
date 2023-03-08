@@ -24,7 +24,7 @@ class InitTest extends UserTestCase
      * @group registration
      * @dataProvider severalTimes
      */
-    public function testRegister($severalTimes)
+    public function testRegister(int $severalTimes)
     {
         $this->assertTrue($this->user->getIsNewRecord());
         $this->assertFalse($this->user->deregister(), 'False if not registered.');
@@ -36,7 +36,7 @@ class InitTest extends UserTestCase
         $this->assertFalse($this->user->deregister());
     }
     
-    public function severalTimes()
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield [$i];

@@ -115,7 +115,7 @@ class GUIDTest extends UserTestCase
         $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->{$this->user->getReadableGuidAttribute()});
     }
 
-    public function severalTimes(): \Generator
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++) {
             yield [$i];

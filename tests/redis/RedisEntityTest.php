@@ -163,7 +163,7 @@ class RedisEntityTest extends RedisEntityTestCase
         $this->assertGreaterThanOrEqual(1, $this->entity->delete());
     }
     
-    public function severalTimes(): \Generator
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {

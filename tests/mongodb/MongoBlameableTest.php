@@ -355,7 +355,7 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->user->deregister());
     }
 
-    public function severalTimes(): \Generator
+    public static function severalTimes(): \Generator
     {
         for ($i = 0; $i < 3; $i++)
         {
