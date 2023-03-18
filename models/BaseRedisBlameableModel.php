@@ -18,7 +18,8 @@ use rhosocial\base\models\traits\BlameableTrait;
 /**
  * Description of BaseRedisBlameableModel
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseRedisBlameableModel extends BaseRedisEntityModel

@@ -14,6 +14,7 @@ namespace rhosocial\base\models\tests\entity;
 
 use rhosocial\base\models\tests\data\ar\Entity;
 use yii\base\Exception;
+use yii\base\NotSupportedException;
 
 /**
  * @version 2.0
@@ -24,6 +25,7 @@ class EntityTest extends EntityTestCase
 {
     /**
      * @group entity
+     * @throws NotSupportedException
      */
     public function testAttributes()
     {

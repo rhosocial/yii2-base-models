@@ -13,14 +13,16 @@
 namespace rhosocial\base\models\queries;
 
 use rhosocial\base\models\traits\EntityQueryTrait;
+use yii\db\ActiveQuery;
 
 /**
  * Description of BaseEntityQuery
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
-class BaseEntityQuery extends \yii\db\ActiveQuery
+class BaseEntityQuery extends ActiveQuery
 {
     use EntityQueryTrait;
 

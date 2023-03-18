@@ -100,9 +100,10 @@ abstract class TestCase extends PHPunitTestCase {
                     ]
                         ], $config));
     }
-    
+
     /**
      * Destroys application in Yii::$app by setting it to null.
+     * @throws \yii\db\Exception
      */
     protected function destroyApplication() {
         $redis = Yii::$app->redis;
@@ -120,7 +121,7 @@ abstract class TestCase extends PHPunitTestCase {
     
     protected function setUp() : void {
         $databases = self::getParam('databases');
-        $params = $databases['mysql'] ?? null;
+        $params = $databases[ENV_DATABASE] ?? null;
         if ($params === null) {
             $this->markTestSkipped('No mysql server connection configured.');
         }
@@ -143,7 +144,7 @@ abstract class TestCase extends PHPunitTestCase {
     public function getConnection(bool $reset = true): Connection
     {
         $databases = self::getParam('databases');
-        $params = $databases['mysql'] ?? [];
+        $params = $databases[ENV_DATABASE] ?? [];
         $db = new Connection($params);
         if ($reset) {
             $db->open();

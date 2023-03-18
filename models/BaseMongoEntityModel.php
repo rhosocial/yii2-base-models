@@ -32,7 +32,7 @@ abstract class BaseMongoEntityModel extends ActiveRecord
 {
     use EntityTrait;
     
-    public function getGUIDRules()
+    public function getGUIDRules(): array
     {
         $rules = [];
         if (is_string($this->guidAttribute) || !empty($this->guidAttribute)) {
@@ -64,9 +64,9 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     /**
      * Check if the $guid existed in current database table.
      * @param string|Binary $guid the GUID to be checked.
-     * @return boolean Whether the $guid exists or not.
+     * @return bool Whether the $guid exists or not.
      */
-    public static function checkGuidExists($guid)
+    public static function checkGuidExists($guid): bool
     {
         if (is_string($guid)) {
             if (strlen($guid) == 16) {

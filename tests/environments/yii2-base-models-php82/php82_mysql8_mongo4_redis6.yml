@@ -34,7 +34,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ../../../../yii2-base-models:/opt/project
-      - ../../../../yii2-base-models/tests/data/yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
+      - ../../../../yii2-base-models/tests/data/mysql8_yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_USER: user

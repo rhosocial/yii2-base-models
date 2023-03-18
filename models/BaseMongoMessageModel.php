@@ -16,9 +16,11 @@ use MongoDB\BSON\Binary;
 use rhosocial\base\models\queries\BaseMongoMessageQuery;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\traits\MessageTrait;
+use yii\base\InvalidConfigException;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
@@ -44,11 +46,12 @@ abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
     /**
      * Get recipient.
      * @return BaseUserQuery
+     * @throws InvalidConfigException
      */
     public function getRecipient()
     {
         if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
-            throw new \yii\base\InvalidConfigException('Recipient GUID Attribute Not Specified.');
+            throw new InvalidConfigException('Recipient GUID Attribute Not Specified.');
         }
         $hostClass = $this->hostClass;
         $model = $hostClass::buildNoInitModel();
@@ -69,11 +72,12 @@ abstract class BaseMongoMessageModel extends BaseMongoBlameableModel
      * Set recipient.
      * @param BaseUserModel $user
      * @return string
+     * @throws InvalidConfigException
      */
     public function setRecipient($user)
     {
         if (!is_string($this->otherGuidAttribute) || empty($this->otherGuidAttribute)) {
-            throw new \yii\base\InvalidConfigException('Recipient GUID Attribute Not Specified.');
+            throw new InvalidConfigException('Recipient GUID Attribute Not Specified.');
         }
         if ($user instanceof BaseUserModel) {
             $user = $user->getGUID();

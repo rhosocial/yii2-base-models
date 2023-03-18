@@ -122,7 +122,7 @@ class RedisTimestampEntityTest extends RedisEntityTestCase
         $updatedAt = $this->entity->getUpdatedAt();
         $this->entity = TimestampEntity::findOne((string)($this->entity));
         sleep(1);
-        $this->entity->content = (\Yii::$app->security->generateRandomString());
+        $this->entity->content = \Yii::$app->security->generateRandomString();
         $this->assertTrue($this->entity->save());
         $this->entity = TimestampEntity::findOne((string)($this->entity));
         $this->assertEquals($createdAt, $this->entity->getCreatedAt());

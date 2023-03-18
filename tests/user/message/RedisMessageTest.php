@@ -15,12 +15,15 @@ namespace rhosocial\base\models\tests\user\message;
 use rhosocial\base\models\tests\data\ar\User;
 use rhosocial\base\models\tests\data\ar\redis\RedisMessage;
 use rhosocial\base\models\tests\user\UserTestCase;
+use Throwable;
 use yii\base\Exception;
+use yii\base\ModelEvent;
 use yii\db\IntegrityException;
 use yii\db\StaleObjectException;
 
 /**
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 class RedisMessageTest extends UserTestCase
@@ -36,7 +39,7 @@ class RedisMessageTest extends UserTestCase
     }
 
     /**
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      */
     protected function tearDown() : void {
         $this->other->deregister();
@@ -49,7 +52,7 @@ class RedisMessageTest extends UserTestCase
      * @group redis
      * @throws IntegrityException
      * @throws \yii\db\Exception
-     * @throws StaleObjectException
+     * @throws StaleObjectException|Throwable
      */
     public function testNew()
     {
@@ -69,7 +72,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws IntegrityException
+     * @throws IntegrityException|Throwable
      */
     public function testExpired()
     {
@@ -97,7 +100,7 @@ class RedisMessageTest extends UserTestCase
 
     /**
      * 
-     * @param \yii\base\ModelEvent $event
+     * @param ModelEvent $event
      */
     public function onReceived($event): true
     {
@@ -107,7 +110,7 @@ class RedisMessageTest extends UserTestCase
 
     /**
      * 
-     * @param \yii\base\ModelEvent $event
+     * @param ModelEvent $event
      */
     public function onRead($event): true
     {
@@ -132,7 +135,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function testRead()
     {
@@ -216,7 +219,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function testReceived()
     {
@@ -278,7 +281,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function testGetUpdater()
     {
@@ -300,7 +303,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function testSetUpdater()
     {
@@ -322,7 +325,7 @@ class RedisMessageTest extends UserTestCase
      * @group user
      * @group redis
      * @group message
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function testPagination()
     {

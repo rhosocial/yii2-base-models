@@ -16,6 +16,7 @@ use MongoDB\BSON\Binary;
 use rhosocial\base\helpers\Number;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\base\models\queries\BaseMongoBlameableQuery;
+use rhosocial\base\models\traits\BaseUserModel;
 use rhosocial\base\models\traits\BlameableTrait;
 use yii\web\IdentityInterface;
 
@@ -146,13 +147,13 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
         $updatedByAttribute = $this->updatedByAttribute;
         return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
     }
-    
+
     /**
      * Set updater.
-     * @param string|\rhosocial\base\models\models\BaseUserModel $updater
+     * @param string|BaseUserModel $updater
      * @return Binary|false
      */
-    public function setUpdater(string|\rhosocial\base\models\traits\BaseUserModel $updater): Binary|false
+    public function setUpdater(mixed $updater): Binary|false
     {
         if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
             return false;

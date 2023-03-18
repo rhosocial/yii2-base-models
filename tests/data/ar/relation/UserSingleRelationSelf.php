@@ -19,5 +19,5 @@ namespace rhosocial\base\models\tests\data\ar\relation;
  */
 class UserSingleRelationSelf extends UserSingleRelation
 {
-    public $relationSelf = true;
+    public bool $relationSelf = true;
 }

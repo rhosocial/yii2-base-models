@@ -56,7 +56,7 @@ trait GUIDTrait
      * override or modify it directly, unless you know the consequences.
      * @param ModelEvent $event
      */
-    public function onInitGUIDAttribute($event): void
+    public function onInitGUIDAttribute(mixed $event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -130,10 +130,13 @@ trait GUIDTrait
     public function setGUID(string $guid): ?string
     {
         $guidAttribute = $this->guidAttribute;
+        if (empty($guidAttribute)) {
+            return null;
+        }
         if (preg_match(Number::GUID_REGEX, $guid)) {
             $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
         }
-        return (!empty($guidAttribute)) ? $this->$guidAttribute = $guid : null;
+        return $this->$guidAttribute = $guid;
     }
 
     /**

@@ -41,32 +41,32 @@ use yii\db\IntegrityException;
  * @property-read array $userRelationRules
  * @property-read mixed $group
  * @property-read array $groupMembers
- * @property array $groupGuids
  * @property-read array $allGroups
  * @property-read array $nonGroupMembers
  * @property-read integer $groupsCount
  * @property-read array $groupsRules
  *
- * @method {$this->multiBlamesClass} createGroup(BaseUserModel $user, array $config = [])
- * @method array|false addGroup({$this->multiBlamesClass} $blame)
- * @method array|false addOrCreateGroup(){$this->multiBlamesClass}|array &$blame = null, BaseUserModel $user = null)
- * @method array|false removeGroup({$this->multiBlamesClass}|string $blame)
+ * @method mixed createGroup(BaseUserModel $user, array $config = [])
+ * @method array|false addGroup(mixed $blame)
+ * @method array|false addOrCreateGroup(mixed &$blame = null, BaseUserModel $user = null)
+ * @method array|false removeGroup(mixed $blame)
  * @method array|false removeAllGroups()
- * @method {$this->multiBlamesClass} getGroup(string $blameGuid)
- * @method {$this->multiBlamesClass} getOrCreateGroup(string $blameGuid, BaseUserModel $user = null))
- * @method array getGroupMembers({$this->multiBlamesClass} $blame) Get all members that belongs to
+ * @method mixed getGroup(string $blameGuid)
+ * @method mixed getOrCreateGroup(string $blameGuid, BaseUserModel $user = null))
+ * @method array getGroupMembers(mixed $blame) Get all members that belongs to
  * @method array getGroupGuids(bool $checkValid = false)
  * @method array|false setGroupGuids(array $guids = [], bool $checkValid = false)
  * @method array getOwnGroups() Get all groups that owned this relation.
  * @method array setOwnGroups(array $blames)
- * @method array isGroupContained({$this->multiBlamesClass} $blame)
+ * @method array isGroupContained(mixed $blame)
  * @method array getAllGroups() Get all groups created by whom created this relation.
  * @method array getNonGroupMembers(BaseUserModel $user) Get members that do not belong to any group.
  * @method integer getGroupsCount() Get the count of groups of this relation.
  * @method array getEmptyGroups() Get the groups which does not contain any relations.
  * @method array getGroupsRules() Get rules associated with group attribute.
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 trait UserRelationTrait
@@ -94,48 +94,48 @@ trait UserRelationTrait
     }
 
     /**
-     * @var string
+     * @var string|false
      */
-    public $remarkAttribute = 'remark';
-    public static $relationSingle = 0;
-    public static $relationMutual = 1;
-    public $relationType = 1;
-    public static $relationTypes = [
+    public string|false $remarkAttribute = 'remark';
+    public static int $relationSingle = 0;
+    public static int $relationMutual = 1;
+    public int $relationType = 1;
+    public static array $relationTypes = [
         0 => 'Single',
         1 => 'Mutual',
     ];
 
     /**
-     * @var string the attribute name of which determines the relation type.
+     * @var string|false the attribute name of which determines the relation type.
      */
-    public $mutualTypeAttribute = 'type';
-    public static $mutualTypeNormal = 0x00;
-    public static $mutualTypeSuspend = 0x01;
+    public string|false $mutualTypeAttribute = 'type';
+    public static int $mutualTypeNormal = 0x00;
+    public static int $mutualTypeSuspend = 0x01;
 
     /**
      * @var array Mutual types.
      */
-    public static $mutualTypes = [
+    public static array $mutualTypes = [
         0x00 => 'Normal',
         0x01 => 'Suspend',
     ];
 
     /**
-     * @var string the attribute name of which determines the `favorite` field.
+     * @var string|false the attribute name of which determines the `favorite` field.
      */
-    public $favoriteAttribute = 'favorite';
+    public string|false $favoriteAttribute = 'favorite';
 
     /**
      * Permit to build self relation.
      * @var boolean
      */
-    public $relationSelf = false;
+    public bool $relationSelf = false;
 
     /**
      * Get whether this relation is favorite or not.
-     * @return boolean
+     * @return ?bool
      */
-    public function getIsFavorite()
+    public function getIsFavorite(): ?bool
     {
         $favoriteAttribute = $this->favoriteAttribute;
         return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ?
@@ -144,9 +144,9 @@ trait UserRelationTrait
 
     /**
      * Set favorite.
-     * @param boolean $fav
+     * @param bool $fav
      */
-    public function setIsFavorite($fav)
+    public function setIsFavorite(bool $fav): ?int
     {
         $favoriteAttribute = $this->favoriteAttribute;
         return (is_string($favoriteAttribute) && !empty($favoriteAttribute)) ?
@@ -165,7 +165,7 @@ trait UserRelationTrait
      * Validation rules associated with user relation.
      * @return array rules.
      */
-    public function getUserRelationRules()
+    public function getUserRelationRules(): array
     {
         $rules = [];
         if ($this->relationType == static::$relationMutual) {
@@ -182,9 +182,9 @@ trait UserRelationTrait
 
     /**
      * Get remark.
-     * @return string remark.
+     * @return ?string remark.
      */
-    public function getRemark()
+    public function getRemark(): ?string
     {
         $remarkAttribute = $this->remarkAttribute;
         return (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $this->$remarkAttribute : null;
@@ -193,9 +193,9 @@ trait UserRelationTrait
     /**
      * Set remark.
      * @param string $remark
-     * @return string remark.
+     * @return ?string remark.
      */
-    public function setRemark($remark)
+    public function setRemark(string $remark): ?string
     {
         $remarkAttribute = $this->remarkAttribute;
         return (is_string($remarkAttribute) && !empty($remarkAttribute)) ? $this->$remarkAttribute = $remark : null;
@@ -205,7 +205,7 @@ trait UserRelationTrait
      * Validation rules associated with remark attribute.
      * @return array rules.
      */
-    public function getRemarkRules()
+    public function getRemarkRules(): array
     {
         return is_string($this->remarkAttribute) ? [
             [[$this->remarkAttribute], 'string'],
@@ -217,7 +217,7 @@ trait UserRelationTrait
      * Validation rules associated with favorites attribute.
      * @return array rules.
      */
-    public function getFavoriteRules()
+    public function getFavoriteRules(): array
     {
         return is_string($this->favoriteAttribute) ? [
             [[$this->favoriteAttribute], 'boolean'],
@@ -229,21 +229,20 @@ trait UserRelationTrait
      * Validation rules associated with other guid attribute.
      * @return array rules.
      */
-    public function getOtherGuidRules()
+    public function getOtherGuidRules(): array
     {
-        $rules = array_merge($this->getMutualRules(), [
+        return array_merge($this->getMutualRules(), [
             [[$this->otherGuidAttribute,
                 $this->createdByAttribute],
                 'unique',
                 'targetAttribute' => [$this->otherGuidAttribute, $this->createdByAttribute]],
         ]);
-        return $rules;
     }
 
     /**
      * Attach events associated with user relation.
      */
-    public function initUserRelationEvents()
+    public function initUserRelationEvents(): void
     {
         $this->on(static::EVENT_INIT, [$this, 'onInitBlamesLimit']);
         $this->on(static::EVENT_NEW_RECORD_CREATED, [$this, 'onInitGroups']);
@@ -256,9 +255,9 @@ trait UserRelationTrait
 
     /**
      * Get opposite relation against self.
-     * @return static
+     * @return ?static
      */
-    public function getOpposite()
+    public function getOpposite(): ?static
     {
         if ($this->isNewRecord) {
             return null;
@@ -270,9 +269,9 @@ trait UserRelationTrait
      * Check whether the initiator is followed by recipient.
      * @param BaseUserModel $initiator
      * @param BaseUserModel $recipient
-     * @return boolean
+     * @return bool
      */
-    public static function isFollowed($initiator, $recipient)
+    public static function isFollowed($initiator, $recipient): bool
     {
         return static::find()->initiators($recipient)->recipients($initiator)->exists();
     }
@@ -281,9 +280,9 @@ trait UserRelationTrait
      * Check whether the initiator is following recipient.
      * @param BaseUserModel $initiator
      * @param BaseUserModel $recipient
-     * @return boolean
+     * @return bool
      */
-    public static function isFollowing($initiator, $recipient)
+    public static function isFollowing($initiator, $recipient): bool
     {
         return static::find()->initiators($initiator)->recipients($recipient)->exists();
     }
@@ -293,9 +292,9 @@ trait UserRelationTrait
      * Or check whether the initiator and recipient are friend whatever the mutual type is normal or suspend.
      * @param BaseUserModel $initiator
      * @param BaseUserModel $recipient
-     * @return boolean
+     * @return bool
      */
-    public static function isMutual($initiator, $recipient)
+    public static function isMutual($initiator, $recipient): bool
     {
         return static::isFollowed($initiator, $recipient) && static::isFollowing($initiator, $recipient);
     }
@@ -305,9 +304,9 @@ trait UserRelationTrait
      * Or check whether the initiator and recipient are friend if the mutual type is normal.
      * @param BaseUserModel $initiator
      * @param BaseUserModel $recipient
-     * @return boolean
+     * @return bool
      */
-    public static function isFriend($initiator, $recipient)
+    public static function isFriend($initiator, $recipient): bool
     {
         $query = static::find();
         $model = $query->noInitModel;
@@ -488,13 +487,13 @@ trait UserRelationTrait
      * If you don't want to use transaction or database doesn't support it,
      * please use `save()` directly.
      * @param static $relation
-     * @param Connection $connection
-     * @return boolean
+     * @param ?Connection $connection
+     * @return bool
      * @throws InvalidValueException
      * @throws InvalidConfigException
      * @throws IntegrityException
      */
-    public static function insertRelation($relation, Connection $connection = null)
+    public static function insertRelation($relation, ?Connection $connection = null): bool
     {
         if (!($relation instanceof static)) {
             return false;
@@ -633,7 +632,7 @@ trait UserRelationTrait
      * Initialize groups attribute.
      * @param ModelEvent $event
      */
-    public function onInitGroups($event)
+    public function onInitGroups($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -644,7 +643,7 @@ trait UserRelationTrait
      * Initialize remark attribute.
      * @param ModelEvent $event
      */
-    public function onInitRemark($event)
+    public function onInitRemark($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -658,7 +657,7 @@ trait UserRelationTrait
      * @param ModelEvent $event
      * @throws IntegrityException throw if insert failed.
      */
-    public function onInsertRelation($event)
+    public function onInsertRelation($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -678,9 +677,9 @@ trait UserRelationTrait
      * The opposite relation should be updated without triggering events
      * simultaneously after existed relation removed.
      * @param ModelEvent $event
-     * @throw IntegrityException throw if update failed.
+     * @throws IntegrityException throw if update failed.
      */
-    public function onUpdateRelation($event)
+    public function onUpdateRelation($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -701,7 +700,7 @@ trait UserRelationTrait
      * simultaneously after existed relation removed.
      * @param ModelEvent $event
      */
-    public function onDeleteRelation($event)
+    public function onDeleteRelation($event): void
     {
         $sender = $event->sender;
         /* @var $sender static */

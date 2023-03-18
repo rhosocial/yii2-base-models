@@ -13,21 +13,24 @@
 namespace rhosocial\base\models\queries;
 
 use rhosocial\base\models\traits\EntityQueryTrait;
+use yii\db\Exception;
+use yii\redis\ActiveQuery;
 
 /**
  * Description of BaseRedisEntityQuery
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
-class BaseRedisEntityQuery extends \yii\redis\ActiveQuery
+class BaseRedisEntityQuery extends ActiveQuery
 {
     use EntityQueryTrait;
     
     protected static function range($query, $attribute, $start = null, $end = null)
     {
         if (!isset($attribute, $start, $end)) {
-            throw new \yii\db\Exception("`attribute`, `start` and `end` must be specified.");
+            throw new Exception("`attribute`, `start` and `end` must be specified.");
         }
         return $query->andWhere(['between', $attribute, $start, $end]);
     }
