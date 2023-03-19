@@ -90,7 +90,7 @@ trait IPTrait
      */
     protected function getIPv4Address(): ?string
     {
-        return $this->{$this->ipTypeAttribute} == IP::IPv4 ? inet_ntop($this->{$this->ipAttribute}) : null;
+        return $this->{$this->ipTypeAttribute} == IP::IPv4 ? ($this->{$this->ipAttribute}) : null;
     }
 
     /**
@@ -99,7 +99,7 @@ trait IPTrait
      */
     protected function getIPv6Address(): ?string
     {
-        return $this->{$this->ipTypeAttribute} == IP::IPv6 ? inet_ntop($this->{$this->ipAttribute}) : null;
+        return $this->{$this->ipTypeAttribute} == IP::IPv6 ? ($this->{$this->ipAttribute}) : null;
     }
     
     /**
@@ -109,7 +109,7 @@ trait IPTrait
      */
     protected function setIPv4Address(string $ipAddress): string
     {
-        return $this->{$this->ipAttribute} = inet_pton($ipAddress);
+        return $this->{$this->ipAttribute} = ($ipAddress);
     }
     
     /**
@@ -119,7 +119,7 @@ trait IPTrait
      */
     protected function setIPv6Address(string $ipAddress): string
     {
-        return $this->{$this->ipAttribute} = inet_pton($ipAddress);
+        return $this->{$this->ipAttribute} = ($ipAddress);
     }
     
     /**
@@ -186,14 +186,14 @@ trait IPTrait
         if ($this->enableIP & self::IP_V4_ENABLED) {
             $rules = [
                 [[$this->ipAttribute],
-                    'string', 'max' => 4
+                    'string', 'max' => 15
                 ],
             ];
         }
         if ($this->enableIP & self::IP_V6_ENABLED) {
             $rules = [
                 [[$this->ipAttribute],
-                    'string', 'max' => 16
+                    'string', 'max' => 39
                 ],
             ];
         }

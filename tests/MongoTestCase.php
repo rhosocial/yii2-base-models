@@ -31,7 +31,7 @@ class MongoTestCase extends TestCase
     
     protected function setUp() : void {
         $databases = self::getParam('databases');
-        $params = $databases['mysql'] ?? null;
+        $params = $databases[ENV_DATABASE] ?? null;
         if ($params === null) {
             $this->markTestSkipped('No mysql server connection configured.');
         }

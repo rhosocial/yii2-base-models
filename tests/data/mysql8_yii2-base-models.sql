@@ -32,10 +32,10 @@ USE `yii2-base-models`;
 
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE IF NOT EXISTS `entity` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(16) COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -54,10 +54,10 @@ CREATE TABLE IF NOT EXISTS `entity` (
 
 DROP TABLE IF EXISTS `entity_ai`;
 CREATE TABLE IF NOT EXISTS `entity_ai` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -75,15 +75,15 @@ CREATE TABLE IF NOT EXISTS `entity_ai` (
 
 DROP TABLE IF EXISTS `operator_entity`;
 CREATE TABLE IF NOT EXISTS `operator_entity` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(16) COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  `operator_guid` varbinary(16) NOT NULL DEFAULT '',
+  `operator_guid` char(36) NOT NULL DEFAULT '',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `operator_entity_id_unique` (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='For Operator.';
@@ -98,13 +98,13 @@ CREATE TABLE IF NOT EXISTS `operator_entity` (
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `pass_hash` varchar(80) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `expired_after` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `auth_key` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `access_token` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -128,15 +128,15 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 DROP TABLE IF EXISTS `user_additional_account`;
 CREATE TABLE IF NOT EXISTS `user_additional_account` (
-  `guid` varbinary(16) NOT NULL,
-  `user_guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
   `pass_hash` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `separate_login` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `content` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `source` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'User source',
   `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `confirmed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `confirmed_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -156,15 +156,15 @@ CREATE TABLE IF NOT EXISTS `user_additional_account` (
 
 DROP TABLE IF EXISTS `user_comment`;
 CREATE TABLE IF NOT EXISTS `user_comment` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `parent_guid` varbinary(16) NOT NULL DEFAULT '',
-  `user_guid` varbinary(16) NOT NULL,
-  `post_guid` varbinary(16) NOT NULL,
+  `parent_guid` char(36) NULL DEFAULT NULL,
+  `user_guid` char(36) NOT NULL,
+  `post_guid` char(36) NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `confirmed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `confirmed_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -186,8 +186,8 @@ CREATE TABLE IF NOT EXISTS `user_comment` (
 
 DROP TABLE IF EXISTS `user_email`;
 CREATE TABLE IF NOT EXISTS `user_email` (
-  `guid` varbinary(16) NOT NULL,
-  `user_guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
@@ -212,8 +212,8 @@ CREATE TABLE IF NOT EXISTS `user_email` (
 
 DROP TABLE IF EXISTS `user_meta`;
 CREATE TABLE IF NOT EXISTS `user_meta` (
-  `guid` varbinary(16) NOT NULL,
-  `user_guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `key` varchar(190) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '', -- key length should be less than 767 bytes.
   `value` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
@@ -230,11 +230,11 @@ CREATE TABLE IF NOT EXISTS `user_meta` (
 
 DROP TABLE IF EXISTS `user_post`;
 CREATE TABLE IF NOT EXISTS `user_post` (
-  `guid` varbinary(16) NOT NULL,
-  `user_guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `content` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -253,14 +253,14 @@ CREATE TABLE IF NOT EXISTS `user_post` (
 
 DROP TABLE IF EXISTS `user_relation`;
 CREATE TABLE IF NOT EXISTS `user_relation` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `user_guid` varbinary(16) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `remark` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `other_guid` varbinary(16) NOT NULL,
+  `other_guid` char(36) NOT NULL,
   `type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `favorite` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -282,9 +282,9 @@ CREATE TABLE IF NOT EXISTS `user_relation` (
 
 DROP TABLE IF EXISTS `user_relation_group`;
 CREATE TABLE IF NOT EXISTS `user_relation_group` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `user_guid` varbinary(16) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `content` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -304,17 +304,17 @@ CREATE TABLE IF NOT EXISTS `user_relation_group` (
 
 DROP TABLE IF EXISTS `user_single_relation`;
 CREATE TABLE IF NOT EXISTS `user_single_relation` (
-  `guid` varbinary(16) NOT NULL,
+  `guid` char(36) NOT NULL,
   `id` varchar(8) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `user_guid` varbinary(16) NOT NULL,
+  `user_guid` char(36) NOT NULL,
   `remark` varchar(255) COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `other_guid` varbinary(16) NOT NULL,
+  `other_guid` char(36) NOT NULL,
   `favorite` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-  `ip` varbinary(16) NOT NULL DEFAULT '0',
+  `ip` varchar(39) NOT NULL DEFAULT '',
   `ip_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '4',
   `created_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `updated_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `groups` varbinary(800) NOT NULL DEFAULT '',
+  `groups` varchar(2048) NOT NULL DEFAULT '',
   `description` text COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `user_other_unique` (`user_guid`,`other_guid`) USING BTREE,

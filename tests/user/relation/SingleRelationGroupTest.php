@@ -12,6 +12,7 @@
 
 namespace rhosocial\base\models\tests\user\relation;
 
+use rhosocial\base\helpers\Number;
 use rhosocial\base\models\tests\data\ar\relation\UserSingleRelation;
 use rhosocial\base\models\tests\data\ar\relation\UserRelationGroup;
 
@@ -290,7 +291,7 @@ class SingleRelationGroupTest extends SingleRelationTestCase
         $this->assertTrue($this->other->register());
         $this->assertTrue($this->relation->save());
         
-        $members = UserSingleRelation::getGroupMembers('1');
+        $members = UserSingleRelation::getGroupMembers(Number::guid());
         $this->assertEquals([], $members);
         
         $this->assertTrue($this->user->deregister());

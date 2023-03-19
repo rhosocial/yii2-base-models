@@ -38,8 +38,8 @@ class GUIDTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $this->assertTrue(User::checkGuidExists($this->user->getGUID()));
 
-        $this->assertEquals(16, strlen($this->user->guid));
-        $this->assertEquals(16, strlen($this->user->getGUID()));
+        $this->assertEquals(36, strlen($this->user->guid));
+        $this->assertEquals(36, strlen($this->user->getGUID()));
         $this->assertEquals($this->user->getGUID(), $this->user->guid);
 
         $this->assertMatchesRegularExpression(Number::GUID_REGEX, $this->user->readableGUID);
@@ -62,7 +62,7 @@ class GUIDTest extends UserTestCase
     public function testFind(int $severalTimes)
     {
         $this->assertTrue($this->user->register());
-        $this->assertEquals(16, strlen((string)($this->user)));
+        $this->assertEquals(36, strlen((string)($this->user)));
         $this->assertInstanceOf(User::class, User::find()->guid($this->user)->one());
         $this->assertInstanceOf(User::class, User::find()->guid($this->user->guid)->one());
         $this->assertEquals(User::find()->guid($this->user->guid)->one()->getGUID(), User::find()->guid($this->user)->one()->getGUID());
@@ -83,7 +83,7 @@ class GUIDTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $oldGUID = $this->user->getGUID();
         $this->user->setGUID($this->user->generateGuid());
-        $this->assertEquals(16, strlen($this->user->guid));
+        $this->assertEquals(36, strlen($this->user->guid));
         $this->assertNotEquals($oldGUID, $this->user->guid);
         $this->assertTrue($this->user->save());
         $user = User::findOne($this->user->guid);
@@ -104,7 +104,7 @@ class GUIDTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $oldGUID = $this->user->guid;
         $this->user->setGUID(Number::guid());
-        $this->assertEquals(16, strlen($this->user->guid));
+        $this->assertEquals(36, strlen($this->user->guid));
         $this->assertNotEquals($oldGUID, $this->user->guid);
         $this->assertTrue($this->user->save());
         $user = User::findOne($this->user->guid);

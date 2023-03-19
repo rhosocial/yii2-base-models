@@ -55,7 +55,7 @@ trait EntityQueryTrait
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        return $this->likeCondition($guid, $model->guidAttribute, $like);
+        return $this->likeCondition((string)$guid, $model->guidAttribute, $like);
     }
 
     /**
@@ -68,7 +68,7 @@ trait EntityQueryTrait
     {
         /* @var $this ActiveQuery */
         $model = $this->noInitModel;
-        return $this->likeCondition($id, $model->idAttribute, $like);
+        return $this->likeCondition((string)$id, $model->idAttribute, $like);
     }
 
     /**

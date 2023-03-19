@@ -27,6 +27,11 @@ $config = [
             'password' => '123456',
             'charset' => 'utf8',
         ],
+        'postgres' => [
+            'dsn' => 'pgsql:host=postgres;dbname=yii2-base-models',
+            'username' => 'user',
+            'password' => '123456',
+        ],
     ],
     'redis' => [
         'class' => 'yii\redis\Connection',

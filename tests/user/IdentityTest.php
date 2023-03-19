@@ -54,7 +54,7 @@ class IdentityTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $user = User::findIdentityByGuid($this->user);
         $this->assertInstanceOf(User::class, $user);
-        $user = User::findIdentityByGuid(Number::guid_bin());
+        $user = User::findIdentityByGuid(Number::guid());
         $this->assertNull($user);
         $this->assertTrue($this->user->deregister());
     }

@@ -17,21 +17,22 @@ use rhosocial\base\models\traits\MetaTrait;
 /**
  * Description of BaseRedisMetaModel
  *
- * @version 1.0
+ * @version 2.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseRedisMetaModel extends BaseRedisBlameableModel
 {
     use MetaTrait;
 
-    public $idAttribute = 'key';
-    public $idPreassigned = true;
-    public $idAttributeLength = 255;
-    public $createdAtAttribute = false;
-    public $updatedAtAttribute = false;
-    public $enableIP = false;
-    public $contentAttribute = 'value';
-    public $updatedByAttribute = false;
-    public $confirmationAttribute = false;
+    public string|false $idAttribute = 'key';
+    public bool $idPreassigned = true;
+    public int $idAttributeLength = 255;
+    public string|false $createdAtAttribute = false;
+    public string|false $updatedAtAttribute = false;
+    public int $enableIP = 0;
+    public string|array|false $contentAttribute = 'value';
+    public string|false $updatedByAttribute = false;
+    public string|false $confirmationAttribute = false;
 
 }

@@ -91,7 +91,7 @@ trait MultipleBlameableTrait
     public function getMultipleBlameableAttributeRules(): array
     {
         return is_string($this->multiBlamesAttribute) ? [
-            [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 16],
+            [[$this->multiBlamesAttribute], 'string', 'max' => $this->blamesLimit * 36],
             [[$this->multiBlamesAttribute], 'default', 'value' => ''],
         ] : [];
     }
@@ -247,7 +247,7 @@ trait MultipleBlameableTrait
         if ($multiBlamesAttribute === false) {
             return [];
         }
-        $guids = Number::divide_guid_bin($this->$multiBlamesAttribute);
+        $guids = static::divide_guid_strs($this->$multiBlamesAttribute);
         if ($checkValid) {
             $guids = $this->unsetInvalidBlames($guids);
         }
@@ -301,7 +301,7 @@ trait MultipleBlameableTrait
             $guids = $this->unsetInvalidBlames($guids);
         }
         $multiBlamesAttribute = $this->multiBlamesAttribute;
-        $this->$multiBlamesAttribute = Number::composite_guid($guids);
+        $this->$multiBlamesAttribute = static::composite_guid_strs($guids);
         return $guids;
     }
 

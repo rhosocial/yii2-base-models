@@ -58,7 +58,7 @@ trait IdentityTrait
      */
     public static function findIdentityByGuid(mixed $guid): ?static
     {
-        return static::findOne($guid);
+        return static::findOne((string)$guid);
     }
 
     /**

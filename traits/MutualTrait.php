@@ -84,7 +84,7 @@ trait MutualTrait
         if (is_string($this->otherGuidAttribute)) {
             $rules = [
                 [$this->otherGuidAttribute, 'required'],
-                [$this->otherGuidAttribute, 'string', 'max' => 16],
+                [$this->otherGuidAttribute, 'string', 'max' => 36],
             ];
         }
         return $rules;

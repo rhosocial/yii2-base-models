@@ -168,12 +168,12 @@ class BaseAdditionalAccountModelTest extends TestCase
         $this->assertTrue($user->deregister());
     }
     
-    private function AdditionalAccountRules()
+    private function AdditionalAccountRules(): array
     {
         return [
             [['guid'], 'required'],
             [['guid'], 'unique'],
-            [['guid'], 'string', 'max' => 16],
+            [['guid'], 'string', 'max' => 36],
         ];
     }
     

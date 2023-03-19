@@ -127,7 +127,8 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->blameable->host->equals($this->user));
         $this->assertFalse($this->blameable->host->equals($this->other));
         
-        $this->assertInstanceOf(Binary::class, $this->blameable->host = new Binary($this->other->getGUID(), Binary::TYPE_UUID));
+        // $this->assertInstanceOf(Binary::class, $this->blameable->host = new Binary($this->other->getGUID(), Binary::TYPE_UUID));
+        $this->assertIsString($this->blameable->host = $this->other->getGUID());
         $this->assertTrue($this->blameable->save());
         unset($this->blameable->host);
         $this->assertTrue($this->blameable->host->equals($this->other));
@@ -230,7 +231,8 @@ class MongoBlameableTest extends MongoBlameableTestCase
         $this->assertTrue($this->blameable->updater->equals($this->user));
         $this->assertFalse($this->blameable->updater->equals($this->other));
         
-        $this->blameable->updater = new Binary($this->other->getGUID(), Binary::TYPE_UUID);
+        // $this->blameable->updater = new Binary($this->other->getGUID(), Binary::TYPE_UUID);
+        $this->blameable->updater = $this->other;
         $this->assertEquals($this->other->getGUID(), $this->blameable->getUpdatedBy());
         $this->assertTrue($this->blameable->save());
         

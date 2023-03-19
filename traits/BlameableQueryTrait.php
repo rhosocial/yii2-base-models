@@ -44,7 +44,7 @@ trait BlameableQueryTrait
         if (!is_string($model->confirmationAttribute)) {
             return $this;
         }
-        return $this->andWhere([$model->confirmationAttribute => $isConfirmed]);
+        return $this->andWhere([$model->confirmationAttribute => $isConfirmed ? 1 : 0]);
     }
 
     /**

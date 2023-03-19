@@ -1,0 +1,72 @@
+version: "3.8"
+services:
+  php:
+    build:
+      context: ..
+      args:
+        TAG: 8.2-apache
+    image: registry.us-west-1.aliyuncs.com/vistart_public/php:8.2-apache-dev
+    working_dir: /opt/project
+    ports:
+      - 8080:80
+    networks:
+      - dev
+    volumes:
+      - composer_data:/root/.composer/cache
+      - ../../../../yii2-base-models:/opt/project
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+  postgres:
+    image: postgres:15
+    working_dir: /opt/project
+    ports:
+      - 8432:5432
+    networks:
+      - dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../../../yii2-base-models:/opt/project
+      - ../../../../yii2-base-models/tests/data/postgres_yii2-base-models.sql:/docker-entrypoint-initdb.d/yii2-base-models.sql
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: user
+      POSTGRES_DB: yii2-base-models
+      PGDATA: /var/lib/postgresql/data/pgdata
+  mongo:
+    image: mongo:6
+    working_dir: /opt/project
+    ports:
+      - 8707:27017
+    networks:
+      - dev
+    volumes:
+      - mongo_data:/data/db
+      - ../../../../yii2-base-models:/opt/project
+      - ../../../../yii2-base-models/tests/data/yii2-base-models.js:/docker-entrypoint-initdb.d/yii2-base-models.js
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: yii2-base-models
+  redis:
+    image: redis:7
+    ports:
+      - 8379:6379
+    networks:
+      - dev
+    volumes:
+      - redis_data:/data
+networks:
+  dev:
+volumes:
+  composer_data:
+  postgres_data:
+  mongo_data:
+  redis_data:

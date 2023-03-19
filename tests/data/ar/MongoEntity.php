@@ -12,6 +12,8 @@
 
 namespace rhosocial\base\models\tests\data\ar;
 
+use rhosocial\base\helpers\Number;
+use rhosocial\base\models\models\BaseEntityModel;
 use rhosocial\base\models\models\BaseMongoEntityModel;
 use rhosocial\base\models\queries\BaseMongoEntityQuery;
 
@@ -40,5 +42,33 @@ class MongoEntity extends BaseMongoEntityModel
     public static function find()
     {
         return parent::find();
+    }
+
+    /**
+     *
+     * @param array $models
+     */
+    public static function compositeGUIDs($models): array|string|null
+    {
+        if (empty($models)) {
+            return null;
+        }
+        if (!is_array($models) && $models instanceof static) {
+            return $models->getGUID();
+        }
+        if (is_string($models) && preg_match(Number::GUID_REGEX, $models)) {
+            return $models;
+        }
+        $guids = [];
+        foreach ($models as $model) {
+            if ($model instanceof static || $model instanceof BaseEntityModel) {
+                $guids[] = $model->getGUID();
+            } elseif (is_string($model) && preg_match(Number::GUID_REGEX, $model)) {
+                $guids[] = $model;
+            } elseif (is_string($model) && strlen($model) == 16) {
+                $guids[] = Number::guid(false, false, $model);
+            }
+        }
+        return $guids;
     }
 }

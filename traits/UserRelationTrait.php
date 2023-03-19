@@ -368,9 +368,9 @@ trait UserRelationTrait
      * Transform relation from suspend to normal.
      * Note: You should ensure the relation model is not new one.
      * @param static $relation
-     * @return boolean
+     * @return bool
      */
-    public static function transformSuspendToNormal($relation)
+    public static function transformSuspendToNormal($relation): bool
     {
         if (!($relation instanceof static) || $relation->getIsNewRecord() ||
                 $relation->relationType != static::$relationMutual) {
@@ -384,9 +384,9 @@ trait UserRelationTrait
      * Revert relation from normal to suspend.
      * Note: You should ensure the relation model is not new one.
      * @param static $relation
-     * @return boolean
+     * @return bool
      */
-    public static function revertNormalToSuspend($relation)
+    public static function revertNormalToSuspend($relation): bool
     {
         if (!($relation instanceof static) || $relation->getIsNewRecord() ||
                 $relation->relationType != static::$relationMutual) {
@@ -415,9 +415,7 @@ trait UserRelationTrait
         $noInit = $relationQuery->noInitModel;
         $relation = $relationQuery->one();
         if (!$relation) {
-            $hostClass = $noInit->hostClass;
             if ($user instanceof BaseUserModel) {
-                $hostClass = $hostClass ? : $user->className();
                 $user = $user->getGUID();
             }
             if ($other instanceof BaseUserModel) {

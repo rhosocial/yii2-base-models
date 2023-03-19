@@ -74,20 +74,6 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     {
         return $this->enabledFields();
     }
-
-    /**
-     * Get blame who owned this blamable model.
-     * NOTICE! This method will not check whether `$hostClass` exists. You should
-     * specify it in `init()` method.
-     * @return BaseUserQuery user.
-     */
-    public function getHost(): BaseUserQuery
-    {
-        $hostClass = $this->hostClass;
-        $user = $hostClass::buildNoInitModel();
-        /* @var BaseUserModel $user */
-        return $this->hasOne($hostClass::className(), [$user->guidAttribute => 'createdBy']);
-    }
     
     /**
      * Get created_by attribute.
@@ -96,48 +82,9 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function getCreatedBy(): ?string
     {
         $createdByAttribute = $this->createdByAttribute;
-        return (!is_string($createdByAttribute) || empty($createdByAttribute)) ? null : $this->$createdByAttribute->getData();
-    }
-    
-    /**
-     * Set host.
-     * @param string|Binary $host
-     * @return Binary|false
-     */
-    public function setHost(string|Binary $host): Binary|false
-    {
-        if ($host instanceof Binary && $host->getType() == Binary::TYPE_UUID) {
-            return $this->{$this->createdByAttribute} = $host;
-        }
-        if ($host instanceof $this->hostClass || $host instanceof IdentityInterface) {
-            return $this->{$this->createdByAttribute} = new Binary($host->getGUID(), Binary::TYPE_UUID);
-        }
-        if (is_string($host) && preg_match(Number::GUID_REGEX, $host)) {
-            return $this->{$this->createdByAttribute} = new Binary(Number::guid_bin($host), Binary::TYPE_UUID);
-        }
-        if (strlen($host) == 16) {
-            return $this->{$this->createdByAttribute} = new Binary($host, Binary::TYPE_UUID);
-        }
-        return false;
+        return (!is_string($createdByAttribute) || empty($createdByAttribute)) ? null : $this->$createdByAttribute;
     }
 
-    /**
-     * Get updater who updated this blameable model recently.
-     * NOTICE! This method will not check whether `$hostClass` exists. You should
-     * specify it in `init()` method.
-     * @return ?BaseUserQuery user.
-     */
-    public function getUpdater(): ?BaseUserQuery
-    {
-        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
-            return null;
-        }
-        $hostClass = $this->hostClass;
-        $host = $hostClass::buildNoInitModel();
-        /* @var $user BaseUserModel */
-        return $this->hasOne($hostClass::className(), [$host->guidAttribute => 'updatedBy']);
-    }
-    
     /**
      * Get updated_by attribute.
      * @return string|null
@@ -145,54 +92,6 @@ abstract class BaseMongoBlameableModel extends BaseMongoEntityModel
     public function getUpdatedBy(): ?string
     {
         $updatedByAttribute = $this->updatedByAttribute;
-        return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute->getData();
-    }
-
-    /**
-     * Set updater.
-     * @param string|BaseUserModel $updater
-     * @return Binary|false
-     */
-    public function setUpdater(mixed $updater): Binary|false
-    {
-        if (!is_string($this->updatedByAttribute) || empty($this->updatedByAttribute)) {
-            return false;
-        }
-        if ($updater instanceof Binary && $updater->getType() == Binary::TYPE_UUID) {
-            return $this->{$this->updatedByAttribute} = $updater;
-        }
-        if ($updater instanceof $this->hostClass || $updater instanceof IdentityInterface) {
-            return $this->{$this->updatedByAttribute} = new Binary($updater->getGUID(), Binary::TYPE_UUID);
-        }
-        if (is_string($updater) && preg_match(Number::GUID_REGEX, $updater)) {
-            return $this->{$this->updatedByAttribute} = new Binary(Number::guid_bin($updater), Binary::TYPE_UUID);
-        }
-        if (strlen($updater) == 16) {
-            return $this->{$this->updatedByAttribute} = new Binary($updater, Binary::TYPE_UUID);
-        }
-        return false;
-    }
-
-    /**
-     * Return the current user's GUID if current model doesn't specify the owner
-     * yet, or return the owner's GUID if current model has been specified.
-     * This method is ONLY used for being triggered by event. DO NOT call,
-     * override or modify it directly, unless you know the consequences.
-     * @param ModelEvent $event
-     * @return ?Binary the GUID of current user or the owner.
-     */
-    public function onGetCurrentUserGuid($event): ?Binary
-    {
-        $sender = $event->sender;
-        /* @var $sender static */
-        if (isset($sender->attributes[$sender->createdByAttribute])) {
-            return $sender->attributes[$sender->createdByAttribute];
-        }
-        $identity = \Yii::$app->user->identity;
-        /* @var BaseUserModel $identity */
-        if ($identity) {
-            return new Binary($identity->getGUID(), Binary::TYPE_UUID);
-        }
-        return null;
+        return (!is_string($updatedByAttribute) || empty($updatedByAttribute)) ? null : $this->$updatedByAttribute;
     }
 }

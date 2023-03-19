@@ -275,7 +275,7 @@ trait ConfirmationTrait
         }
         $contents = static::find()
             ->where([$this->contentAttribute => $this->getContent()])
-            ->andWhere(['not like', $this->createdByAttribute, $this->user->getGUID()])
+            ->andWhere(['!=', $this->createdByAttribute, $this->user->getGUID()])
             ->all();
         foreach ($contents as $content) {
             $content->confirmation = self::CONFIRMATION_STATUS_UNCONFIRMED;

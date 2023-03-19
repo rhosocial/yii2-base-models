@@ -28,40 +28,6 @@ class BaseMongoBlameableQuery extends BaseMongoEntityQuery
     use BlameableQueryTrait;
 
     /**
-     * Specify creator(s).
-     * @param string|array $guid
-     * @return $this
-     */
-    public function createdBy($guid)
-    {
-        $model = $this->noInitModel;
-        if (!is_string($model->createdByAttribute)) {
-            return $this;
-        }
-        if ($guid instanceof BaseUserModel) {
-            $guid = $guid->getGUID();
-        }
-        return $this->andWhere([$model->createdByAttribute => new Binary($guid, Binary::TYPE_UUID)]);
-    }
-
-    /**
-     * Specify last updater(s).
-     * @param string|array $guid
-     * @return $this
-     */
-    public function updatedBy($guid)
-    {
-        $model = $this->noInitModel;
-        if (!is_string($model->updatedByAttribute)) {
-            return $this;
-        }
-        if ($guid instanceof BaseUserModel) {
-            $guid = $guid->getGUID();
-        }
-        return $this->andWhere([$model->updatedByAttribute => new Binary($guid, Binary::TYPE_UUID)]);
-    }
-
-    /**
      * Attach current identity to createdBy condition.
      * @param BaseUserModel|null $identity
      * @return $this

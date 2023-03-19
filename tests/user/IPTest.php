@@ -55,7 +55,7 @@ class IPTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $this->assertEquals($ip, $this->user->ipAddress);
         $this->assertEquals($ip, $this->user->getIPAddress());
-        $this->assertEquals(inet_pton($ip), $this->user->{$this->user->ipAttribute});
+        $this->assertEquals(($ip), $this->user->{$this->user->ipAttribute});
         $this->assertEquals(IP::IPv4, $this->user->{$this->user->ipTypeAttribute});
         $this->assertTrue($this->user->deregister());
 
@@ -92,7 +92,7 @@ class IPTest extends UserTestCase
         $this->assertTrue($this->user->register());
         $this->assertEquals($ip, $this->user->ipAddress);
         $this->assertEquals($ip, $this->user->getIPAddress());
-        $this->assertEquals(inet_pton($ip), $this->user->ip);
+        $this->assertEquals(($ip), $this->user->ip);
         $this->assertEquals(IP::IPv6, $this->user->ip_type);
         $this->assertTrue($this->user->deregister());
         

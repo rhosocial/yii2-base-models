@@ -32,58 +32,6 @@ abstract class BaseMongoEntityModel extends ActiveRecord
 {
     use EntityTrait;
     
-    public function getGUIDRules(): array
-    {
-        $rules = [];
-        if (is_string($this->guidAttribute) || !empty($this->guidAttribute)) {
-            $rules = [
-                [[$this->guidAttribute], 'required',],
-            ];
-        }
-        return $rules;
-    }
-    
-    public function getGUID()
-    {
-        $guidAttribute = $this->guidAttribute;
-        return (!is_string($guidAttribute) || empty($guidAttribute)) ? null : $this->$guidAttribute->getData();
-    }
-    
-    public function setGUID($guid)
-    {
-        $guidAttribute = $this->guidAttribute;
-        if (!is_string($guidAttribute) || empty($guidAttribute)) {
-            return null;
-        }
-        if (preg_match(Number::GUID_REGEX, $guid)) {
-            $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
-        }
-        return $this->$guidAttribute = new Binary($guid, Binary::TYPE_UUID);
-    }
-    
-    /**
-     * Check if the $guid existed in current database table.
-     * @param string|Binary $guid the GUID to be checked.
-     * @return bool Whether the $guid exists or not.
-     */
-    public static function checkGuidExists($guid): bool
-    {
-        if (is_string($guid)) {
-            if (strlen($guid) == 16) {
-                $binary = new Binary($guid, Binary::TYPE_UUID);
-            } elseif (preg_match(Number::GUID_REGEX, $guid)) {
-                $binary = new Binary(Number::guid_bin($guid), Binary::TYPE_UUID);
-            } else {
-                return false;
-            }
-            return static::findOne($binary) !== null;
-        }
-        if ($guid instanceof Binary) {
-            return static::findOne($guid) !== null;
-        }
-        return false;
-    }
-    
     /**
      * Get the rules associated with ip attributes.
      * @return array
@@ -177,32 +125,5 @@ abstract class BaseMongoEntityModel extends ActiveRecord
     public function attributes(): array
     {
         return $this->enabledFields();
-    }
-    
-    /**
-     * 
-     * @param array $models
-     */
-    public static function compositeGUIDs($models) {
-        if (empty($models)) {
-            return null;
-        }
-        if (!is_array($models) && $models instanceof static) {
-            return new Binary($models->getGUID(), Binary::TYPE_UUID);
-        }
-        if (is_string($models) && strlen($models) == 16) {
-            return new Binary($models, Binary::TYPE_UUID);
-        }
-        $guids = [];
-        foreach ($models as $model) {
-            if ($model instanceof static || $model instanceof BaseEntityModel) {
-                $guids[] = new Binary($model->getGUID(), Binary::TYPE_UUID);
-            } elseif (is_string($model) && preg_match(Number::GUID_REGEX, $model)) {
-                $guids[] = new Binary(Number::guid_bin($model), Binary::TYPE_UUID);
-            } elseif (is_string($model) && strlen($model) == 16) {
-                $guids[] = new Binary($model, Binary::TYPE_UUID);
-            }
-        }
-        return $guids;
     }
 }

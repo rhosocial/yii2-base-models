@@ -77,7 +77,7 @@ trait SelfBlameableTrait
      * @var string|array rule name and parameters of parent attribute, as well
      * as self referenced ID attribute.
      */
-    public string|array $parentAttributeRule = ['string', 'max' => 16];
+    public string|array $parentAttributeRule = ['string', 'max' => 36];
 
     /**
      * @var string self referenced ID attribute.
@@ -93,9 +93,9 @@ trait SelfBlameableTrait
     ];
 
     /**
-     * @var string The constant determines the null parent.
+     * @var ?string The constant determines the null parent.
      */
-    public static string $nullParent = '';
+    public static ?string $nullParent = null;
     const SELF_REF_UPDATE_TYPE_ON_NO_ACTION = 0;
     const SELF_REF_UPDATE_TYPE_ON_RESTRICT = 1;
     const SELF_REF_UPDATE_TYPE_ON_CASCADE = 2;

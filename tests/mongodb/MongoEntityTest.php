@@ -60,7 +60,8 @@ class MongoEntityTest extends MongoEntityTestCase
 
         $readable = Number::guid();
         $this->entity->setGUID($readable);
-        $this->assertEquals($readable, Number::guid(false, false, (string)($this->entity)));
+        // $this->assertEquals($readable, Number::guid(false, false, (string)($this->entity)));
+        $this->assertEquals($readable, (string)($this->entity));
         $this->assertEquals(1, $this->entity->delete());
     }
 
@@ -75,11 +76,12 @@ class MongoEntityTest extends MongoEntityTestCase
     {
         $this->assertTrue($this->entity->save());
         $this->assertTrue(MongoEntity::checkGuidExists($this->entity->getGUID()));
-        $this->assertTrue(MongoEntity::checkGuidExists(Number::guid(false, false, $this->entity->getGUID())));
+        // $this->assertTrue(MongoEntity::checkGuidExists(Number::guid(false, false, $this->entity->getGUID())));
         $this->assertFalse(MongoEntity::checkGuidExists($this->entity->getGUID() . $this->faker->randomNumber()));
         $this->assertTrue(MongoEntity::checkGuidExists($this->entity->{$this->entity->guidAttribute}));
-        $this->assertFalse(MongoEntity::checkGuidExists(new Binary(Number::guid_bin(), Binary::TYPE_UUID)));
-        $this->assertFalse(MongoEntity::checkGuidExists(null));
+        // $this->assertFalse(MongoEntity::checkGuidExists(new Binary(Number::guid_bin(), Binary::TYPE_UUID)));
+        $this->assertFalse(MongoEntity::checkGuidExists(Number::guid()));
+        // $this->assertFalse(MongoEntity::checkGuidExists(null));
         $this->assertEquals(1, $this->entity->delete());
     }
 
@@ -124,7 +126,8 @@ class MongoEntityTest extends MongoEntityTestCase
     {
         $this->assertNull(MongoEntity::compositeGuids(null));
 
-        $this->assertEquals($this->entity->getGUID(), MongoEntity::compositeGUIDs($this->entity)->getData());
+        // $this->assertEquals($this->entity->getGUID(), MongoEntity::compositeGUIDs($this->entity)->getData());
+        $this->assertEquals($this->entity->getGUID(), MongoEntity::compositeGUIDs($this->entity));
 
         $models = [];
         $models[] = $this->entity;
@@ -132,9 +135,12 @@ class MongoEntityTest extends MongoEntityTestCase
         $models[] = Number::guid();
 
         $guids = MongoEntity::compositeGUIDs($models);
-        $this->assertEquals($guids[0]->getData(), $models[0]->getGUID());
-        $this->assertEquals($guids[1]->getData(), $models[1]->getGUID());
-        $this->assertEquals($guids[2]->getData(), Number::guid_bin($models[2]));
+        // $this->assertEquals($guids[0]->getData(), $models[0]->getGUID());
+        $this->assertEquals($guids[0], $models[0]->getGUID());
+        // $this->assertEquals($guids[1]->getData(), $models[1]->getGUID());
+        $this->assertEquals($guids[1], $models[1]->getGUID());
+        // $this->assertEquals($guids[2]->getData(), Number::guid_bin($models[2]));
+        $this->assertEquals($guids[2], $models[2]);
     }
 
     public static function severalTimes(): \Generator

@@ -69,7 +69,7 @@ trait GUIDTrait
      */
     public static function generateGuid(): string
     {
-        return Number::guid_bin();
+        return Number::guid();
     }
 
     /**
@@ -93,7 +93,7 @@ trait GUIDTrait
             $rules = [
                 [[$this->guidAttribute], 'required',],
                 [[$this->guidAttribute], 'unique',],
-                [[$this->guidAttribute], 'string', 'max' => 16],
+                [[$this->guidAttribute], 'string', 'max' => 36],
             ];
         }
         return $rules;
@@ -133,8 +133,12 @@ trait GUIDTrait
         if (empty($guidAttribute)) {
             return null;
         }
+        /**
         if (preg_match(Number::GUID_REGEX, $guid)) {
             $guid = hex2bin(str_replace(['{', '}', '-'], '', $guid));
+        }*/
+        if (strlen($guid) == 16) {
+            $guid = Number::guid(false, false, $guid);
         }
         return $this->$guidAttribute = $guid;
     }
@@ -152,7 +156,7 @@ trait GUIDTrait
         if (!is_array($models) && $models instanceof static) {
             return $models->getGUID();
         }
-        if (is_string($models) && strlen($models) == 16) {
+        if (is_string($models) && preg_match(Number::GUID_REGEX, $models)) {
             return $models;
         }
         $guids = [];
@@ -160,13 +164,47 @@ trait GUIDTrait
             if ($model instanceof static) {
                 $guids[] = $model->getGUID();
             } elseif (is_string($model)) {
-                if (strlen($model) == 16) {
+                if (preg_match(Number::GUID_REGEX, $model)) {
                     $guids[] = $model;
-                } elseif (preg_match(Number::GUID_REGEX, $model)) {
-                    $guids[] = Number::guid_bin($model);
+                } elseif (strlen($model) == 16) {
+                    $guids[] = Number::guid(false, false, $model);
                 }
             }
         }
         return $guids;
+    }
+
+    /**
+     * Composited guid string chunk into one string.
+     * @param array $guids
+     * @return string
+     */
+    public static function composite_guid_strs($guids)
+    {
+        if (!is_array($guids) || empty($guids)) {
+            return '';
+        }
+        if (is_string($guids[0]) && strlen($guids[0]) == 36) {
+            return implode('', $guids);
+        }
+        $validGuids = Number::unsetInvalidGUIDs($guids);
+        $composited = '';
+        foreach ($validGuids as $guid) {
+            $composited .= $guid;
+        }
+        return $composited;
+    }
+
+    /**
+     * Divide composited guid binary into chunk.
+     * @param string $guids
+     * @return array
+     */
+    public static function divide_guid_strs($guids)
+    {
+        if (!is_string($guids) || strlen($guids) == 0 || strlen($guids) % 36 > 0) {
+            return [];
+        }
+        return str_split($guids, 36);
     }
 }
