@@ -99,7 +99,7 @@ jobs:
           docker exec yii2-base-models-php82_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.mysql.php --display-deprecations --display-errors --display-notices --display-warnings"
+        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.postgres.php --display-deprecations --display-errors --display-notices --display-warnings"
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/yii2-base-models-php82/php82_postgres12_mongo6_redis7.yml down
@@ -115,7 +115,7 @@ jobs:
           docker exec yii2-base-models-php82_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.mysql.php --display-deprecations --display-errors --display-notices --display-warnings"
+        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.postgres.php --display-deprecations --display-errors --display-notices --display-warnings"
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/yii2-base-models-php82/php82_postgres13_mongo6_redis7.yml down
@@ -131,7 +131,7 @@ jobs:
           docker exec yii2-base-models-php82_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.mysql.php --display-deprecations --display-errors --display-notices --display-warnings"
+        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.postgres.php --display-deprecations --display-errors --display-notices --display-warnings"
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/yii2-base-models-php82/php82_postgres14_mongo6_redis7.yml down
@@ -147,7 +147,7 @@ jobs:
           docker exec yii2-base-models-php82_php_1 sh -c "composer install && composer require yiisoft/yii2-mongodb yiisoft/yii2-redis"
           sleep 60
       - name: Run tests
-        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.mysql.php --display-deprecations --display-errors --display-notices --display-warnings"
+        run: docker exec yii2-base-models-php82_php_1 sh -c "XDEBUG_MODE=coverage phpunit --bootstrap ./tests/bootstrap.postgres.php --display-deprecations --display-errors --display-notices --display-warnings"
       - name: Stop containers
         if: always()
         run: docker-compose -f tests/environments/yii2-base-models-php82/php82_postgres15_mongo6_redis7.yml down
