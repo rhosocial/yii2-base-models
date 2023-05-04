@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\traits;
 
 use rhosocial\base\helpers\Number;
+use rhosocial\base\models\traits\config\GUIDConfig;
 use yii\base\ModelEvent;
 
 /**
@@ -179,7 +180,7 @@ trait GUIDTrait
      * @param array $guids
      * @return string
      */
-    public static function composite_guid_strs($guids)
+    public static function composite_guid_strs($guids): string
     {
         if (!is_array($guids) || empty($guids)) {
             return '';
@@ -188,11 +189,7 @@ trait GUIDTrait
             return implode('', $guids);
         }
         $validGuids = Number::unsetInvalidGUIDs($guids);
-        $composited = '';
-        foreach ($validGuids as $guid) {
-            $composited .= $guid;
-        }
-        return $composited;
+        return implode('', $validGuids);
     }
 
     /**
@@ -200,11 +197,19 @@ trait GUIDTrait
      * @param string $guids
      * @return array
      */
-    public static function divide_guid_strs($guids)
+    public static function divide_guid_strs($guids): array
     {
         if (!is_string($guids) || strlen($guids) == 0 || strlen($guids) % 36 > 0) {
             return [];
         }
         return str_split($guids, 36);
+    }
+
+    protected function applyGUIDConfig(?GUIDConfig $guidConfig): void
+    {
+        if ($guidConfig == null) {
+            return;
+        }
+        $this->guidAttribute = $guidConfig->guidAttribute;
     }
 }

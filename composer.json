@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "yiisoft/yii2-faker": "*",
-        "phpunit/phpunit": "^10.0.7",
+        "phpunit/phpunit": "^10.1.2",
         "codedungeon/phpunit-result-printer": "^0.31.0",
         "ext-mbstring": "*"
     },

@@ -30,7 +30,8 @@ use rhosocial\base\models\traits\AdditionalAccountTrait;
  * , email or any other formats.
  * the content type attribute is used for recording the account source, e.g. register
  * from self, or any other account providers.
- * @version 1.0
+ * @version 3.0
+ * @since 1.0
  * @author vistart <i@vistart.me>
  */
 abstract class BaseAdditionalAccountModel extends BaseBlameableModel

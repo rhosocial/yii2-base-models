@@ -13,6 +13,7 @@
 namespace rhosocial\base\models\models;
 
 use rhosocial\base\models\queries\BaseEntityQuery;
+use rhosocial\base\models\traits\config\EntityConfig;
 use rhosocial\base\models\traits\EntityTrait;
 use yii\db\ActiveRecord;
 use yii\base\NotSupportedException;
@@ -38,6 +39,7 @@ abstract class BaseEntityModel extends ActiveRecord
      */
     public function init()
     {
+        $this->resolveAttributes();
         if ($this->skipInit) {
             return;
         }
@@ -82,5 +84,18 @@ abstract class BaseEntityModel extends ActiveRecord
         }
         $queryClass = $self->queryClass;
         return new $queryClass(get_called_class(), ['noInitModel' => $self]);
+    }
+
+    protected function resolveAttributes(): void
+    {
+        $reflector = new \ReflectionClass(static::class);
+        $attrs = $reflector->getAttributes();
+        foreach ($attrs as $attribute) {
+            if ($attribute->getName() == EntityConfig::class) {
+                $entityConfig = $attribute->newInstance();
+                var_dump($entityConfig);
+                break;
+            }
+        }
     }
 }

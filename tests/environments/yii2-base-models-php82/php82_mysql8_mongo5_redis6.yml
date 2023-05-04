@@ -40,6 +40,12 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: 123456
       MYSQL_DATABASE: yii2-base-models
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
   mongo:
     image: mongo:5
     working_dir: /opt/project
@@ -55,6 +61,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: 123456
       MONGO_INITDB_DATABASE: yii2-base-models
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
   redis:
     image: redis:6
     ports:
@@ -63,6 +75,12 @@ services:
       - dev
     volumes:
       - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
 networks:
   dev:
 volumes:
